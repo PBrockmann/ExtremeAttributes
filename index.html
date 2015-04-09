@@ -47,6 +47,17 @@
       .adminunit {
           fill: #ddc;
       }
+
+      .place, .place-label {
+          /* fill: #444; */
+          fill: #8e8e8e;
+      }
+
+      text {
+          font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+          font-size: 10px;
+          pointer-events: none;
+      }
     
 
     </style>
@@ -64,15 +75,11 @@
           .attr("width", width)
           .attr("height", height);
 
-      d3.json("FRA_admin_topojson3.json", function(error, admin) { //this json version has an id param
+      d3.json("FRA_admin_places.json", function(error, admin) {
         if (error) return console.error(error);
         console.log(admin);
 
         var adminunits = topojson.feature(admin, admin.objects.FRA_admin);
-
-        // var projection = d3.geo.mercator()
-        //                    .scale(500)
-        //                    .translate([width / 2, height / 2]);
 
         var projection = d3.geo.albers()
                            .center([0, 47.0])
@@ -83,7 +90,8 @@
 
         //path generator
         var path = d3.geo.path()
-                     .projection(projection);
+                     .projection(projection)
+                     .pointRadius(1.5);
 
         //Create path element, bind data to it, then use selection.attr to set the "d" attribute 
         //to the formatted path data
@@ -98,9 +106,31 @@
            .attr("class", "adminunit")
            .attr("d", path);                            
 
-        // svg.append("path")
-        //    .datum(topojson.feature(admin, admin.objects.FRA_admin))
-        //    .attr("d", d3.geo.path().projection(d3.geo.mercator()));
+        //Bind places to svg   
+        svg.append("path")
+           .datum(topojson.feature(admin, admin.objects.FRA_places))
+           .attr("d", path)
+           //.attr("path.pointRadius", "1")
+           .attr("class", "place");
+
+        //Add place labels
+        svg.selectAll(".place-label")
+           .data(topojson.feature(admin, admin.objects.FRA_places).features)
+           .enter().append("text")
+           .attr("class", "place-label")
+           .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+           .attr("dy", ".35em")
+           .text(function(d) { 
+            console.log(d.properties.name);
+            return d.properties.name; 
+           });
+        
+        //Use right-aligned labels on the left side of the map, and left-aligned labels on the right side of the map, 
+        //here using 1°W as the threshold          
+        svg.selectAll(".place-label")
+           .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
+           .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });   
+       
       
       });
     </script>
