@@ -1,6 +1,3 @@
-ClimateProxiesFinder
-====================
+Extreme Attributes 
 
-dc.js + leaflet application to discover climate proxies
-
-![ScreenShot](snapshot1.png)
+Geo-temporal attributes of extreme weather/climate events in France.
