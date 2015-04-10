@@ -10,10 +10,12 @@
     <meta charset="utf-8">
     <title>Extreme Events Attributes</title>
     <link href="style.css" rel="stylesheet" type="text/css" media="all">
+    
+    <script src="lib/jquery-1.10.2.min.js"></script>
 
+    <!--Leaflet links-->
     <link rel="stylesheet" href="lib/leaflet-0.7/leaflet.css" />
     <script src="lib/leaflet-0.7/leaflet.js"></script>
-
     <link rel="stylesheet" href="lib/Leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="lib/Leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <script src="lib/Leaflet.markercluster/dist/leaflet.markercluster-src.js"></script>
@@ -23,25 +25,26 @@
     <script src="lib/Leaflet-MiniMap/src/Control.MiniMap.js"></script>
     <link rel="stylesheet" href="lib/Leaflet-MiniMap/src/Control.MiniMap.css" />
 
+    <!--d3 and dc-->
     <script src="lib/d3.js"></script>
     <script src="lib/crossfilter.js"></script>
-
     <script src="lib/dc.js-1.6.0/dc.js"></script>
     <link rel="stylesheet" href="lib/dc.js-1.6.0/dc.css" />
 
-    <script src="setup.js"></script>
-
-    <script src="lib/jquery-1.10.2.min.js"></script>
-
+    <!--css links-->
     <link href="lib/bootstrap-3.0.2-dist/css/bootstrap.css" rel="stylesheet">
     <script src="lib/bootstrap-3.0.2-dist/js/bootstrap.min.js"></script>
-
     <!-- Custom styles for this template -->
     <link href="sticky-footer-navbar.css" rel="stylesheet">
 
-    <!--Add for d3 map -->
+    <!--Custom files-->
+    <script src="setup.js"></script>
+    <!--French admin zones (geoJSON file)-->
+    <script src="FRA_admin_lines.geojson" type="text/javascript"></script>
+    <!--For d3 map layer -->
     <script src="http://d3js.org/topojson.v1.min.js"></script>
 
+    <!--custom styling-->
     <style type="text/css">
     
       .adminunit {
@@ -104,13 +107,22 @@
            .enter().append("path")
            //.attr("class", function(d) { return "adminunit " + d.id; })
            .attr("class", "adminunit")
-           .attr("d", path);                            
+           .attr("d", path);
+
+        //Add country label   
+        // svg.selectAll(".country-label")
+        //    .data(topojson.feature(admin, admin.objects.FRA_admin).features)
+        //    .enter().append("text")
+        //    .attr("class", "country-label")
+        //    .attr("transform", function(d) { return "translate(" + path.centroid(d) + ")"; })
+        //    //.attr("transform", function(d) { return "translate(" + path.centroid(d[55]) + ")"; })
+        //    .attr("dy", ".35em")
+        //    .text("FRANCE");                       
 
         //Bind places to svg   
         svg.append("path")
            .datum(topojson.feature(admin, admin.objects.FRA_places))
            .attr("d", path)
-           //.attr("path.pointRadius", "1")
            .attr("class", "place");
 
         //Add place labels
@@ -120,8 +132,7 @@
            .attr("class", "place-label")
            .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
            .attr("dy", ".35em")
-           .text(function(d) { 
-            console.log(d.properties.name);
+           .text(function(d) {
             return d.properties.name; 
            });
         

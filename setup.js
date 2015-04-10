@@ -66,17 +66,36 @@ d3.tsv("proxies.tsv", function(data) {
 
 });
 
-}
+} //end init()
 
 
-function initMap() {
+function initMap() {http: //http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer?f=jsapi
+  //http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}
 
-var mapmadeUrl = 'http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}',
-    mapmadeAttribution = 'LSCE &copy; 2014 | Baselayer &copy; ArcGis',
+var mapmadeUrl = 'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+    mapmadeAttribution = 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
     mapmade = new L.TileLayer(mapmadeUrl, {maxZoom: 10, attribution: mapmadeAttribution}),
     maplatlng = new L.LatLng(47.000, 2.000); //new L.LatLng(0, 0);
 
+//map styling
+var myStyle = {
+    "color": "#471D1D",
+    "weight": 1,
+    "opacity": 0.5
+};
+
+
 map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom: 1
+
+//From EuroCORDEX:
+// countries = L.geoJson(countries, {
+//         style: style,
+//   onEachFeature: onEachFeature
+// }).addTo(map);
+L.geoJson(geojsonAdminLines, {
+  style: myStyle
+}).addTo(map);
+
 
 grat_10 = L.graticule({ interval: 10, style: { color: '#333', weight: 1, opacity: 1. } }).addTo(map);
 grat_05 = L.graticule({ interval: 05, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
@@ -139,7 +158,7 @@ for (var i = 0; i < points.length; i++) {
 }
 map.addLayer(markerGroup);
 
-}
+} //end initMap()
 
 function initCrossfilter() {
   filter = crossfilter(points);
