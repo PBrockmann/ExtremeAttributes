@@ -81,9 +81,9 @@ var mapmadeUrl = 'http://services.arcgisonline.com/arcgis/rest/services/World_Ph
 var myStyle = {
     "color": "#471D1D",
     "weight": 1,
-    "opacity": 0.5
+    "opacity": 0.5,
+    "fillColor": "none"
 };
-
 
 map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom: 1
 
@@ -92,10 +92,9 @@ map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom:
 //         style: style,
 //   onEachFeature: onEachFeature
 // }).addTo(map);
-L.geoJson(geojsonAdminLines, {
+L.geoJson(geojsonAdminLines, { //geojsonAdminLines
   style: myStyle
 }).addTo(map);
-
 
 grat_10 = L.graticule({ interval: 10, style: { color: '#333', weight: 1, opacity: 1. } }).addTo(map);
 grat_05 = L.graticule({ interval: 05, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
