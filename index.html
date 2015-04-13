@@ -52,7 +52,13 @@
           
       }
 
-      .place, .place-label {
+       .place {
+          /* fill: #444; */
+          fill: #000000;
+          stroke: red;
+      }
+
+      .place-label {
           /* fill: #444; */
           fill: #8e8e8e;
       }
@@ -105,11 +111,53 @@
         var bounds = d3.geo.bounds(adminunits);
         var path = d3.geo.path().projection(projectPoint);
 
+
+
         var feature = g.selectAll('.adminunit')
                        .data(topojson.feature(admin, admin.objects.FRA_admin).features)
                        .enter()
                        .append('path')
-                       .attr('class', 'adminunit');
+                       .attr('class', 'adminunit');      
+
+        // var circles = svg.append("path") //g.selectAll('.places')
+        //              .datum(topojson.feature(admin, admin.objects.FRA_places))
+        //              .attr("d", path)
+        //              .attr('class', 'place');
+
+        //admin.objects.FRA_places.geometries.forEach(function(d) {
+        //admin.objects.FRA_places.features.forEach(function(d) {  
+          // console.log("name:", d.properties.name);
+          // console.log("coords: ", d.coordinates);
+          // console.log("centroid: ", path.centroid(d));
+          // console.log("projectPoint(coords): ", projectPoint(d.coordinates));
+          // d.LatLng = new L.LatLng(d.coordinates[0],
+          //             d.coordinates[1])
+          // console.log(d.LatLng);
+        //})
+
+        // var cityMarker = g.selectAll("circle")
+        //                .data(admin.objects.FRA_places.geometries)
+        //                .enter().append("circle")
+        //                 .style("stroke", "black")  
+        //                 //.style("opacity", .6) 
+        //                 .style("fill", "red")
+        //                 .attr("r", 20);   
+
+        var cityMarker = g.selectAll("circle")
+                     .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                     .enter()
+                     .append("circle")
+                     .style("stroke", "black")  
+                     .style("opacity", .6) 
+                     .style("fill", "#8e8e8e")
+                     .attr("r", 2);       
+
+        //place labels               
+        var places = g.selectAll('.place-label')
+                     .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                     .enter()
+                     .append('text')
+                     .attr('class', 'place-label');               
 
         map.on('viewreset', reset);
         reset();               
@@ -127,19 +175,42 @@
         var translation = -bottomLeft[0] + ',' + -topRight[1];
         g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
         
-        feature.attr('d', path);
+        //feature.attr('d', path);
    
-        // label.attr('id', function (d) { return d.id; })
-        //   .attr('class', 'entity-label')
-        //   .attr('transform', function (d) { return 'translate(' + path.centroid(d) + ')'; })
-        //   .attr('x', -20)
-        //   .attr('dy', '.35em')
-        //   .text(function (d) { return toProperCase(d.id); });
-      }
+        places.attr('name', function (d) { return d.properties.name; })
+          .attr('class', 'place-label')
+          .attr('transform', function (d) { 
+            console.log("name centroid: ", path.centroid(d));
+            return 'translate(' + path.centroid(d) + ')'; })
+          .attr('x', -20)
+          .attr('dy', '.35em')
+          .text(function (d) { return d.properties.name; });
+
+        cityMarker.attr("transform", 
+          function(d) { 
+            return 'translate(' + path.centroid(d) + ')';
+            }
+        )
+  
+
+        //cityMarkers
+        // cityMarker.attr("transform", 
+        //   function(d) { 
+        //     return "translate("+ 
+        //       map.latLngToLayerPoint(d.LatLng).x +","+ 
+        //       map.latLngToLayerPoint(d.LatLng).y +")";
+        //     }
+        // )
+
+       
+        
+          
+      } //end reset()
 
       // Use Leaflet to implement a D3 geographic projection.
       function projectPoint(x) {
         var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+        //console.log(x[1], x[0]);
         return [point.x, point.y];
       }    
 
