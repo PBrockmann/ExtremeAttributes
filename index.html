@@ -86,14 +86,8 @@
       var width = 960,
           height = 1160;
 
-      
-
-      // var map = new L.Map("map", {center: [47.000, 2.000], zoom: 6})
-      //     .addLayer(new L.TileLayer("http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}"));
-
       var map = L.map('map').setView([47.0, 2.0], 6);
         L.tileLayer(
-            //'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {  
             attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
             maxZoom: 18,
@@ -101,13 +95,7 @@
 
       var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
-
-      /* Initialize the SVG layer */
-      //map._initPathRoot()    
-
-      /* We simply pick up the SVG from the map object */
-      // var svg = d3.select("#map").select("svg"),
-      // g = svg.append("g");          
+      
 
       d3.json("json/FRA_admin_places.json", function(error, admin) {
         if (error) return console.error(error);
@@ -122,36 +110,9 @@
                        .enter()
                        .append('path')
                        .attr('class', 'adminunit');
-                       //.attr("d",path);
 
         map.on('viewreset', reset);
         reset();               
-      
-
-      // var projection = d3.geo.albers()
-      //                    .center([0, 47.0])
-      //                    .rotate([2.0, 0])
-      //                    .parallels([35, 55])
-      //                    .scale(4000)
-      //                    .translate([width / 5, height / 3]);             
-        
-      // //path generator
-      // var path = d3.geo.path()
-      //              .projection(projection)
-      //              .pointRadius(1.5);
-
-      //Create path element, bind data to it, then use selection.attr to set the "d" attribute 
-      //to the formatted path data
-      // svg.append("path")
-      //    .datum(adminunits)
-      //    .attr("d", path);
-      
-      // svg.selectAll(".adminunit")
-      //      .data(topojson.feature(admin, admin.objects.FRA_admin).features)
-      //      .enter().append("path")
-      //      //.attr("class", function(d) { return "adminunit " + d.id; })
-      //      .attr("class", "adminunit")
-      //      .attr("d", path);
 
       // Reposition the SVG to cover the features.
       function reset() {
