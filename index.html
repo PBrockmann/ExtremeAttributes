@@ -104,60 +104,37 @@
       
 
       d3.json("json/FRA_admin_places.json", function(error, admin) {
-        if (error) return console.error(error);
-        console.log(admin);
+        if (error) return console.error(error);        
 
         var adminunits = topojson.feature(admin, admin.objects.FRA_admin);
         var bounds = d3.geo.bounds(adminunits);
         var path = d3.geo.path().projection(projectPoint);
 
-
-
+        //Extract the admin zone boundaries
         var feature = g.selectAll('.adminunit')
                        .data(topojson.feature(admin, admin.objects.FRA_admin).features)
                        .enter()
                        .append('path')
                        .attr('class', 'adminunit');      
-
-        // var circles = svg.append("path") //g.selectAll('.places')
-        //              .datum(topojson.feature(admin, admin.objects.FRA_places))
-        //              .attr("d", path)
-        //              .attr('class', 'place');
-
-        //admin.objects.FRA_places.geometries.forEach(function(d) {
-        //admin.objects.FRA_places.features.forEach(function(d) {  
-          // console.log("name:", d.properties.name);
-          // console.log("coords: ", d.coordinates);
-          // console.log("centroid: ", path.centroid(d));
-          // console.log("projectPoint(coords): ", projectPoint(d.coordinates));
-          // d.LatLng = new L.LatLng(d.coordinates[0],
-          //             d.coordinates[1])
-          // console.log(d.LatLng);
-        //})
-
-        // var cityMarker = g.selectAll("circle")
-        //                .data(admin.objects.FRA_places.geometries)
-        //                .enter().append("circle")
-        //                 .style("stroke", "black")  
-        //                 //.style("opacity", .6) 
-        //                 .style("fill", "red")
-        //                 .attr("r", 20);   
-
-        var cityMarker = g.selectAll("circle")
-                     .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                     .enter()
-                     .append("circle")
-                     .style("stroke", "black")  
-                     .style("opacity", .6) 
-                     .style("fill", "#8e8e8e")
-                     .attr("r", 2);       
-
-        //place labels               
+    
+        //Extract the place name labels
         var places = g.selectAll('.place-label')
-                     .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                     .enter()
-                     .append('text')
-                     .attr('class', 'place-label');               
+                      .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                      .enter()
+                      .append('text')
+                      .attr('class', 'place-label');
+
+                  
+
+        //Define city markers using the coordinates associated with FRA_places              
+        var cityMarker = g.selectAll("circle")
+                          .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                          .enter()
+                          .append("circle")
+                          .style("stroke", "black")  
+                          .style("opacity", .6) 
+                          .style("fill", "#8e8e8e")
+                          .attr("r", 2);                           
 
         map.on('viewreset', reset);
         reset();               
@@ -175,35 +152,28 @@
         var translation = -bottomLeft[0] + ',' + -topRight[1];
         g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
         
-        //feature.attr('d', path);
+        //Plot the admin zone boundaries
+        feature.attr('d', path);
    
+        //Plot the place names
         places.attr('name', function (d) { return d.properties.name; })
           .attr('class', 'place-label')
-          .attr('transform', function (d) { 
-            console.log("name centroid: ", path.centroid(d));
-            return 'translate(' + path.centroid(d) + ')'; })
+          .attr('transform', function (d) { return 'translate(' + path.centroid(d) + ')'; })
           .attr('x', -20)
           .attr('dy', '.35em')
           .text(function (d) { return d.properties.name; });
 
+        //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
+        svg.selectAll(".place-label")
+           .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
+           .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });      
+
+        //Plot the city markers (small circles)
         cityMarker.attr("transform", 
           function(d) { 
             return 'translate(' + path.centroid(d) + ')';
             }
         )
-  
-
-        //cityMarkers
-        // cityMarker.attr("transform", 
-        //   function(d) { 
-        //     return "translate("+ 
-        //       map.latLngToLayerPoint(d.LatLng).x +","+ 
-        //       map.latLngToLayerPoint(d.LatLng).y +")";
-        //     }
-        // )
-
-       
-        
           
       } //end reset()
 
