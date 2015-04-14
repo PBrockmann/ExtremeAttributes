@@ -78,7 +78,7 @@
           .attr("width", width)
           .attr("height", height);
 
-      d3.json("FRA_admin_places.json", function(error, admin) {
+      d3.json("json/FRA_admin_places.json", function(error, admin) {
         if (error) return console.error(error);
         console.log(admin);
 
