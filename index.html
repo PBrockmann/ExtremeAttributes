@@ -86,27 +86,15 @@
 
   <body>
 
-    <<div id="map" style="width: 700px; height: 700px; margin-top: 50px;"></div>
+    <div id="map" style="width: 700px; height: 700px; margin-top: 50px;"></div>
     <script>
 
-      //vars from setup.js
-      var filter;
-
-      var latDimension;
-      var lonDimension;
-      var idDimension;
-      var idGrouping;
-      //
-
-      var width = 960,
-          height = 1160;
-
       var map = L.map('map').setView([47.0, 2.0], 6);
-        L.tileLayer(
-            'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {  
-            attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
-            maxZoom: 18,
-            }).addTo(map);    
+      L.tileLayer(
+        'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {  
+        attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
+        maxZoom: 18,
+      }).addTo(map);    
 
       var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");

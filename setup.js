@@ -76,6 +76,7 @@ d3.tsv("data/events_test.tsv", function(data) {
 //} //end init()
 
 
+
 function initMap() {http:
   //http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}
 
@@ -94,14 +95,9 @@ function initMap() {http:
 
   map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom: 1
 
-  //From EuroCORDEX:
-  // countries = L.geoJson(countries, {
-  //         style: style,
-  //   onEachFeature: onEachFeature
+  // L.geoJson(geojsonAdminLines, { //geojsonAdminLines
+  //   style: myStyle
   // }).addTo(map);
-  L.geoJson(geojsonAdminLines, { //geojsonAdminLines
-    style: myStyle
-  }).addTo(map);
 
   grat_10 = L.graticule({ interval: 10, style: { color: '#333', weight: 1, opacity: 1. } }).addTo(map);
   grat_05 = L.graticule({ interval: 05, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
