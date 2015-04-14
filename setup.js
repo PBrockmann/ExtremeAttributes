@@ -20,37 +20,44 @@ var lonDimension;
 var idDimension;
 var idGrouping;
 
-function init() {
 
-d3.tsv("proxies.tsv", function(data) {
-    data.forEach(function(d) {
-	d.lng= +d.Longitude;
-	d.lat= +d.Latitude;
-	d.depth= +d.Depth;
-	d.oldestDate= +d.OldestDate;
-	d.recentDate= +d.RecentDate;
-	d.proxy= +d.Proxy;
+
+//function init() {
+
+
+d3.tsv("data/events_test.tsv", function(data) {
+  data.forEach(function(d) {
+   //  console.log("in here");
+   //  d.station= +d.Station;
+  	// d.lng= +d.Longitude;
+  	// d.lat= +d.Latitude;
+  	// d.evtype= +d.Type;
+  	// d.year= +d.Year;
+  	// d.season= +d.Season;
+  	// d.metric= +d.Metric;
+   //  d.statistic= +d.Statistic;
+    console.log(d.Station);
 	});
      points=data;
 
-  initMap();
+  ////old map from Patrick's code// initMap();
   initCrossfilter();
 
 // bind map bounds to lat/lon filter dimensions
-  latDimension = filter.dimension(function(p) { return p.lat; });
-  lonDimension = filter.dimension(function(p) { return p.lng; });
+  latDimension = filter.dimension(function(p) { return p.Latitude; });
+  lonDimension = filter.dimension(function(p) { return p.Longitude; });
 
-  map.on("moveend", function() {
-    var bounds = map.getBounds();
-    var northEast = bounds.getNorthEast();
-    var southWest = bounds.getSouthWest();
+  // map.on("moveend", function() {
+  //   var bounds = map.getBounds();
+  //   var northEast = bounds.getNorthEast();
+  //   var southWest = bounds.getSouthWest();
 
-    // NOTE: need to be careful with the dateline here
-    latDimension.filterRange([southWest.lat, northEast.lat]);
-    lonDimension.filterRange([southWest.lng, northEast.lng]);
+  //   // NOTE: need to be careful with the dateline here
+  //   latDimension.filterRange([southWest.lat, northEast.lat]);
+  //   lonDimension.filterRange([southWest.lng, northEast.lng]);
 
-    update1();
-  });
+  //   update1();
+  // });
 
 // dimension and group for looking up currently selected markers
   idDimension = filter.dimension(function(p, i) { return i; });
@@ -62,100 +69,100 @@ d3.tsv("proxies.tsv", function(data) {
 
   initList();
 
-  update1();
+  //update1();
 
-});
+}); //end d3.tsv
 
-} //end init()
+//} //end init()
 
 
-function initMap() {http: //http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer?f=jsapi
+function initMap() {http:
   //http://services.arcgisonline.com/ArcGIS/rest/services/Ocean_Basemap/MapServer/tile/{z}/{y}/{x}
 
-var mapmadeUrl = 'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
-    mapmadeAttribution = 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
-    mapmade = new L.TileLayer(mapmadeUrl, {maxZoom: 10, attribution: mapmadeAttribution}),
-    maplatlng = new L.LatLng(47.000, 2.000); //new L.LatLng(0, 0);
+  var mapmadeUrl = 'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}',
+      mapmadeAttribution = 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
+      mapmade = new L.TileLayer(mapmadeUrl, {maxZoom: 10, attribution: mapmadeAttribution}),
+      maplatlng = new L.LatLng(47.000, 2.000); //new L.LatLng(0, 0);
 
-//map styling
-var myStyle = {
-    "color": "#471D1D",
-    "weight": 1,
-    "opacity": 0.5,
-    "fillColor": "none"
-};
+  //map styling
+  var myStyle = {
+      "color": "#471D1D",
+      "weight": 1,
+      "opacity": 0.5,
+      "fillColor": "none"
+  };
 
-map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom: 1
+  map = new L.Map('map', {center: maplatlng, zoom: 6, layers: [mapmade]}); //zoom: 1
 
-//From EuroCORDEX:
-// countries = L.geoJson(countries, {
-//         style: style,
-//   onEachFeature: onEachFeature
-// }).addTo(map);
-L.geoJson(geojsonAdminLines, { //geojsonAdminLines
-  style: myStyle
-}).addTo(map);
+  //From EuroCORDEX:
+  // countries = L.geoJson(countries, {
+  //         style: style,
+  //   onEachFeature: onEachFeature
+  // }).addTo(map);
+  L.geoJson(geojsonAdminLines, { //geojsonAdminLines
+    style: myStyle
+  }).addTo(map);
 
-grat_10 = L.graticule({ interval: 10, style: { color: '#333', weight: 1, opacity: 1. } }).addTo(map);
-grat_05 = L.graticule({ interval: 05, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
-grat_01 = L.graticule({ interval: 01, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
+  grat_10 = L.graticule({ interval: 10, style: { color: '#333', weight: 1, opacity: 1. } }).addTo(map);
+  grat_05 = L.graticule({ interval: 05, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
+  grat_01 = L.graticule({ interval: 01, style: { color: '#333', weight: 1, opacity: 0. } }).addTo(map);
 
-mousepos = new L.Control.MousePosition({lngFirst: true}).addTo(map);
+  mousepos = new L.Control.MousePosition({lngFirst: true}).addTo(map);
 
-mapmade2 = new L.TileLayer(mapmadeUrl, { maxZoom: 7, attribution: mapmadeAttribution });
-miniMap = new L.Control.MiniMap(mapmade2, { toggleDisplay: true, zoomLevelOffset: -6 }).addTo(map);
+  mapmade2 = new L.TileLayer(mapmadeUrl, { maxZoom: 7, attribution: mapmadeAttribution });
+  miniMap = new L.Control.MiniMap(mapmade2, { toggleDisplay: true, zoomLevelOffset: -6 }).addTo(map);
 
-myIcon = L.icon({
-    iconUrl: 'LSCE_Icon.png',
-    iconSize: [20, 20], 
-    iconAnchor: [10, 0] 
-});
+  myIcon = L.icon({
+      iconUrl: 'LSCE_Icon.png',
+      iconSize: [20, 20], 
+      iconAnchor: [10, 0] 
+  });
 
-myIconBright = L.icon({
-    iconUrl: 'LSCE_IconBright.png',
-    iconSize: [20, 20], 
-    iconAnchor: [10, 0] 
-});
+  myIconBright = L.icon({
+      iconUrl: 'LSCE_IconBright.png',
+      iconSize: [20, 20], 
+      iconAnchor: [10, 0] 
+  });
 
-markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
+  markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
 
-//http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
-customMarker = L.Marker.extend({
-   options: { 
-      Id: 'Custom data!'
-   }
-});
+  //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
+  customMarker = L.Marker.extend({
+     options: { 
+        Id: 'Custom data!'
+     }
+  });
 
-// create array of markers from points and add them to the map
-for (var i = 0; i < points.length; i++) {
-   //markers[i] = new L.Marker([point.lat, point.lng], {icon: myIcon});
-   markers[i] = new customMarker([points[i].lat, points[i].lng], {icon: myIcon, Id: (i+1).toString()});
-   markers[i].bindPopup(
-		  "Id: #" + "<b>" + (i+1).toString() + "</b> "
-		+ "Core: " + "<b>" + points[i].Core + "</b></br>"
-		+ "Position: " + "<b>" + points[i].lng.toFixed(2) + "°E</b>, <b>" + points[i].lat.toFixed(2) + "°N</b></br>"
-		+ "Depth (m): " + "<span style='color: #2EA3DB;'><b>" +  points[i].depth.toFixed(2) + "</b></span></br>"
-		+ "Date (ka): " + "<span style='color: #C9840B;'>" + "from <b>" + points[i].recentDate.toFixed(2) + "</b> to <b>" + points[i].oldestDate.toFixed(2) + "</b></span></br>"
-		+ "Proxy: " + "<b>" + points[i].Proxy + "</b></br>"
-		,{autoPan: true, keepInView: true, closeOnClick: false}
-		);
-   markers[i].on('mouseover', function(e) {
-	 e.target.setIcon(myIconBright);
-	 e.target.openPopup();
-	 //console.log(e.target.options.Id);
-	 var container = $("#proxiesList");
-	 var scrollTo = $("#"+e.target.options.Id);
-	 container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-	 scrollTo.css("font-weight", "bold");
-	});
-   markers[i].on('mouseout', function(e) {
-	 e.target.setIcon(myIcon);
-	 e.target.closePopup();
-         $(".proxyItem").css("font-weight", "normal");
-	});
-   markerGroup.addLayer(markers[i]);
-}
-map.addLayer(markerGroup);
+  // create array of markers from points and add them to the map
+  for (var i = 0; i < points.length; i++) {
+     //markers[i] = new L.Marker([point.lat, point.lng], {icon: myIcon});
+     markers[i] = new customMarker([points[i].lat, points[i].lng], {icon: myIcon, Id: (i+1).toString()});
+     markers[i].bindPopup(
+  		  "Id: #" + "<b>" + (i+1).toString() + "</b> "
+  		+ "Core: " + "<b>" + points[i].Core + "</b></br>"
+  		+ "Position: " + "<b>" + points[i].lng.toFixed(2) + "°E</b>, <b>" + points[i].lat.toFixed(2) + "°N</b></br>"
+  		+ "Depth (m): " + "<span style='color: #2EA3DB;'><b>" +  points[i].depth.toFixed(2) + "</b></span></br>"
+  		+ "Date (ka): " + "<span style='color: #C9840B;'>" + "from <b>" + points[i].recentDate.toFixed(2) + "</b> to <b>" + points[i].oldestDate.toFixed(2) + "</b></span></br>"
+  		+ "Proxy: " + "<b>" + points[i].Proxy + "</b></br>"
+  		,{autoPan: true, keepInView: true, closeOnClick: false}
+  		);
+     markers[i].on('mouseover', function(e) {
+  	 e.target.setIcon(myIconBright);
+  	 e.target.openPopup();
+  	 //console.log(e.target.options.Id);
+  	 var container = $("#eventsList");
+  	 var scrollTo = $("#"+e.target.options.Id);
+  	 container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+  	 scrollTo.css("font-weight", "bold");
+  	});
+     markers[i].on('mouseout', function(e) {
+  	 e.target.setIcon(myIcon);
+  	 e.target.closePopup();
+           $(".proxyItem").css("font-weight", "normal");
+  	});
+     markerGroup.addLayer(markers[i]);
+  }
+  map.addLayer(markerGroup);
 
 } //end initMap()
 
@@ -279,7 +286,7 @@ function update1() {
 }
 
 function initList() {
-  var proxyItem = d3.select("#proxiesListTitle")
+  var proxyItem = d3.select("#eventsListTitle")
   		.append("div")
    		.style("background", "#ddd")
    		.style("font-style", "italic")
@@ -289,31 +296,31 @@ function initList() {
    	.text("Id");
   proxyItem.append("div")
    	.attr("class", "col-md-2")
-   	.text("Core");
+   	.text("Station");
   proxyItem.append("div")
    	.attr("class", "col-md-1")
    	.style("text-align", "right")
-   	.text("Depth");
+   	.text("Type");
   proxyItem.append("div")
    	.attr("class", "col-md-1")
    	.style("text-align", "right")
-   	.text("Oldest");
+   	.text("Year");
   proxyItem.append("div")
    	.attr("class", "col-md-2")
    	.style("text-align", "right")
-   	.text("Proxy");
+   	.text("Season");
   proxyItem.append("div")
    	.attr("class", "col-md-2")
    	.style("text-align", "right")
-   	.text("Species");
+   	.text("Metric");
   proxyItem.append("div")
         .attr("class", "col-md-3")
    	.style("text-align", "right")
-   	.text("Reference");
+   	.text("Statistic");
 
   var pointIds = idGrouping.all();
   for (var i = 0; i < pointIds.length; i++) {
-  	var proxyItem = d3.select("#proxiesList")
+  	var proxyItem = d3.select("#eventsList")
     			.append("div")
     			.attr("class", "proxyItem row")
          		.attr("id", (i+1).toString())
@@ -325,34 +332,34 @@ function initList() {
   	proxyItem.append("div")
          	.attr("class", "col-md-2")
          	.attr("title", points[i].Core)
-         	.text(points[i].Core);
+         	.text(points[i].Station);
   	proxyItem.append("div")
          	.attr("class", "col-md-1")
          	.style("text-align", "right")
 		.style("color", "#2EA3DB")
          	.attr("title", points[i].Depth)
-         	.text(points[i].Depth);
+         	.text(points[i].Type);
   	proxyItem.append("div")
          	.attr("class", "col-md-1")
          	.style("text-align", "right")
 		.style("color", "#F5B441")
          	.attr("title", points[i].OldestDate)
-         	.text(points[i].OldestDate);
+         	.text(points[i].Year);
   	proxyItem.append("div")
          	.attr("class", "col-md-2")
          	.style("text-align", "right")
          	.attr("title", points[i].Proxy)
-         	.text(points[i].Proxy);
+         	.text(points[i].Season);
   	proxyItem.append("div")
          	.attr("class", "col-md-2")
          	.style("text-align", "right")
          	.attr("title", points[i].Species)
-         	.text(points[i].Species);
+         	.text(points[i].Metric);
   	proxyItem.append("div")
          	.attr("class", "col-md-3")
          	.style("text-align", "right")
          	.attr("title", points[i].Reference)
-         	.text(points[i].Reference);
+         	.text(points[i].Statistic);
   }
 }
 
@@ -370,7 +377,7 @@ function popupfromlist() {
 				map.setView(new L.LatLng(lat,lng), 6);  // added to handle single marker
 				m.openPopup();
 			});
-	var container = $("#proxiesList");
+	var container = $("#eventsList");
 	var scrollTo = $("#" + this.id);
 	container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
         $(".proxyItem").css("font-weight", "normal");

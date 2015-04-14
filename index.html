@@ -38,7 +38,7 @@
     <link href="sticky-footer-navbar.css" rel="stylesheet">
 
     <!--Custom files-->
-    <script src="setup.js"></script>
+    <<script src="setup.js"></script>
     <!--French admin zones (geoJSON file)-->
     <script src="geojson/FRA_admin_lines_countrybd.geojson" type="text/javascript"></script>
     <!--For d3 map layer -->
@@ -89,6 +89,15 @@
     <<div id="map" style="width: 700px; height: 700px; margin-top: 50px;"></div>
     <script>
 
+      //vars from setup.js
+      var filter;
+
+      var latDimension;
+      var lonDimension;
+      var idDimension;
+      var idGrouping;
+      //
+
       var width = 960,
           height = 1160;
 
@@ -102,7 +111,7 @@
       var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
       
-
+      //Admin and place name overlays for base Leaflet map of France
       d3.json("json/FRA_admin_places.json", function(error, admin) {
         if (error) return console.error(error);        
 
@@ -182,9 +191,12 @@
         var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
         //console.log(x[1], x[0]);
         return [point.x, point.y];
-      }    
+      }  
 
-    });
+    }); //end overlay fn
+
+   
+  
     </script>
 
 
@@ -240,21 +252,20 @@
            	     </div>
         </div>
       	<div class="row">
-			<div id="totals"><span id="active">-</span> of <span id="total">-</span> proxies selected.</div>
+			<div id="totals">
+        <h3>Events Table</h3>
+        <span id="active">-</span> of <span id="total">-</span> proxies selected.
+      </div>
         </div>
       	<div class="row">
-      		<div id="proxiesListTitle" class="col-md-12"  style="width: 1000px;"></div>
-      		<div id="proxiesList" class="col-md-12" style="width: 1000px; max-height: 160px; overflow-y:auto;"></div>
+      		<div id="eventsListTitle" class="col-md-12"  style="width: 1000px;"></div>
+      		<div id="eventsList" class="col-md-12" style="width: 1000px; max-height: 160px; overflow-y:auto;"></div>
         </div>
       </div><!-- /.container -->
 
     </div>
 
-    <div id="footer">
-       <div class="container">
-       		<p class="text-muted credit">Realised by <span title="Climate and Environment Sciences Laboratory" style="font-weight:bold;">LSCE</span> &nbsp;<img src="LSCE_Icon.png" title="Climate and Environment Sciences Laboratory"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version 1.3 - 2014/10/29</p>
-      </div><!-- /.container -->
-    </div>
+ 
 
   </body>
 </html>

@@ -1,0 +1,10 @@
+Station	Longitude	Latitude	Type	Year	Season	Metric	Statistic
+12PC51	2.3964	47.0844	flood	2014	Fall	Precipitation	Mean	
+GIK23415-9	7.0128	43.5513	drought	2013	Spring	Precipitation	Mean	
+A107-131	7.0194	43.5769	drought	2013	Spring	Precipitation	Mean
+GIK13289	7.2663	43.7034	extreme-cold	2009	Winter	Temperature	Mean
+MD02-2550	7.1142	43.7236	extreme-cold	2009	Winter	Temperature	Mean	
+AHF-11343	7.1767	43.7603	extreme-cold	2009	Winter	Temperature	Mean
+AHF-16830	2.3508	48.8567	heatwave	2014	Summer	Temperature	Mean
+AHF-16832	2.1232	48.8044	heatwave	2014	Summer	Temperature	Mean
+AHF-16833	2.3	48.8	flood	2014	Fall	Precipitation	Mean
