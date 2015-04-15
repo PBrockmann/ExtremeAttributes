@@ -209,6 +209,11 @@
 
         initCrossfilter();
         eventList(); //defined in display_fns.js
+        update1();
+
+        // Render the total number of events in tsv file
+        d3.selectAll("#total")
+          .text(filter.size());
 
       }); //end d3.tsv
 
@@ -271,7 +276,7 @@
       	<div class="row">
 			<div id="totals">
         <h3>Extreme Events Table</h3>
-        <span id="active">-</span> of <span id="total">-</span> proxies selected.
+        <span id="active">-</span> of <span id="total">-</span> Event Types selected.
       </div>
         </div>
       	<div class="row">
