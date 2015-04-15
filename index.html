@@ -94,13 +94,29 @@
       //var idGrouping;
       
       //vars for the map
+      myIcon = L.icon({
+        iconUrl: 'LSCE_Icon.png',
+        iconSize: [20, 20], 
+        iconAnchor: [10, 0] 
+      });
+
+      myIconBright = L.icon({
+        iconUrl: 'LSCE_IconBright.png',
+        iconSize: [20, 20], 
+        iconAnchor: [10, 0] 
+      });
+
+
       var map = L.map('map').setView([47.0, 2.0], 6);
       L.tileLayer(
         'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {  
         attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
         maxZoom: 18,
-      }).addTo(map);    
+      }).addTo(map);
 
+      
+      
+      //d3 + Leaflet + topojson    
       var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
       
@@ -213,11 +229,52 @@
         d3.selectAll("#total")
           .text(filter.size());
 
+        //Leaftlet clusters  
+        markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
+        //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
+        customMarker = L.Marker.extend({
+           options: { 
+              Id: 'Custom data!'
+           }
+        });
+          
+        // create array of markers from points and add them to the map
+        for (var i = 0; i < points.length; i++) {
+          markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
+
+          //popup window for markers
+          markers[i].bindPopup(
+            "Id: #" + "<b>" + (i+1).toString() + "</b> "
+              + "Station: " + "<b>" + points[i].Station + "</b></br>"
+              + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
+              + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
+              + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
+              + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
+              + "Metric: " + "<b>" + points[i].Metric + "</b></br>"
+              ,{autoPan: true, keepInView: true, closeOnClick: true}
+          );
+
+          markers[i].on('mouseover', function(e) {
+            e.target.setIcon(myIconBright);
+            e.target.openPopup();          
+            var container = $("#proxiesList");
+            var scrollTo = $("#"+e.target.options.Id);
+            //container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+            scrollTo.css("font-weight", "bold");
+          });
+
+          markers[i].on('mouseout', function(e) {
+            e.target.setIcon(myIcon);
+            e.target.closePopup();
+               $(".proxyItem").css("font-weight", "normal");
+          });
+
+          markerGroup.addLayer(markers[i]);
+        }
+        map.addLayer(markerGroup);
+
       }); //end d3.tsv
-
-
-
-     
+      
   
     </script>
 
