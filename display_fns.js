@@ -24,6 +24,11 @@ function initCrossfilter() {
   filter = crossfilter(points);
   console.log('in initCrossfilter');
 
+  // dimension and group for looking up currently selected markers
+  idDimension = filter.dimension(function(p, i) { return i; });
+  idGrouping = idDimension.group(function(id) { return id; });
+
+
   // simple dimensions and groupings for major variables
   
   eventDimension = filter.dimension(
@@ -57,7 +62,7 @@ function initCrossfilter() {
 // Update map markers, list and number of selected
 function update0() {
   // updateMarkers();
-  // updateList();
+  updateList();
   d3.select("#active").text(filter.groupAll().value());
 }
 
@@ -118,9 +123,9 @@ function eventList() {
           .text("Statistic");
 
         //Extreme Events table -- row values
-        // var pointIds = idGrouping.all();
-        // for (var i = 0; i < pointIds.length; i++) {
-        for (var i = 0; i < idGrouping; i++) {  
+        var pointIds = idGrouping.all();
+        for (var i = 0; i < pointIds.length; i++) {
+        //for (var i = 0; i < idGrouping; i++) {  
           var eventItem = d3.select("#eventsList")
                 .append("div")
                 .attr("class", "eventItem row")
@@ -164,3 +169,12 @@ function eventList() {
         }
 }
 
+function updateList() {
+  var pointIds = idGrouping.all();
+  for (var i = 0; i < pointIds.length; i++) {
+    if (pointIds[i].value > 0)
+   $("#"+(i+1)).show();
+    else
+   $("#"+(i+1)).hide();
+  }
+}

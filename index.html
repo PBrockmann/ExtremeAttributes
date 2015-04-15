@@ -204,12 +204,10 @@
 
         });
         points=events;
-        idGrouping = events.length;
-      //points=data;
 
-        initCrossfilter();
-        eventList(); //defined in display_fns.js
-        update1();
+        initCrossfilter(); //defined in display_fns.js
+        eventList(); //renders Extreme Events Table; defined in display_fns.js
+        update1(); //updates number of Event Types selected; defined in display_fns.js
 
         // Render the total number of events in tsv file
         d3.selectAll("#total")
