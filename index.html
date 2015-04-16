@@ -47,6 +47,7 @@
 
     <style>
 
+      /*Map overlay*/
       .adminunit {
           fill: #ddc;
           opacity: 0.1,
@@ -79,13 +80,12 @@
         stroke-width: 0.5px;
         fill-opacity: .2;
       }
- 
 
     </style>
 
   </head>
 
-  <body>
+  <body >
 
     <div id="map" style="width: 700px; height: 700px; margin-top: 50px;"></div>
     <script>
@@ -272,6 +272,12 @@
 
       }); //end d3.tsv
       
+      //Change mouse to pointer when hovering over Event Table rows
+      //need window.onload because Id element doesn't exist yet
+      //cf http://stackoverflow.com/questions/2632137/why-is-document-getelementbyid-returning-null
+      window.onload = function() {
+        document.getElementById("eventsList").style.cursor = "pointer";
+      }
   
     </script>
 

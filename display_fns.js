@@ -139,8 +139,8 @@ function eventList() {
           var eventItem = d3.select("#eventsList")
                 .append("div")
                 .attr("class", "eventItem row")
-                  .attr("id", (i+1).toString());
-            //.on('click', popupfromlist);
+                .attr("id", (i+1).toString())
+                .on('click', popupfromlist);
           eventItem.append("div")
                 .attr("class", "col-md-1")
                 .attr("title", "#"+(i+1).toString())
@@ -187,4 +187,26 @@ function updateList() {
     else
    $("#"+(i+1)).hide();
   }
+}
+
+function popupfromlist() {
+  console.log("in popupfromlist");
+  // var i = this.id - 1;
+  // var lng = points[i].lng;
+  // var lat = points[i].lat;
+  // console.log(i, lng.toFixed(2), lat.toFixed(2));
+  // //map.setView(new L.LatLng(lat,lng), 6);
+  // //map.panTo(new L.LatLng(lat,lng));
+  // //markers[i].openPopup();
+  // // https://github.com/Leaflet/Leaflet.markercluster/issues/46
+  // var m = markers[i];
+  // markerGroup.zoomToShowLayer(m, function () {
+  //       map.setView(new L.LatLng(lat,lng), 6);  // added to handle single marker
+  //       m.openPopup();
+  //     });
+  // var container = $("#proxiesList");
+  // var scrollTo = $("#" + this.id);
+  // container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+  //       $(".proxyItem").css("font-weight", "normal");
+  // $("#"+this.id).css("font-weight", "bold");
 }
