@@ -190,11 +190,9 @@ function updateList() {
 }
 
 function popupfromlist() {
-  console.log("in popupfromlist");
   var i = this.id - 1;
   var lng = points[i].Longitude;
   var lat = points[i].Latitude;
-  console.log("points[i] lat, lon: ", points[i].Latitude +", " + points[i].Longitude);
   // console.log(i, lng.toFixed(2), lat.toFixed(2));
   // //map.setView(new L.LatLng(lat,lng), 6);
   // //map.panTo(new L.LatLng(lat,lng));
@@ -208,8 +206,8 @@ function popupfromlist() {
   var container = $("#eventsList");
   var scrollTo = $("#" + this.id);
   container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-        //$(".eventItem").css("font-weight", "normal"); //bolds the text in the selected row
-        $(".eventItem").css("background-color", "#ffffff"); //remove highlight
+  //$(".eventItem").css("font-weight", "normal"); //bolds the text in the selected row
+  $(".eventItem").css("background-color", "#ffffff"); //remove highlight
   //$("#"+this.id).css("font-weight", "bold"); //bolds the text in the selected row
   $("#"+this.id).css("background-color", "#F7FE2E"); //highlights row
 }
