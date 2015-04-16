@@ -36,15 +36,19 @@ function initCrossfilter() {
         return p.Type;
       });
   eventGrouping = eventDimension.group();
+  eventChart  = dc.rowChart("#chart-eventType");
 
-  eventChart  = dc.rowChart("#chart-eventType"),
-
-    
+  yearDimension = filter.dimension(
+      function(p) {
+        return p.Year;
+      });
+  yearGrouping = yearDimension.group();
+  yearChart  = dc.rowChart("#chart-eventYear");  
 
   eventChart
     .width(200)
     .height(200)
-    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}.
+    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
     .dimension(eventDimension)
     .group(eventGrouping)
     .on("preRedraw",update0)
@@ -53,13 +57,24 @@ function initCrossfilter() {
     .gap(0)
     .xAxis().ticks(4);
 
+  yearChart
+    .width(200)
+    .height(200)
+    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
+    .dimension(yearDimension)
+    .group(yearGrouping)
+    .on("preRedraw",update0)
+    .colors(d3.scale.category20c()) 
+    .elasticX(true)
+    .gap(0)
+    .xAxis().ticks(4);  
+
   dc.renderAll();
 
 }
 
 // set visibility of markers based on crossfilter
 function updateMarkers() {
-  console.log('markers[1]:', markers[1]);
   var pointIds = idGrouping.all();
   for (var i = 0; i < pointIds.length; i++) {
     if (pointIds[i].value > 0)
