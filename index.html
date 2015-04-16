@@ -239,26 +239,31 @@
           markers[i].on('mouseover', function(e) {
             e.target.setIcon(myIconBright);
             e.target.openPopup();          
-            var container = $("#proxiesList");
+            var container = $("#eventsList");
             var scrollTo = $("#"+e.target.options.Id);
-            //container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-            scrollTo.css("font-weight", "bold");
+            container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+            //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
+            scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
           });
 
           markers[i].on('mouseout', function(e) {
             e.target.setIcon(myIcon);
             e.target.closePopup();
-               $(".proxyItem").css("font-weight", "normal");
+               //$(".proxyItem").css("font-weight", "normal"); //orig
+               //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
+            var container = $("#eventsList");
+            var scrollTo = $("#"+e.target.options.Id);
+            scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
           });
 
           markerGroup.addLayer(markers[i]);
         }
         map.addLayer(markerGroup);
 
-
-        initCrossfilter(); //defined in display_fns.js
-        eventList(); //renders Extreme Events Table; defined in display_fns.js
-        update1(); //updates number of Event Types selected; defined in display_fns.js
+        //call fns defined in display_fns.js
+        initCrossfilter();
+        eventList(); //renders Extreme Events Table
+        update1(); //updates number of Event Types selected
 
         // Render the total number of events in tsv file
         d3.selectAll("#total")
