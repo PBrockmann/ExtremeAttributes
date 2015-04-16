@@ -1,7 +1,7 @@
 
-var map;
+//var map;
 var markers = [] ;
-var markerGroup ;
+//var markerGroup ;
 
 var grat;
 
@@ -39,9 +39,7 @@ function initCrossfilter() {
 
   eventChart  = dc.rowChart("#chart-eventType"),
 
-  
-
-  
+    
 
   eventChart
     .width(200)
@@ -59,9 +57,21 @@ function initCrossfilter() {
 
 }
 
+// set visibility of markers based on crossfilter
+function updateMarkers() {
+  console.log('markers[1]:', markers[1]);
+  var pointIds = idGrouping.all();
+  for (var i = 0; i < pointIds.length; i++) {
+    if (pointIds[i].value > 0)
+      markerGroup.addLayer(markers[i]);
+    else  
+      markerGroup.removeLayer(markers[i]);
+  }
+}
+
 // Update map markers, list and number of selected
 function update0() {
-  // updateMarkers();
+  updateMarkers();
   updateList();
   d3.select("#active").text(filter.groupAll().value());
 }

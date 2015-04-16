@@ -207,27 +207,9 @@
       d3.tsv("data/events_test.tsv", function(events) {
         events.forEach(function(d, i) {
           console.log("in d3.tsv");
-         //  d.station= +d.Station;
-          // d.lng= +d.Longitude;
-          // d.lat= +d.Latitude;
-          // d.evtype= +d.Type;
-          // d.year= +d.Year;
-          // d.season= +d.Season;
-          // d.metric= +d.Metric;
-         //  d.statistic= +d.Statistic;
-          //d.Station = +d.Station;
-          //console.log(d.Station);
-
         });
+        
         points=events;
-
-        initCrossfilter(); //defined in display_fns.js
-        eventList(); //renders Extreme Events Table; defined in display_fns.js
-        update1(); //updates number of Event Types selected; defined in display_fns.js
-
-        // Render the total number of events in tsv file
-        d3.selectAll("#total")
-          .text(filter.size());
 
         //Leaftlet clusters  
         markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
@@ -272,6 +254,16 @@
           markerGroup.addLayer(markers[i]);
         }
         map.addLayer(markerGroup);
+
+
+        initCrossfilter(); //defined in display_fns.js
+        eventList(); //renders Extreme Events Table; defined in display_fns.js
+        update1(); //updates number of Event Types selected; defined in display_fns.js
+
+        // Render the total number of events in tsv file
+        d3.selectAll("#total")
+          .text(filter.size());
+
 
       }); //end d3.tsv
       
