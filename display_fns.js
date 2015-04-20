@@ -40,10 +40,13 @@ function initCrossfilter() {
 
   yearDimension = filter.dimension(
       function(p) {
-        return p.Year;
+        return Math.round(p.Year);
       });
   yearGrouping = yearDimension.group();
-  yearChart  = dc.rowChart("#chart-eventYear");  
+  yearChart  = dc.barChart("#chart-eventYear");
+
+  // xAxis_yearChart = yearChart.xAxis();
+  // xAxis_yearChart.ticks(6);  //.tickFormat(d3.format(".0f"));
 
   eventChart
     .width(200)
@@ -57,17 +60,29 @@ function initCrossfilter() {
     .gap(0)
     .xAxis().ticks(4);
 
+
+  var yAxis = d3.svg.axis()
+    .orient("left")
+    .ticks(4);
+
   yearChart
     .width(200)
     .height(200)
-    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
+    .centerBar(true) //ensure that the bar for the bar graph is centred on the ticks on the x axis
+    .elasticY(true)
     .dimension(yearDimension)
     .group(yearGrouping)
     .on("preRedraw",update0)
     .colors(d3.scale.category20c()) 
-    .elasticX(true)
-    .gap(0)
-    .xAxis().ticks(4);  
+    //.elasticX(true)
+    .renderHorizontalGridLines(true)
+    //.round(Math.round)
+    //.xUnits(function(){return 2;})
+    .xUnits(dc.units.integers)
+    .x(d3.scale.linear().domain([2008, 2016]))
+    .xAxis().ticks(3).tickFormat(d3.format("d"));
+
+  var yAxis_yearChart = yearChart.yAxis().ticks(6);  
 
   dc.renderAll();
 
