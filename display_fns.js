@@ -60,7 +60,7 @@ function initCrossfilter() {
     .elasticX(true)
     .gap(0);
 
-  xAxis_eventChart = eventChart.xAxis();
+  xAxis_eventChart = eventChart.xAxis().ticks(4);
 
   yearChart
     .width(200)
