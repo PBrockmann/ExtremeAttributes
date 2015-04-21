@@ -1,0 +1,13 @@
+Region	Longitude	Latitude	Type	Year	Season	CSU	ID	CDD	R20mm
+ALSACE	2.3964	47.0844	precipitation	2014	Fall	--	--	--	17
+BRITTANY	7.0128	43.5513	drought	2013	Spring	--	--	22	--
+BURGUNDY	7.0194	43.5769	drought	2013	Spring	--	--	17	--
+LIMOUSIN	7.2663	43.7034	extreme-cold	2009	Winter	--	11	--	--
+LORRAINE	7.1142	43.7236	extreme-cold	2009	Winter	--	9	--	--
+PICARDY 	7.1767	43.7603	extreme-cold	2009	Winter	--	15	--	--
+RHONE-ALPS	2.3508	48.8567	heatwave	2014	Summer	33	--	--	--
+LOIRE	2.1232	48.8044	heatwave	2014	Summer	31	--	--	--
+LANGUEDOC-ROUSSILLON	2.3	48.8	precipitation	2014	Fall	--	--	--	22
+ILE-DE-FRANCE	2.4296	48.6238	precipitation	2014	Fall	--	--	--	66
+LOIRE	2.1232	48.8044	heatwave	2013	Summer	9	--	--	--
+ILE-DE-FRANCE	2.7025	48.4097	heatwave	2013	Summer	19	--	--	--

@@ -59,13 +59,13 @@
   height: 512px;
 }
 
-.proxyItem {
+.eventItem {
   line-height: 1.2em;
   background: #eee;
   margin-bottom: 1px;
 }
 
-.proxyItem div {
+.eventItem div {
   display: inline-block;
   text-align: left;
   overflow: hidden;

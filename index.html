@@ -81,6 +81,8 @@
         fill-opacity: .2;
       }
 
+      
+
     </style>
 
   </head>
@@ -112,6 +114,7 @@
 
       <!-- Begin page content -->
       <div class="container">
+
         <!--ROW 1-->
         <div class="row">         
           <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 50px;"></div>          
@@ -127,6 +130,15 @@
             <h3>Year</h3>
             <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>          
             <span class="reset" style="display: none;"><span class="filter"></span></span>
+          </div>
+
+          <div id="eventsListDiv" class="col-md-5" style="margin-top: 27px; margin-left: 50px; width=400">
+          <!--<div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>  -->
+            <h3>Summary</h3>
+            
+              <div id="eventsListTitle" class="col-md-5"  style="width: 590px;"></div>
+              <div id="eventsList" class="col-md-5" style="width: 600px; max-height: 200px; overflow-y: auto;"></div>
+            
           </div>
           
 
@@ -162,8 +174,8 @@
 
         <!--ROW 4-->
         <div class="row">
-          <div id="eventsListTitle" class="col-md-12"  style="width: 1000px;"></div>
-          <div id="eventsList" class="col-md-12" style="width: 1000px; max-height: 160px; overflow-y:auto;"></div>
+          <div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>
+          <div id="eventsList" class="col-md-12" style="width: 800px; max-height: 160px; overflow-y:auto;"></div>
         </div>
 
       </div><!-- /.container -->
@@ -294,7 +306,7 @@
 
       }); //end overlay fn
 
-      d3.tsv("data/events_test.tsv", function(events) {
+      d3.tsv("data/events_anomdays.tsv", function(events) {
         events.forEach(function(d, i) {
           console.log("in d3.tsv");
         });
@@ -317,12 +329,15 @@
           //popup window for markers
           markers[i].bindPopup(
             "Id: #" + "<b>" + (i+1).toString() + "</b> "
-              + "Station: " + "<b>" + points[i].Station + "</b></br>"
+              + "Region: " + "<b>" + points[i].Region + "</b></br>"
               + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
               + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
               + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
               + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
-              + "Metric: " + "<b>" + points[i].Metric + "</b></br>"
+              + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
+              + "ID: " + "<b>" + points[i].ID + "</b></br>"
+              + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
+              + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
               ,{autoPan: true, keepInView: true, closeOnClick: true}
           );
 
