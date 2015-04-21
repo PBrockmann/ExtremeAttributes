@@ -126,7 +126,7 @@
             <span class="reset" style="display: none;"><span class="filter"></span></span>
           </div>
 
-          <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">
+          <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 120px;">
             <h3>Year</h3>
             <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>          
             <span class="reset" style="display: none;"><span class="filter"></span></span>
@@ -135,7 +135,9 @@
           <div id="eventsListDiv" class="col-md-5" style="margin-top: 27px; margin-left: 50px; width=400">
           <!--<div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>  -->
             <h3>Summary</h3>
-            
+            <div id="totals">
+              <span id="active">-</span> out of <span id="total">-</span> events selected.
+            </div>
               <div id="eventsListTitle" class="col-md-5"  style="width: 590px;"></div>
               <div id="eventsList" class="col-md-5" style="width: 600px; max-height: 200px; overflow-y: auto;"></div>
             
@@ -163,20 +165,7 @@
           </div>
           
         </div> <!--end ROW 2-->
-
-        <!--ROW 3-->
-        <div class="row">
-          <div id="totals">
-            <h3>Extreme Events Table</h3>
-            <span id="active">-</span> of <span id="total">-</span> Event Types selected.
-          </div>
-        </div>
-
-        <!--ROW 4-->
-        <div class="row">
-          <div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>
-          <div id="eventsList" class="col-md-12" style="width: 800px; max-height: 160px; overflow-y:auto;"></div>
-        </div>
+             
 
       </div><!-- /.container -->
 
