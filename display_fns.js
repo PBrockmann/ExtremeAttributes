@@ -32,6 +32,7 @@ function initCrossfilter() {
 
   // simple dimensions and groupings for major variables
   
+  //Event Type filter
   eventDimension = filter.dimension(
       function(p) {
         return p.Type;
@@ -39,6 +40,7 @@ function initCrossfilter() {
   eventGrouping = eventDimension.group();
   eventChart  = dc.rowChart("#chart-eventType");
 
+  //Year filter
   yearDimension = filter.dimension(
       function(p) {
         return Math.round(p.Year);
@@ -46,9 +48,17 @@ function initCrossfilter() {
   yearGrouping = yearDimension.group();
   yearChart  = dc.barChart("#chart-eventYear");
 
+  //dc dataTable
+  dataTable = dc.dataTable("#dc-table-graph");
+  // Create datatable dimension
+  var timeDimension = filter.dimension(function (d) {
+    return d.Year;
+  });
+
   // xAxis_yearChart = yearChart.xAxis();
   // xAxis_yearChart.ticks(6);  //.tickFormat(d3.format(".0f"));
 
+  //Set up the charts
   eventChart
     .width(200) //svg width
     .height(200) //svg height
@@ -79,7 +89,27 @@ function initCrossfilter() {
     .x(d3.scale.linear().domain([2008, 2016]))
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
-  var yAxis_yearChart = yearChart.yAxis().ticks(6);  
+  var yAxis_yearChart = yearChart.yAxis().ticks(6);
+
+  //dataTable
+  dataTable.width(960).height(800)
+    .dimension(timeDimension)
+    .group(function(d) { return ""})
+    .size(10) //number of rows to display
+      .columns([
+        function(d) { return d.Region; },
+        function(d) { return d.Type; },
+        function(d) { return d.Year; },
+        function(d) { return d.Season; },
+        function(d) { return d.CSU; },
+        function(d) { return d.ID; },
+        function(d) { return d.CDD; },
+        function(d) { return d.R20mm; }
+      //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
+      //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
+      ]);
+      //.sortBy(function(d){ return d.dtg; })
+      //.order(d3.ascending);
 
   dc.renderAll();
 
