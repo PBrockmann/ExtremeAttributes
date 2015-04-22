@@ -165,7 +165,12 @@
           </div>
           
         </div> <!--end ROW 2-->
-             
+
+        <!--ROW 3-->
+        <div class="row">
+          <h2>Time Series</h2>              
+          <div id="dc-obsLine-chart" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">  
+        </div> <!--end ROW 3-->             
 
       </div><!-- /.container -->
 
@@ -362,6 +367,8 @@
         // Render the total number of events in tsv file
         d3.selectAll("#total")
           .text(filter.size());
+
+        init_tsCrossfilter();  
 
 
       }); //end d3.tsv

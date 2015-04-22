@@ -79,9 +79,99 @@ function initCrossfilter() {
     .x(d3.scale.linear().domain([2008, 2016]))
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
-  var yAxis_yearChart = yearChart.yAxis().ticks(6);  
+  var yAxis_yearChart = yearChart.yAxis().ticks(6);
+
+  //var obsLineChart = dc.lineChart("#dc-obsLine-chart");
+
+  //Read in time series file
+  // d3.csv("data/quake-later3.csv", function (data) {
+
+  //   // format our data
+  //   var dtgFormat = d3.time.format("%Y-%m-%dT%H:%M:%S");
+  //   var dtgFormat2 = d3.time.format("%a %e %b %H:%M");
+
+  //   data.forEach(function(d) { 
+  //     d.dtg1  = d.origintime.substr(0,10) + " " + d.origintime.substr(11,8);
+  //     d.dtg   = dtgFormat.parse(d.origintime.substr(0,19)); 
+  //     d.lat   = +d.latitude;
+  //     d.long  = +d.longitude;
+  //     d.mag   = d3.round(+d.magnitude,1);
+  //     d.depth = d3.round(+d.depth,0);   
+  //   });
+
+  //   // Run the data through crossfilter and load our 'facts'
+  //   var facts = crossfilter(data);
+
+  //   // time chart
+  //   var volumeByHour = facts.dimension(function(d) {
+  //     return d3.time.hour(d.dtg);
+  //   });
+  //   var volumeByHourGroup = volumeByHour.group()
+  //     .reduceCount(function(d) { return d.dtg; });
+
+  //   // time graph
+  //   obsLineChart.width(960)
+  //     .height(150)
+  //     .transitionDuration(500)
+  //     .margins({top: 10, right: 10, bottom: 20, left: 40})
+  //     .dimension(volumeByHour)
+  //     .group(volumeByHourGroup)
+  //     .elasticY(true)
+  //     .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.dtg; })))
+  //     .xAxis();  
+
+  //   dc.renderAll();
+
+  // }); //end d3.csv
 
   dc.renderAll();
+
+}
+
+function init_tsCrossfilter() {
+  var obsLineChart = dc.lineChart("#dc-obsLine-chart");
+
+  //Read in time series file
+  d3.csv("data/quake-later3.csv", function (data) {
+    console.log("in d3.csv");
+
+    // format our data
+    var dtgFormat = d3.time.format("%Y-%m-%dT%H:%M:%S");
+    var dtgFormat2 = d3.time.format("%a %e %b %H:%M");
+
+    data.forEach(function(d) { 
+      d.dtg1  = d.origintime.substr(0,10) + " " + d.origintime.substr(11,8);
+      d.dtg   = dtgFormat.parse(d.origintime.substr(0,19)); 
+      d.lat   = +d.latitude;
+      d.long  = +d.longitude;
+      d.mag   = d3.round(+d.magnitude,1);
+      d.depth = d3.round(+d.depth,0);   
+    });
+
+    // Run the data through crossfilter and load our 'facts'
+    var facts = crossfilter(data);
+
+    // time chart
+    var volumeByHour = facts.dimension(function(d) {
+      return d3.time.hour(d.dtg);
+    });
+    var volumeByHourGroup = volumeByHour.group()
+      .reduceCount(function(d) { return d.dtg; });
+
+    // time graph
+    obsLineChart.width(960)
+      .height(150)
+      .transitionDuration(500)
+      .margins({top: 10, right: 10, bottom: 20, left: 40})
+      .dimension(volumeByHour)
+      .group(volumeByHourGroup)
+      .elasticY(true)
+      .x(d3.time.scale().domain(d3.extent(data, function(d) { return d.dtg; })))
+      .xAxis();  
+
+    dc.renderAll();
+
+  }); //end d3.csv
 
 }
 
