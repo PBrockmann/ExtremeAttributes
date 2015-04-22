@@ -80,10 +80,10 @@
         stroke-width: 0.5px;
         fill-opacity: .2;
       }
+     
+      table thead { display:block; }
+      table tbody { height:300px; overflow-y:scroll; display:block; }
 
-      .table-hover > tbody > tr:hover > th {
-        background-color: red;
-      }
 
     </style>
 
@@ -169,9 +169,10 @@
         </div> <!--end ROW 2-->
 
        <!--ROW 3-->
-        <div class="row" style="width: 590px;">          
-          <div class='span12'>
-            <table class='table table-striped table-hover' id='dc-table-graph'>
+        <div class="row" style="width: 540px;">      
+          <div class="span12">
+            <table class="table table-striped table-hover" id="dc-table-graph">
+              <caption>Summary</caption>
               <thead>
                 <tr class='header'>
                   <th>Region</th>
@@ -180,7 +181,8 @@
                   <th>Season</th>
                   <th>CSU</th>
                   <th>ID</th>
-                  <th>CDD</th>
+                  <th>
+                    <div><div>CDD</div></div></th>
                   <th>R20mm</th>
                 </tr>
               </thead>
