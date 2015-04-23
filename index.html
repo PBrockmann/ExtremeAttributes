@@ -26,10 +26,16 @@
     <link rel="stylesheet" href="lib/Leaflet-MiniMap/src/Control.MiniMap.css" />
 
     <!--d3 and dc-->
-    <script src="lib/d3.js"></script>
-    <script src="lib/crossfilter.js"></script>
-    <script src="lib/dc.js-1.6.0/dc.js"></script>
+    <!--ORIGINAL-->
+    <!--<script src="lib/d3.js"></script>-->
+    <!--<script src="lib/crossfilter.js"></script>-->
+    <!--<script src="lib/dc.js-1.6.0/dc.js"></script>-->
     <link rel="stylesheet" href="lib/dc.js-1.6.0/dc.css" />
+
+    <!--FROM dc.js GITHUB PAGE https://github.com/dc-js/dc.js/tree/master/web/js-->
+    <script src="lib/tmp/d3.js"></script>
+    <script src="lib/tmp/crossfilter.js"></script>
+    <script src="lib/tmp/dc.js"></script> <!--contains dc.seriesChart fn-->
 
     <!--css links-->
     <link href="lib/bootstrap-3.0.2-dist/css/bootstrap.css" rel="stylesheet">
@@ -168,7 +174,7 @@
 
         <!--ROW 3-->
         <div class="row">
-          <h2>Time Series</h2>              
+          <h2>Zoomable dc.seriesChart</h2>              
           <div id="dc-obsLine-chart" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">  
         </div> <!--end ROW 3-->             
 
@@ -183,7 +189,6 @@
     </div>
 
 
-    <!--<div id="map" style="width: 600px; height: 600px; margin-top: 50px;"></div>-->
     <script>
 
       //vars for displaying the extreme events data
@@ -368,6 +373,7 @@
         d3.selectAll("#total")
           .text(filter.size());
 
+        //Call line plot for time series data  
         init_tsCrossfilter();  
 
 
