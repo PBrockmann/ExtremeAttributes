@@ -212,16 +212,19 @@
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
       
       //Admin and place name overlays for base Leaflet map of France
-      d3.json("json/FRA_admin_places.json", function(error, admin) {
+      //d3.json("json/FRA_admin_places.json", function(error, admin) {
+      d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {  
         if (error) return console.error(error);        
 
-        var adminunits = topojson.feature(admin, admin.objects.FRA_admin);
+        //var adminunits = topojson.feature(admin, admin.objects.FRA_admin);
+        var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
         var bounds = d3.geo.bounds(adminunits);
         var path = d3.geo.path().projection(projectPoint);
 
         //Extract the admin zone boundaries
         var feature = g.selectAll('.adminunit')
-                       .data(topojson.feature(admin, admin.objects.FRA_admin).features)
+                       //.data(topojson.feature(admin, admin.objects.FRA_admin).features)
+                       .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                        .enter()
                        .append('path')
                        .attr('class', 'adminunit');      
