@@ -90,18 +90,19 @@ function init_tsCrossfilter() {
   var obsLineChart = dc.seriesChart("#dc-obsLine-chart");
 
   //Read in time series file
-  d3.csv("data/quake-later3.csv", function (data) {
+  d3.csv("data/quake-later3.csv", function (data) {  
     console.log("in d3.csv");
 
-    // format our data
+    //format our data
     var dtgFormat = d3.time.format("%Y-%m-%dT%H:%M:%S");
-    var dtgFormat2 = d3.time.format("%a %e %b %H:%M");
+    //var dtgFormat2 = d3.time.format("%a %e %b %H:%M");
 
+    //for quake-later3.csv
     data.forEach(function(d) { 
-      d.dtg1  = d.origintime.substr(0,10) + " " + d.origintime.substr(11,8);
-      d.dtg   = dtgFormat.parse(d.origintime.substr(0,19)); 
+      d.dtg1  = d.origintime.substr(0,10) + " " + d.origintime.substr(11,8);      
+      d.dtg   = dtgFormat.parse(d.origintime.substr(0,19));
       d.lat   = +d.latitude;
-      d.long  = +d.longitude;
+      d.lon  = +d.longitude;
       d.mag   = d3.round(+d.magnitude,1);
       d.depth = d3.round(+d.depth,0);   
     });
@@ -109,15 +110,21 @@ function init_tsCrossfilter() {
     // Run the data through crossfilter and load our 'facts'
     var facts = crossfilter(data);
 
-    // time chart
+    // time chart filters
+    //--------------------
+    //for quake-later3.csv
     var volumeByHour = facts.dimension(function(d) {
       //console.log("d3.time.hour(d.dtg): ", d3.time.hour(d.dtg));
       return d3.time.hour(d.dtg);
     });
     var volumeByHourGroup = volumeByHour.group()
-      .reduceCount(function(d) { return d.dtg; });
+      .reduceCount(function(d) { 
+        console.log("in group: ", d.dtg);
+        return d.dtg; 
+      });
 
-      //console.log("volumeByHourGroup: ", volumeByHourGroup.all());
+    console.log("volumeByHourGroup: ", volumeByHourGroup);
+
 
     // Time Series Plot
     //------------------
@@ -133,6 +140,8 @@ function init_tsCrossfilter() {
     //   .xAxis();
 
     //Configuration for dc.seriesChart
+    //---------------------------------
+    //for quake-later3.csv:
     obsLineChart.width(960)
       .height(150)
       //.chart(function(c) { return dc.lineChart(c).interpolate('basis'); })
@@ -146,10 +155,8 @@ function init_tsCrossfilter() {
       .dimension(volumeByHour)
       .group(volumeByHourGroup)
       .transitionDuration(500)
-      //.mouseZoomable(true)    
-      .seriesAccessor(function(d) {return "Expt: " + d.key[7];});      
-      //.xAxis();
-    obsLineChart.mouseZoomable(true);    
+      .mouseZoomable(true)    
+      .seriesAccessor(function(d) {return "Expt: " + d.key[7];}); //for quake-later3.csv
 
     dc.renderAll();
 
