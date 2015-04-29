@@ -53,18 +53,18 @@
           opacity: 0.1,
           
       }
-
-       .place {
+      
+      .place {
           /* fill: #444; */
           fill: #000000;
           stroke: red;
       }
-
+      
       .place-label {
           /* fill: #444; */
           fill: #8e8e8e;
       }
-
+      
       text {
           font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
           font-size: 10px;
@@ -74,13 +74,26 @@
       svg {
         position: relative;
       }
-
+      
       path {
         stroke: #A38566;
         stroke-width: 0.5px;
-        fill-opacity: .2;
+        fill-opacity: .1;
+      }
+      
+      path:hover {
+        fill: brown;
+        fill-opacity: .7;
       }
 
+
+      /*.leaflet-overlay-pane {
+        z-index: 15;
+      }*/
+
+    /*  .leaflet-marker-pane {
+        z-index: 1;
+      }*/
       
 
     </style>
@@ -197,7 +210,6 @@
         iconAnchor: [10, 0] 
       });
 
-
       var map = L.map('map').setView([47.0, 1.5], 6);
       L.tileLayer(
         'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -205,14 +217,77 @@
         maxZoom: 18,
       }).addTo(map);
 
-      
-      
       //d3 + Leaflet + topojson    
       var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
       
-      //Admin and place name overlays for base Leaflet map of France
-      //d3.json("json/FRA_admin_places.json", function(error, admin) {
+      
+
+    d3.tsv("data/events_anomdays.tsv", function(events) {
+        events.forEach(function(d, i) {
+          console.log("in d3.tsv test");
+        });
+        
+        points=events;
+        //console.log("points: ", points);
+
+        //Leaftlet clusters  
+        markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
+        //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
+        customMarker = L.Marker.extend({
+           options: { 
+              Id: 'Custom data!'
+           }
+        });
+
+        // create array of markers from points and add them to the map
+        for (var i = 0; i < points.length; i++) {
+          markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
+
+      //     //popup window for markers
+      //     markers[i].bindPopup(
+      //       "Id: #" + "<b>" + (i+1).toString() + "</b> "
+      //         + "Region: " + "<b>" + points[i].Region + "</b></br>"
+      //         + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
+      //         + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
+      //         + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
+      //         + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
+      //         + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
+      //         + "ID: " + "<b>" + points[i].ID + "</b></br>"
+      //         + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
+      //         + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
+      //         ,{autoPan: true, keepInView: true, closeOnClick: true}
+      //     );
+
+       //     markers[i].on('mouseover', function(e) {
+      //       e.target.setIcon(myIconBright);
+      //       e.target.openPopup();          
+      //       var container = $("#eventsList");
+      //       var scrollTo = $("#"+e.target.options.Id);
+      //       container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+      //       //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
+      //       scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
+      //     });
+
+      //     markers[i].on('mouseout', function(e) {
+      //       e.target.setIcon(myIcon);
+      //       e.target.closePopup();
+      //          //$(".proxyItem").css("font-weight", "normal"); //orig
+      //          //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
+      //       var container = $("#eventsList");
+      //       var scrollTo = $("#"+e.target.options.Id);
+      //       scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
+      //     });
+
+          markerGroup.addLayer(markers[i]);        
+          console.log("markers: ", markers);
+      }
+      //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS**** 
+
+
+
+
+      //Admin and place name overlays for base Leaflet map of France      
       d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {  
         if (error) return console.error(error);        
 
@@ -221,13 +296,15 @@
         var bounds = d3.geo.bounds(adminunits);
         var path = d3.geo.path().projection(projectPoint);
 
+
         //Extract the admin zone boundaries
-        var feature = g.selectAll('.adminunit')
+        var feature = g.selectAll('path')
                        //.data(topojson.feature(admin, admin.objects.FRA_admin).features)
                        .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                        .enter()
-                       .append('path')
-                       .attr('class', 'adminunit');      
+                       .append('path');
+                       //.attr('class', 'adminunit');  
+                       //.attr('d', path);  
     
         //Extract the place name labels
         var places = g.selectAll('.place-label')
@@ -236,7 +313,7 @@
                       .append('text')
                       .attr('class', 'place-label');
 
-                  
+           
 
         //Define city markers using the coordinates associated with FRA_places              
         var cityMarker = g.selectAll("circle")
@@ -246,7 +323,16 @@
                           .style("stroke", "black")  
                           .style("opacity", .6) 
                           .style("fill", "#8e8e8e")
-                          .attr("r", 2);                           
+                          .attr("r", 2)
+                          .attr("class", "circle-class");;       
+
+        //Add marker by appending to the svg
+        var markertest = g.selectAll('circle')
+                      .data(markerGroup)
+                      .enter()
+                      .append('circle')
+                      .attr("r", 5)
+                      .attr("class", "marker-class");                                
 
         map.on('viewreset', resetMap);
         resetMap();               
@@ -278,7 +364,9 @@
           //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
           svg.selectAll(".place-label")
              .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-             .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });      
+             .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
+
+    
 
           //Plot the city markers (small circles)
           cityMarker.attr("transform", 
@@ -295,79 +383,82 @@
           //console.log(x[1], x[0]);
           return [point.x, point.y];
         }  
+       
 
-      }); //end overlay fn
+      }); //end d3.json
+    }); //end d3.tsv
 
-      d3.tsv("data/events_anomdays.tsv", function(events) {
-        events.forEach(function(d, i) {
-          console.log("in d3.tsv");
-        });
+      //MAKE EVENT CLUSTERS FROM TSV FILE
+      // d3.tsv("data/events_anomdays.tsv", function(events) {
+      //   events.forEach(function(d, i) {
+      //     console.log("in d3.tsv");
+      //   });
         
-        points=events;
-
-        //Leaftlet clusters  
-        markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
-        //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
-        customMarker = L.Marker.extend({
-           options: { 
-              Id: 'Custom data!'
-           }
-        });
+      //   points=events;
+        
+      //   //Leaftlet clusters  
+      //   markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
+      //   //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
+      //   customMarker = L.Marker.extend({
+      //      options: { 
+      //         Id: 'Custom data!'
+      //      }
+      //   });
           
-        // create array of markers from points and add them to the map
-        for (var i = 0; i < points.length; i++) {
-          markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
+      //   // create array of markers from points and add them to the map
+      //   for (var i = 0; i < points.length; i++) {
+      //     markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
 
-          //popup window for markers
-          markers[i].bindPopup(
-            "Id: #" + "<b>" + (i+1).toString() + "</b> "
-              + "Region: " + "<b>" + points[i].Region + "</b></br>"
-              + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
-              + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
-              + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
-              + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
-              + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
-              + "ID: " + "<b>" + points[i].ID + "</b></br>"
-              + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
-              + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
-              ,{autoPan: true, keepInView: true, closeOnClick: true}
-          );
+      //     //popup window for markers
+      //     markers[i].bindPopup(
+      //       "Id: #" + "<b>" + (i+1).toString() + "</b> "
+      //         + "Region: " + "<b>" + points[i].Region + "</b></br>"
+      //         + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
+      //         + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
+      //         + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
+      //         + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
+      //         + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
+      //         + "ID: " + "<b>" + points[i].ID + "</b></br>"
+      //         + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
+      //         + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
+      //         ,{autoPan: true, keepInView: true, closeOnClick: true}
+      //     );
 
-          markers[i].on('mouseover', function(e) {
-            e.target.setIcon(myIconBright);
-            e.target.openPopup();          
-            var container = $("#eventsList");
-            var scrollTo = $("#"+e.target.options.Id);
-            container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-            //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
-            scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
-          });
+       //     markers[i].on('mouseover', function(e) {
+      //       e.target.setIcon(myIconBright);
+      //       e.target.openPopup();          
+      //       var container = $("#eventsList");
+      //       var scrollTo = $("#"+e.target.options.Id);
+      //       container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+      //       //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
+      //       scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
+      //     });
 
-          markers[i].on('mouseout', function(e) {
-            e.target.setIcon(myIcon);
-            e.target.closePopup();
-               //$(".proxyItem").css("font-weight", "normal"); //orig
-               //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
-            var container = $("#eventsList");
-            var scrollTo = $("#"+e.target.options.Id);
-            scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
-          });
+      //     markers[i].on('mouseout', function(e) {
+      //       e.target.setIcon(myIcon);
+      //       e.target.closePopup();
+      //          //$(".proxyItem").css("font-weight", "normal"); //orig
+      //          //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
+      //       var container = $("#eventsList");
+      //       var scrollTo = $("#"+e.target.options.Id);
+      //       scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
+      //     });
 
-          markerGroup.addLayer(markers[i]);
-        }
-        map.addLayer(markerGroup);
+        //   markerGroup.addLayer(markers[i]);        
+        // }
+        //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS****
 
-        //call fns defined in display_fns.js
-        initCrossfilter();
-        eventList(); //renders Extreme Events Table
-        update1(); //updates number of Event Types selected
+      //   //call fns defined in display_fns.js
+      //   initCrossfilter();
+      //   eventList(); //renders Extreme Events Table
+      //   update1(); //updates number of Event Types selected
 
-        // Render the total number of events in tsv file
-        d3.selectAll("#total")
-          .text(filter.size());
+      //   // Render the total number of events in tsv file
+      //   d3.selectAll("#total")
+      //     .text(filter.size());
 
 
-      }); //end d3.tsv
+      //}); //end d3.tsv
       
       //Change mouse to pointer when hovering over Event Table rows
       //need window.onload because Id element doesn't exist yet
