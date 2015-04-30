@@ -6,11 +6,12 @@
  PLEASE DO NOT COPY OR DISTRIBUTE WITHOUT PERMISSION
  ##########################################################################
 -->
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>Extreme Events Attributes</title>
     <link href="style.css" rel="stylesheet" type="text/css" media="all">
-    
+
     <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
     <script src="lib/jquery-1.10.2.min.js"></script>
@@ -48,373 +49,383 @@
     <script src="http://d3js.org/topojson.v1.min.js"></script>
 
     <style>
-
-      /*Map overlay*/
-      .adminunit {
-          fill: #ddc;
-          opacity: 0.1,
-          
-      }
-      
-      .place {
-          /* fill: #444; */
-          fill: #000000;
-          stroke: red;
-      }
-      
-      .place-label {
-          /* fill: #444; */
-          fill: #8e8e8e;
-      }
-      
-      text {
-          font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-          font-size: 10px;
-          pointer-events: none;
-      }
-    
-      svg {
-        position: relative;
-      }
-      
-      path {
-        stroke: #A38566;
-        stroke-width: 0.5px;
-        fill-opacity: .1;
-      }
-      
-      path:hover {
-        fill: brown;
-        fill-opacity: .7;
-      }
-
-
-      /*.leaflet-overlay-pane {
+        /*Map overlay*/
+        
+        .adminunit {
+            fill: #ddc;
+            opacity: 0.1,
+        }
+        
+        .place {
+            /* fill: #444; */
+            
+            fill: #000000;
+            stroke: red;
+        }
+        
+        .place-label {
+            /* fill: #444; */
+            
+            fill: #8e8e8e;
+        }
+        
+        text {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 10px;
+            pointer-events: none;
+        }
+        
+        svg {
+            position: relative;
+        }
+        
+        path {
+            stroke: #A38566;
+            stroke-width: 0.5px;
+            fill-opacity: .1;
+        }
+        
+        path:hover {
+            fill: brown;
+            fill-opacity: .7;
+        }
+        /*.leaflet-overlay-pane {
         z-index: 15;
       }*/
-
-    /*  .leaflet-marker-pane {
+        /*  .leaflet-marker-pane {
         z-index: 1;
       }*/
-
-    .dot {
-      stroke: #000;
-      fill: blue; 
-    }
-      
-
+        
+        .dot {
+            stroke: #000;
+            fill: blue;
+        }
     </style>
 
-  </head>
+</head>
 
-  <body >
+<body>
 
     <div id="wrap">
 
-      <!-- Fixed navbar -->
-      <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="index.html">Extreme Events Attributes</a>
-          </div>
-          <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-              <li><a href="help.html">Help</a></li>
-              <li><a href="contact.html">Contact</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-
-      <!-- Begin page content -->
-      <div class="container">
-
-        <!--ROW 1-->
-        <div class="row">         
-          <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 50px;"></div>          
-          
-
-          <div id="chart-eventType" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">
-            <h3>Type</h3>
-            <a class="reset" href="javascript:eventChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>          
-            <span class="reset" style="display: none;"><span class="filter"></span></span>
-          </div>
-
-          <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 120px;">
-            <h3>Year</h3>
-            <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>          
-            <span class="reset" style="display: none;"><span class="filter"></span></span>
-          </div>
-
-          <div id="eventsListDiv" class="col-md-5" style="margin-top: 27px; margin-left: 50px; width=400">
-          <!--<div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>  -->
-            <h3>Summary</h3>
-            <div id="totals">
-              <span id="active">-</span> out of <span id="total">-</span> events selected.
+        <!-- Fixed navbar -->
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="index.html">Extreme Events Attributes</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li><a href="help.html">Help</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
             </div>
-              <div id="eventsListTitle" class="col-md-5"  style="width: 590px;"></div>
-              <div id="eventsList" class="col-md-5" style="width: 600px; max-height: 200px; overflow-y: auto;"></div>
-            
-          </div>
-          
+        </div>
 
-        </div>  
+        <!-- Begin page content -->
+        <div class="container">
 
-        <!--ROW 2-->
-        <div class="row">
-          <div id="chart-depth" class="dc-chart col-md-4">
-            <span>Depth (m)</span>
-            <a class="reset" href="javascript:depthChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-            <span class="reset" style="display: none;"><span class="filter"></span></span>
-            <br>
-            <br>
-          </div>
-                 
-          <div id="chart-age" class="dc-chart col-md-4">
-            <span>Oldest age (ka)</span>
-            <a class="reset" href="javascript:ageChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-            <span class="reset" style="display: none;"><span class="filter"></span></span>
-            <br>
-            <br>
-          </div>
-          
-        </div> <!--end ROW 2-->
-             
+            <!--ROW 1-->
+            <div class="row">
+                <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 50px;"></div>
 
-      </div><!-- /.container -->
 
-    </div><!-- /.wrap -->
+                <div id="chart-eventType" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">
+                    <h3>Type</h3>
+                    <a class="reset" href="javascript:eventChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                </div>
+
+                <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 120px;">
+                    <h3>Year</h3>
+                    <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                </div>
+
+                <div id="eventsListDiv" class="col-md-5" style="margin-top: 27px; margin-left: 50px; width=400">
+                    <!--<div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>  -->
+                    <h3>Summary</h3>
+                    <div id="totals">
+                        <span id="active">-</span> out of <span id="total">-</span> events selected.
+                    </div>
+                    <div id="eventsListTitle" class="col-md-5" style="width: 590px;"></div>
+                    <div id="eventsList" class="col-md-5" style="width: 600px; max-height: 200px; overflow-y: auto;"></div>
+
+                </div>
+
+
+            </div>
+
+            <!--ROW 2-->
+            <div class="row">
+                <div id="chart-depth" class="dc-chart col-md-4">
+                    <span>Depth (m)</span>
+                    <a class="reset" href="javascript:depthChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                    <br>
+                    <br>
+                </div>
+
+                <div id="chart-age" class="dc-chart col-md-4">
+                    <span>Oldest age (ka)</span>
+                    <a class="reset" href="javascript:ageChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                    <br>
+                    <br>
+                </div>
+
+            </div>
+            <!--end ROW 2-->
+
+
+        </div>
+        <!-- /.container -->
+
+    </div>
+    <!-- /.wrap -->
 
     <div id="footer">
-       <div class="container">
-          <p class="text-muted credit"><span title="Climate and Environment Sciences Laboratory" style="font-weight:bold;">LSCE</span> &nbsp;<img src="LSCE_Icon.png" title="Climate and Environment Sciences Laboratory"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version 1.3 - 2015/04/16</p>
-      </div><!-- /.container -->
+        <div class="container">
+            <p class="text-muted credit"><span title="Climate and Environment Sciences Laboratory" style="font-weight:bold;">LSCE</span> &nbsp;<img src="LSCE_Icon.png" title="Climate and Environment Sciences Laboratory" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Version 1.3 - 2015/04/16</p>
+        </div>
+        <!-- /.container -->
     </div>
 
 
     <!--<div id="map" style="width: 600px; height: 600px; margin-top: 50px;"></div>-->
     <script>
-      
-      //vars for the map
-      myIcon = L.icon({
-        iconUrl: 'LSCE_Icon.png',
-        iconSize: [20, 20], 
-        iconAnchor: [10, 0] 
-      });
+        //vars for the map
+        myIcon = L.icon({
+            iconUrl: 'LSCE_Icon.png',
+            iconSize: [20, 20],
+            iconAnchor: [10, 0]
+        });
 
-      myIconBright = L.icon({
-        iconUrl: 'LSCE_IconBright.png',
-        iconSize: [20, 20], 
-        iconAnchor: [10, 0] 
-      });
+        myIconBright = L.icon({
+            iconUrl: 'LSCE_IconBright.png',
+            iconSize: [20, 20],
+            iconAnchor: [10, 0]
+        });
 
-      var map = L.map('map').setView([47.0, 1.5], 6);
-      L.tileLayer(
-        'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
-        maxZoom: 18,
-      }).addTo(map);
-
-
-      //d3 + Leaflet + topojson    
-      var svg = d3.select(map.getPanes().overlayPane).append("svg"),
-            g = svg.append("g").attr("class", "leaflet-zoom-hide");  
-      
-      var path = d3.geo.path().projection(projectPoint);
-
-      //Read in admin and place name overlays for base Leaflet map of France      
-      d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) { 
-        if (error) return console.error(error);       
-      
-        //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
-        d3.json("json/cities.json", function(error, data) {         
-       
-          var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
-          var bounds = d3.geo.bounds(adminunits);
-          
-
-          //Extract the admin zone boundaries
-          var feature = g.selectAll('path')          
-                         .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
-                         .enter()
-                         .append('path');                         
-        
-          //Extract the place name labels
-          var places = g.selectAll('.place-label')
-                        .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                        .enter()
-                        .append('text')
-                        .attr('class', 'place-label');
-               
-          //Define city markers using the coordinates associated with FRA_places              
-          var cityMarker = g.selectAll("circle").attr("class", "some-class")
-                            .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                            .enter()
-                            .append("circle")
-                            .style("stroke", "black")  
-                            .style("opacity", .6) 
-                            .style("fill", "#8e8e8e")
-                            .attr("r", 2);  
-
-          //http://stackoverflow.com/questions/10261992/d3-js-add-a-circle-in-d3-geo-path
-          //note: does not need to be transformed in resetMap() like the other g nodes
-          //because it is already transformed with projectPoint()
-          var stationMarker = g.selectAll('dot')
-                               .data(data)
-                               .enter()//.append('path').attr('d', path)
-                               .append('svg:circle')
-                               .attr("cx", function(d) {                          
-                                  return projectPoint([d.lon, d.lat])[0]; //get first col
-                               })
-                               .attr("cy", function(d) {
-                                  return projectPoint([d.lon, d.lat])[1]; //get second col
-                               })          
-                               .attr('r', 5);                        
-
-          map.on('viewreset', resetMap);
-          resetMap();               
-
-          // Reposition the SVG to cover the features.
-          function resetMap() {
-            var bottomLeft = projectPoint(bounds[0]),
-              topRight = projectPoint(bounds[1]);
-       
-            svg.attr('width', topRight[0] - bottomLeft[0])
-               .attr('height', bottomLeft[1] - topRight[1])
-               .style('margin-left', bottomLeft[0] + 'px')
-               .style('margin-top', topRight[1] + 'px');
-       
-            var translation = -bottomLeft[0] + ',' + -topRight[1];
-            g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
-            
-            //Plot the admin zone boundaries
-            feature.attr('d', path);
-       
-            //Plot the place names
-            places.attr('name', function (d) { return d.properties.name; })
-                  .attr('class', 'place-label')
-                  .attr('transform', function (d) { return 'translate(' + path.centroid(d) + ')'; })
-                  .attr('x', -20)
-                  .attr('dy', '.35em')
-                  .text(function (d) { return d.properties.name; });
-
-            //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
-            svg.selectAll(".place-label")
-               .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
-               .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
-
-      
-            //Plot the city markers (small circles)
-            cityMarker.attr("transform", 
-              function(d) {                     
-                return 'translate(' + path.centroid(d) + ')';
-              }
-            )
-              
-          } //end resetMap()
+        var map = L.map('map').setView([47.0, 1.5], 6);
+        L.tileLayer(
+            'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
+                maxZoom: 18,
+            }).addTo(map);
 
 
-      }); //end d3.json
-    }); //end d3.tsv
+        //d3 + Leaflet + topojson    
+        var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+            g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-    //Use Leaflet to implement a D3 geographic projection.
-    //Put outside the read file loops
-    function projectPoint(x) {
-          var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
-          //console.log(x[1], x[0]);
-          //console.log("point.x, point.y: ", point.x, point.y);
-          return [point.x, point.y];
-    }
-    
+        var path = d3.geo.path().projection(projectPoint);
 
-      //MAKE EVENT CLUSTERS FROM TSV FILE
-      // d3.tsv("data/events_anomdays.tsv", function(events) {
-      //   events.forEach(function(d, i) {
-      //     console.log("in d3.tsv");
-      //   });
-        
-      //   points=events;
-        
-      //   //Leaftlet clusters  
-      //   markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
-      //   //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
-      //   customMarker = L.Marker.extend({
-      //      options: { 
-      //         Id: 'Custom data!'
-      //      }
-      //   });
-          
-      //   // create array of markers from points and add them to the map
-      //   for (var i = 0; i < points.length; i++) {
-      //     markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
+        //Read in admin and place name overlays for base Leaflet map of France      
+        d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
+            if (error) return console.error(error);
 
-      //     //popup window for markers
-      //     markers[i].bindPopup(
-      //       "Id: #" + "<b>" + (i+1).toString() + "</b> "
-      //         + "Region: " + "<b>" + points[i].Region + "</b></br>"
-      //         + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
-      //         + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
-      //         + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
-      //         + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
-      //         + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
-      //         + "ID: " + "<b>" + points[i].ID + "</b></br>"
-      //         + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
-      //         + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
-      //         ,{autoPan: true, keepInView: true, closeOnClick: true}
-      //     );
+            //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
+            d3.json("json/cities.json", function(error, data) {
 
-       //     markers[i].on('mouseover', function(e) {
-      //       e.target.setIcon(myIconBright);
-      //       e.target.openPopup();          
-      //       var container = $("#eventsList");
-      //       var scrollTo = $("#"+e.target.options.Id);
-      //       container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-      //       //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
-      //       scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
-      //     });
+                var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
+                var bounds = d3.geo.bounds(adminunits);
 
-      //     markers[i].on('mouseout', function(e) {
-      //       e.target.setIcon(myIcon);
-      //       e.target.closePopup();
-      //          //$(".proxyItem").css("font-weight", "normal"); //orig
-      //          //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
-      //       var container = $("#eventsList");
-      //       var scrollTo = $("#"+e.target.options.Id);
-      //       scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
-      //     });
+
+                //Extract the admin zone boundaries
+                var feature = g.selectAll('path')
+                    .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
+                    .enter()
+                    .append('path');
+
+                //Extract the place name labels
+                var places = g.selectAll('.place-label')
+                    .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'place-label');
+
+                //Define city markers using the coordinates associated with FRA_places              
+                var cityMarker = g.selectAll("circle").attr("class", "some-class")
+                    .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                    .enter()
+                    .append("circle")
+                    .style("stroke", "black")
+                    .style("opacity", .6)
+                    .style("fill", "#8e8e8e")
+                    .attr("r", 2);
+
+                //http://stackoverflow.com/questions/10261992/d3-js-add-a-circle-in-d3-geo-path
+                //note: does not need to be transformed in resetMap() like the other g nodes
+                //because it is already transformed with projectPoint()
+                var stationMarker = g.selectAll('dot')
+                    .data(data)
+                    .enter() //.append('path').attr('d', path)
+                    .append('svg:circle')
+                    .attr("cx", function(d) {
+                        return projectPoint([d.lon, d.lat])[0]; //get first col
+                    })
+                    .attr("cy", function(d) {
+                        return projectPoint([d.lon, d.lat])[1]; //get second col
+                    })
+                    .attr('r', 5);
+
+                map.on('viewreset', resetMap);
+                resetMap();
+
+                // Reposition the SVG to cover the features.
+                function resetMap() {
+                        var bottomLeft = projectPoint(bounds[0]),
+                            topRight = projectPoint(bounds[1]);
+
+                        svg.attr('width', topRight[0] - bottomLeft[0])
+                            .attr('height', bottomLeft[1] - topRight[1])
+                            .style('margin-left', bottomLeft[0] + 'px')
+                            .style('margin-top', topRight[1] + 'px');
+
+                        var translation = -bottomLeft[0] + ',' + -topRight[1];
+                        g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
+
+                        //Plot the admin zone boundaries
+                        feature.attr('d', path);
+
+                        //Plot the place names
+                        places.attr('name', function(d) {
+                                return d.properties.name;
+                            })
+                            .attr('class', 'place-label')
+                            .attr('transform', function(d) {
+                                return 'translate(' + path.centroid(d) + ')';
+                            })
+                            .attr('x', -20)
+                            .attr('dy', '.35em')
+                            .text(function(d) {
+                                return d.properties.name;
+                            });
+
+                        //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
+                        svg.selectAll(".place-label")
+                            .attr("x", function(d) {
+                                return d.geometry.coordinates[0] > -1 ? 6 : -6;
+                            })
+                            .style("text-anchor", function(d) {
+                                return d.geometry.coordinates[0] > -1 ? "start" : "end";
+                            });
+
+
+                        //Plot the city markers (small circles)
+                        cityMarker.attr("transform",
+                            function(d) {
+                                return 'translate(' + path.centroid(d) + ')';
+                            }
+                        )
+
+                    } //end resetMap()
+
+
+            }); //end d3.json
+        }); //end d3.tsv
+
+        //Use Leaflet to implement a D3 geographic projection.
+        //Put outside the read file loops
+        function projectPoint(x) {
+            var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+            //console.log(x[1], x[0]);
+            //console.log("point.x, point.y: ", point.x, point.y);
+            return [point.x, point.y];
+        }
+
+
+        //MAKE EVENT CLUSTERS FROM TSV FILE
+        // d3.tsv("data/events_anomdays.tsv", function(events) {
+        //   events.forEach(function(d, i) {
+        //     console.log("in d3.tsv");
+        //   });
+
+        //   points=events;
+
+        //   //Leaftlet clusters  
+        //   markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
+        //   //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
+        //   customMarker = L.Marker.extend({
+        //      options: { 
+        //         Id: 'Custom data!'
+        //      }
+        //   });
+
+        //   // create array of markers from points and add them to the map
+        //   for (var i = 0; i < points.length; i++) {
+        //     markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
+
+        //     //popup window for markers
+        //     markers[i].bindPopup(
+        //       "Id: #" + "<b>" + (i+1).toString() + "</b> "
+        //         + "Region: " + "<b>" + points[i].Region + "</b></br>"
+        //         + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
+        //         + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
+        //         + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
+        //         + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
+        //         + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
+        //         + "ID: " + "<b>" + points[i].ID + "</b></br>"
+        //         + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
+        //         + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
+        //         ,{autoPan: true, keepInView: true, closeOnClick: true}
+        //     );
+
+        //     markers[i].on('mouseover', function(e) {
+        //       e.target.setIcon(myIconBright);
+        //       e.target.openPopup();          
+        //       var container = $("#eventsList");
+        //       var scrollTo = $("#"+e.target.options.Id);
+        //       container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
+        //       //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
+        //       scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
+        //     });
+
+        //     markers[i].on('mouseout', function(e) {
+        //       e.target.setIcon(myIcon);
+        //       e.target.closePopup();
+        //          //$(".proxyItem").css("font-weight", "normal"); //orig
+        //          //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
+        //       var container = $("#eventsList");
+        //       var scrollTo = $("#"+e.target.options.Id);
+        //       scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
+        //     });
 
         //   markerGroup.addLayer(markers[i]);        
         // }
         //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS****
 
-      //   //call fns defined in display_fns.js
-      //   initCrossfilter();
-      //   eventList(); //renders Extreme Events Table
-      //   update1(); //updates number of Event Types selected
+        //   //call fns defined in display_fns.js
+        //   initCrossfilter();
+        //   eventList(); //renders Extreme Events Table
+        //   update1(); //updates number of Event Types selected
 
-      //   // Render the total number of events in tsv file
-      //   d3.selectAll("#total")
-      //     .text(filter.size());
+        //   // Render the total number of events in tsv file
+        //   d3.selectAll("#total")
+        //     .text(filter.size());
 
 
-      //}); //end d3.tsv
-      
-      //Change mouse to pointer when hovering over Event Table rows
-      //need window.onload because Id element doesn't exist yet
-      //cf http://stackoverflow.com/questions/2632137/why-is-document-getelementbyid-returning-null
-      window.onload = function() {
-        document.getElementById("eventsList").style.cursor = "pointer";
-      }
-  
+        //}); //end d3.tsv
+
+        //Change mouse to pointer when hovering over Event Table rows
+        //need window.onload because Id element doesn't exist yet
+        //cf http://stackoverflow.com/questions/2632137/why-is-document-getelementbyid-returning-null
+        window.onload = function() {
+            document.getElementById("eventsList").style.cursor = "pointer";
+        }
     </script>
 
 
-   
-  </body>
+
+</body>
+
 </html>
