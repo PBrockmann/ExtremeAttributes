@@ -1,0 +1,25 @@
+{
+   "type": "FeatureCollection",
+   "features": [
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ 7.0128,43.5513 ]
+    },
+    "properties": {
+    "name":"LA"
+    }
+  },
+  {
+    "type": "Feature",
+    "geometry": {
+       "type": "Point",
+       "coordinates":  [ 2.3508,48.8567 ]
+    },
+    "properties": {
+    "name":"NY"
+    }
+  }
+]
+}
