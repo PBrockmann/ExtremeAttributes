@@ -99,6 +99,7 @@
 
     .dot {
       stroke: #000;
+      fill: blue; 
     }
       
 
@@ -199,9 +200,6 @@
 
     <!--<div id="map" style="width: 600px; height: 600px; margin-top: 50px;"></div>-->
     <script>
-
-      //vars for displaying the extreme events data
-      //var idGrouping;
       
       //vars for the map
       myIcon = L.icon({
@@ -222,94 +220,6 @@
         attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
         maxZoom: 18,
       }).addTo(map);
-
-      
-      
-      
-
-    // d3.tsv("data/events_anomdays.tsv", function(events) {
-        
-    //   points=events;
-
-    //     var dataset=[];
-    //     events.forEach(function(d, i) {
-    //       console.log("in d3.tsv test");
-    //      dataset[i] = [ [points[i].Longitude, points[i].Latitude] ];
-    //     });
-        
-    //     // var dataset = [
-    //     //           [ 5,     20 ],
-    //     //           [ 480,   90 ],
-    //     //           [ 250,   50 ],
-    //     //           [ 100,   33 ],
-    //     //           [ 330,   95 ],
-    //     //           [ 410,   12 ],
-    //     //           [ 475,   44 ],
-    //     //           [ 25,    67 ],
-    //     //           [ 85,    21 ],
-    //     //           [ 220,   88 ]
-    //           // ];
-    //     console.log('dataset: ', dataset);      
-
-    //     //points=events;
-    //     //console.log("points: ", points);
-
-    //     //Leaftlet clusters  
-    //     markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
-    //     //http://stackoverflow.com/questions/17423261/how-to-pass-data-with-marker-in-leaflet-js
-    //     customMarker = L.Marker.extend({
-    //        options: { 
-    //           Id: 'Custom data!'
-    //        }
-    //     });
-
-    //     // create array of markers from points and add them to the map
-    //     for (var i = 0; i < points.length; i++) {
-    //       markers[i] = new customMarker([points[i].Latitude, points[i].Longitude], {icon: myIcon, Id: (i+1).toString()});
-    //       // markers[i].options.opacity = 0.8;
-    //       // markers[i].options.riseOffset=1;
-
-
-
-      //     //popup window for markers
-      //     markers[i].bindPopup(
-      //       "Id: #" + "<b>" + (i+1).toString() + "</b> "
-      //         + "Region: " + "<b>" + points[i].Region + "</b></br>"
-      //         + "Location: " + "<b>" + points[i].Longitude + "°E</b>, <b>" + points[i].Latitude + "°N</b></br>"
-      //         + "Event type: " + "<b>" +  points[i].Type + "</b></span></br>"
-      //         + "Year: " + "<b>" +  points[i].Year + "</b></span></br>"
-      //         + "Season: " + "<span style='color: #C9840B;'>" + points[i].Season + "</b></span></br>"
-      //         + "CSU: " + "<b>" + points[i].CSU + "</b></br>"
-      //         + "ID: " + "<b>" + points[i].ID + "</b></br>"
-      //         + "CDD: " + "<b>" + points[i].CDD + "</b></br>"
-      //         + "R20mm: " + "<b>" + points[i].R20mm + "</b></br>"
-      //         ,{autoPan: true, keepInView: true, closeOnClick: true}
-      //     );
-
-       //     markers[i].on('mouseover', function(e) {
-      //       e.target.setIcon(myIconBright);
-      //       e.target.openPopup();          
-      //       var container = $("#eventsList");
-      //       var scrollTo = $("#"+e.target.options.Id);
-      //       container.scrollTop( scrollTo.offset().top - container.offset().top + container.scrollTop() );
-      //       //scrollTo.css("font-weight", "bold"); //bold the text in Events Table row for selected map marker
-      //       scrollTo.css("background-color", "#F7FE2E"); //highlight Events Table row for selected map marker
-      //     });
-
-      //     markers[i].on('mouseout', function(e) {
-      //       e.target.setIcon(myIcon);
-      //       e.target.closePopup();
-      //          //$(".proxyItem").css("font-weight", "normal"); //orig
-      //          //$(".eventItem").css("background-color", "normal"); //doesn't work bec eventItem defined in display_fns.js
-      //       var container = $("#eventsList");
-      //       var scrollTo = $("#"+e.target.options.Id);
-      //       scrollTo.css("background-color", "#ffffff"); //remove highlight from mouseover
-      //     });
-
-      //     markerGroup.addLayer(markers[i]);
-      //     //console.log("markers: ", markers);
-      // }
-      //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS**** 
 
 
       //d3 + Leaflet + topojson    
@@ -378,13 +288,9 @@
 
         // Add markers for cities by their latitude and longitude.
         //from: http://stackoverflow.com/questions/26769083/add-static-lines-on-d3-map-between-latitude-and-longitude-points
-        // d3.csv("data/cities.csv", function (error, data) {
-        //    console.log("in d3.csv!!!");
 
 
-          //var proj = d3.geo.mercator();
-            //features.selectAll("circle")
-            //svg.append("g").selectAll("circle")
+
           var stationMarker = svg.append("g").attr("class", "leaflet-zoom-hide")
                     .selectAll("circle")
                      .data(data)
@@ -404,31 +310,28 @@
                     .style("fill", "red");
                 
 
-          var repeatMarker = g.selectAll("rect")                          
+          // var repeatMarker = g.selectAll("rect")                          
+          //                 .data(data.features)
+          //                 //.data(data)
+          //                 .enter()
+          //                 .append("rect")
+          //                 .attr("width", 5)
+          //                 .attr("height", 5)
+          //                 .style("stroke", "black")  
+          //                 .style("stroke-width", "2px")
+          //                 .style("opacity", .6) 
+          //                 .style("fill", "#8e8e8e")
+          //                 .attr("r", 5);        
+            
+          var repeatMarker = g.selectAll("dot")                          
                           .data(data.features)
                           //.data(data)
                           .enter()
-                          .append("rect")
-                          .attr("width", 5)
-                          .attr("height", 5)
-                          .style("stroke", "black")  
-                          .style("stroke-width", "2px")
+                          .append("circle")
+                          .attr("class", "dot")
                           .style("opacity", .6) 
-                          .style("fill", "#8e8e8e")
-                          .attr("r", 5);        
-            
+                          .attr("r", 5); 
 
-              // g.selectAll('path')
-              //       .data(data)
-              //       .enter().append('path').attr('d', path);
-              // // now use the projection to project your coords
-              // var coordinates = projectPoint([mylon, mylat]);
-              // map.append('svg:circle')
-              //     .attr('cx', coordinates[0])
-              //     .attr('cy', coordinates[1])
-              //     .attr('r', 5);
-
-//        });
                                                   
 
         map.on('viewreset', resetMap);
@@ -483,31 +386,15 @@
               }
           )
 
-          //Plot the station markers (small circles)
-          // stationMarker.attr("transform", 
-          //   function(d) { 
-          //     return 'translate(' + path.centroid(d) + ')';
-          //     }
-          // )
-
-
-      
-
             
         } //end resetMap()
 
-        // Use Leaflet to implement a D3 geographic projection.
-        // function projectPoint(x) {
-        //   var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
-        //   //console.log(x[1], x[0]);
-        //   return [point.x, point.y];
-        // }  
-       
 
       }); //end d3.json
     }); //end d3.tsv
 
-    //Put projectPoint fn here
+    //Use Leaflet to implement a D3 geographic projection.
+    //Put outside the read file loops
     function projectPoint(x) {
           var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
           //console.log(x[1], x[0]);
