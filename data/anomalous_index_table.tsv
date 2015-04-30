@@ -1,0 +1,13 @@
+Year	Region	Type	Season	CSU	ID	CDD	R20mm
+1950	ALSACE	precipitation	Fall	--	--	--	17
+1960	BRITTANY	drought	Spring	--	--	22	--
+1970	BURGUNDY	drought	Spring	--	--	17	--
+1980	LIMOUSIN	extreme-cold	Winter	--	11	--	--
+1990	LORRAINE	extreme-cold	Winter	--	9	--	--
+2000	PICARDY 	extreme-cold	Winter	--	15	--	--
+2001	RHONE-ALPS	heatwave	Summer	33	--	--	--
+2005	LOIRE	heatwave	Summer	31	--	--	--
+2006	LANGUEDOC-ROUSSILLON	precipitation	2014	Fall	--	--	--	22
+2010	ILE-DE-FRANCE	precipitation	Fall	--	--	--	66
+2012	LOIRE	heatwave	Summer	9	--	--	--
+2014	ILE-DE-FRANCE	heatwave	Summer	19	--	--	--
