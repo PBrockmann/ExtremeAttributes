@@ -234,7 +234,7 @@
             if (error) return console.error(error);
 
             //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
-            d3.json("json/cities.json", function(error, data) {
+            d3.json("geojson/cities.geojson", function(error, data) {
 
                 var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
                 var bounds = d3.geo.bounds(adminunits);
@@ -263,20 +263,15 @@
                     .style("fill", "#8e8e8e")
                     .attr("r", 2);
 
-                //http://stackoverflow.com/questions/10261992/d3-js-add-a-circle-in-d3-geo-path
-                //note: does not need to be transformed in resetMap() like the other g nodes
-                //because it is already transformed with projectPoint()
-                var stationMarker = g.selectAll('dot')
-                    .data(data)
-                    .enter() //.append('path').attr('d', path)
-                    .append('svg:circle')
-                    .attr("cx", function(d) {
-                        return projectPoint([d.lon, d.lat])[0]; //get first col
-                    })
-                    .attr("cy", function(d) {
-                        return projectPoint([d.lon, d.lat])[1]; //get second col
-                    })
-                    .attr('r', 5);
+                //note: needs to be transformed in resetMap() like the other g nodes in order to stay in place at different zoom levels
+                var stationMarker = g.selectAll("dot")
+                                     .data(data.features)
+                                     //.data(data)
+                                     .enter()
+                                     .append("circle")
+                                     .attr("class", "dot")
+                                     .style("opacity", .6)
+                                     .attr("r", 5); 
 
                 map.on('viewreset', resetMap);
                 resetMap();
@@ -324,6 +319,14 @@
                         //Plot the city markers (small circles)
                         cityMarker.attr("transform",
                             function(d) {
+                                return 'translate(' + path.centroid(d) + ')';
+                            }
+                        )
+
+                        stationMarker.attr("transform",
+                            function(d) {
+                                console.log("d: ", d);
+                                //console.log("cityMarker path.centroid: ", path.centroid(d));
                                 return 'translate(' + path.centroid(d) + ')';
                             }
                         )
