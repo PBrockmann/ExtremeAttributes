@@ -215,11 +215,12 @@
             iconAnchor: [10, 0]
         });
 
+        var maxZoom = 9;
         var map = L.map('map').setView([47.0, 1.5], 6);
         L.tileLayer(
             'http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
                 attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
-                maxZoom: 18,
+                maxZoom: maxZoom, //called "Levels of Detail"
             }).addTo(map);
 
 
@@ -228,6 +229,12 @@
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
         var path = d3.geo.path().projection(projectPoint);
+
+        // var zoom = d3.behavior.zoom()
+        //     .translate([0, 0])
+        //     .scale(1)
+        //     .scaleExtent([1, maxZoom])
+        //     .on("zoom", zoomed);
 
         //Read in admin and place name overlays for base Leaflet map of France      
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
@@ -278,6 +285,15 @@
 
                 // Reposition the SVG to cover the features.
                 function resetMap() {
+                        var currentZoom = map.getZoom();
+                        console.log("currentZoom", currentZoom);
+                        //if currentZoom <= 4, don't display place labels
+                        g.selectAll(".place-label").attr("opacity", currentZoom > 4 ? 1 : 0);
+                        // g.selectAll("circle").style("opacity", currentZoom > 3 ? 0.6 : 0);
+                        g.selectAll("dot").attr("fill", currentZoom > 3 ? "blue" : "red");
+                        
+
+
                         var bottomLeft = projectPoint(bounds[0]),
                             topRight = projectPoint(bounds[1]);
 
@@ -344,8 +360,7 @@
             //console.log(x[1], x[0]);
             //console.log("point.x, point.y: ", point.x, point.y);
             return [point.x, point.y];
-        }
-
+        }   
 
         //MAKE EVENT CLUSTERS FROM TSV FILE
         // d3.tsv("data/events_anomdays.tsv", function(events) {
