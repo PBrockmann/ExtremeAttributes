@@ -89,14 +89,8 @@
             fill: brown;
             fill-opacity: .7;
         }
-        /*.leaflet-overlay-pane {
-        z-index: 15;
-      }*/
-        /*  .leaflet-marker-pane {
-        z-index: 1;
-      }*/
-        
-        .dot {
+          
+        .station-marker {
             stroke: #000;
             fill: blue;
         }
@@ -261,37 +255,52 @@
                     .attr('class', 'place-label');
 
                 //Define city markers using the coordinates associated with FRA_places              
-                var cityMarker = g.selectAll("circle").attr("class", "some-class")
+                var cityMarker = g.selectAll("circle")
                     .data(topojson.feature(admin, admin.objects.FRA_places).features)
                     .enter()
                     .append("circle")
                     .style("stroke", "black")
-                    .style("opacity", .6)
+                    .style("opacity", 0.6)
                     .style("fill", "#8e8e8e")
+                    .attr("class", "city-marker")
                     .attr("r", 2);
 
                 //note: needs to be transformed in resetMap() like the other g nodes in order to stay in place at different zoom levels
-                var stationMarker = g.selectAll("dot")
+                var stationMarker = g.selectAll(".station-marker")
                                      .data(data.features)
                                      //.data(data)
                                      .enter()
                                      .append("circle")
-                                     .attr("class", "dot")
-                                     .style("opacity", .6)
+                                     .attr("class", "station-marker")
+                                     .style("opacity", .6)                                     
                                      .attr("r", 5); 
 
-                map.on('viewreset', resetMap);
+                map.on('viewreset', resetMap); //called when map is zoomed in or out
                 resetMap();
 
                 // Reposition the SVG to cover the features.
                 function resetMap() {
+                        //set opacity of labels and markers depending on zoom level
                         var currentZoom = map.getZoom();
-                        console.log("currentZoom", currentZoom);
-                        //if currentZoom <= 4, don't display place labels
-                        g.selectAll(".place-label").attr("opacity", currentZoom > 4 ? 1 : 0);
-                        // g.selectAll("circle").style("opacity", currentZoom > 3 ? 0.6 : 0);
-                        g.selectAll("dot").attr("fill", currentZoom > 3 ? "blue" : "red");
+                        //console.log("currentZoom", currentZoom);
+                        //if currentZoom <= 4, don't display place labels                        
+                        g.selectAll(".place-label").attr("opacity", currentZoom <= 4 ? 0 : 1);                        
+
+                        //adjust station marker radius as a fn of zoom level
+                        g.selectAll(".station-marker").attr("r", function () {                
+                            if (currentZoom == 5) return 4;
+                            else if (currentZoom <= 4 && currentZoom >= 3) return 2;
+                            else if (currentZoom < 3) return 0;
+                            else return 5;
+                        });                                
                         
+                        //adjust city marker opacity as a fn of zoom level
+                        g.selectAll(".city-marker").style("opacity", function () {                
+                            if (currentZoom == 5) return 0.5;
+                            else if (currentZoom <= 4 && currentZoom >= 3) return 0.2;
+                            else if (currentZoom < 3) return 0;
+                            else return 0.6;
+                        });
 
 
                         var bottomLeft = projectPoint(bounds[0]),
@@ -340,9 +349,7 @@
                         )
 
                         stationMarker.attr("transform",
-                            function(d) {
-                                console.log("d: ", d);
-                                //console.log("cityMarker path.centroid: ", path.centroid(d));
+                            function(d) {                                
                                 return 'translate(' + path.centroid(d) + ')';
                             }
                         )
