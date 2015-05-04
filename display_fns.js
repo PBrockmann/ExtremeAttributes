@@ -6,10 +6,11 @@ var markers = [] ;
 var grat;
 
 var filter;
-var depthDimension;
-var depthGrouping;
-var oldestDateDimension;
-var oldestDateGrouping;
+var CSUDimension;
+var CSUGrouping;
+var R20mmDateDimension;
+var R20mmDateGrouping;
+
 var eventDimension;
 var eventGrouping;
 var charts;
@@ -30,37 +31,49 @@ function initCrossfilter() {
   idGrouping = idDimension.group(function(id) { return id; });
 
 
-  // simple dimensions and groupings for major variables
   
-  eventDimension = filter.dimension(
+  var indexDimension = filter.dimension(
       function(p) {
+        console.log("p.Index", p.Index);
+        return p.Index;
+      });
+  var indexGrouping = indexDimension.group();
+  indexChart  = dc.rowChart("#chart-indexType");
+  
+  
+
+  eventDimension = filter.dimension(
+      function(p) {        
         return p.Type;
       });
   eventGrouping = eventDimension.group();
-  eventChart  = dc.rowChart("#chart-eventType");
+  //eventChart  = dc.rowChart("#chart-eventType");
 
   yearDimension = filter.dimension(
-      function(p) {
+      function(p) {        
         return Math.round(p.Year);
       });
   yearGrouping = yearDimension.group();
   yearChart  = dc.barChart("#chart-eventYear");
 
+  minYear = parseInt(yearDimension.bottom(1)[0].Year);
+  maxYear = parseInt(yearDimension.top(1)[0].Year); 
+
   // xAxis_yearChart = yearChart.xAxis();
   // xAxis_yearChart.ticks(6);  //.tickFormat(d3.format(".0f"));
 
-  eventChart
+  indexChart
     .width(200) //svg width
     .height(200) //svg height
     .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
-    .dimension(eventDimension)
-    .group(eventGrouping)
+    .dimension(indexDimension)
+    .group(indexGrouping)
     .on("preRedraw",update0)
     .colors(d3.scale.category20()) 
     .elasticX(true)
     .gap(0);
 
-  xAxis_eventChart = eventChart.xAxis().ticks(4);
+  xAxis_indexChart = indexChart.xAxis().ticks(4);
 
   yearChart
     .width(200)
@@ -76,7 +89,7 @@ function initCrossfilter() {
     //.round(Math.round)
     //.xUnits(function(){return 2;})
     .xUnits(dc.units.integers)
-    .x(d3.scale.linear().domain([2008, 2016]))
+    .x(d3.scale.linear().domain([minYear, maxYear]))
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
   var yAxis_yearChart = yearChart.yAxis().ticks(6);  
@@ -139,17 +152,17 @@ function eventList() {
         eventItem.append("div")
           .attr("class", "col-md-2")
           .style("text-align", "left")
-          .text("Region");
+          .text("Year");
         eventItem.append("div")
           .attr("class", "col-md-3")
           .style("text-align", "left")
-          .text("Type");
+          .text("Region");
         eventItem.append("div")
-          .attr("class", "col-md-1")
+          .attr("class", "col-md-4")
           .style("text-align", "left")
-          .text("Year");
+          .text("Type");        
         eventItem.append("div")
-          .attr("class", "col-md-2")
+          .attr("class", "col-md-3")
           .style("text-align", "left")
           .text("Season");
         eventItem.append("div")
@@ -158,7 +171,7 @@ function eventList() {
           .text("CSU");
         eventItem.append("div")
               .attr("class", "col-md-1")
-          .style("text-align", "right")
+          .style("text-align", "left")
           .text("ID");
         eventItem.append("div")
               .attr("class", "col-md-1")
@@ -187,21 +200,21 @@ function eventList() {
           eventItem.append("div")
                 .attr("class", "col-md-2")
                 .style("text-align", "left")
-                .attr("title", points[i].Region)
-                .text(points[i].Region);             
-          eventItem.append("div")
-                .attr("class", "col-md-3")
-                .style("text-align", "left")
-                .attr("title", points[i].Type)
-                .text(points[i].Type);
-          eventItem.append("div")
-                .attr("class", "col-md-1")
-                .style("text-align", "left")
                 .attr("title", points[i].Year)  
                 .text(points[i].Year);
           eventItem.append("div")
-                .attr("class", "col-md-2")
-                .style("text-align", "right")
+                .attr("class", "col-md-3")
+                .style("text-align", "left")
+                .attr("title", points[i].Region)
+                .text(points[i].Region);             
+          eventItem.append("div")
+                .attr("class", "col-md-4")
+                .style("text-align", "left")
+                .attr("title", points[i].Type)
+                .text(points[i].Type);          
+          eventItem.append("div")
+                .attr("class", "col-md-3")
+                .style("text-align", "left")
                 .attr("title", points[i].Season)
                 .text(points[i].Season);
           eventItem.append("div")

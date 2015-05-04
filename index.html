@@ -132,9 +132,9 @@
                 <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 50px;"></div>
 
 
-                <div id="chart-eventType" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">
-                    <h3>Type</h3>
-                    <a class="reset" href="javascript:eventChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                <div id="chart-indexType" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 50px;">
+                    <h3>Index</h3>
+                    <a class="reset" href="javascript:indexChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
 
@@ -145,13 +145,13 @@
                 </div>
 
                 <div id="eventsListDiv" class="col-md-5" style="margin-top: 27px; margin-left: 50px; width=400">
-                    <!--<div id="eventsListTitle" class="col-md-12"  style="width: 800px;"></div>  -->
+                 
                     <h3>Summary</h3>
                     <div id="totals">
                         <span id="active">-</span> out of <span id="total">-</span> events selected.
                     </div>
-                    <div id="eventsListTitle" class="col-md-5" style="width: 590px;"></div>
-                    <div id="eventsList" class="col-md-5" style="width: 600px; max-height: 200px; overflow-y: auto;"></div>
+                    <div id="eventsListTitle" class="col-md-5" style="width: 700px;"></div>
+                    <div id="eventsList" class="col-md-5" style="width: 710px; max-height: 200px; overflow-y: auto;"></div>
 
                 </div>
 
@@ -222,13 +222,7 @@
         var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-        var path = d3.geo.path().projection(projectPoint);
-
-        // var zoom = d3.behavior.zoom()
-        //     .translate([0, 0])
-        //     .scale(1)
-        //     .scaleExtent([1, maxZoom])
-        //     .on("zoom", zoomed);
+        var path = d3.geo.path().projection(projectPoint);    
 
         //Read in admin and place name overlays for base Leaflet map of France      
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
@@ -369,13 +363,13 @@
             return [point.x, point.y];
         }   
 
-        //MAKE EVENT CLUSTERS FROM TSV FILE
-        // d3.tsv("data/events_anomdays.tsv", function(events) {
-        //   events.forEach(function(d, i) {
-        //     console.log("in d3.tsv");
-        //   });
+        //READ IN TSV FILE FOR dc.js
+        d3.tsv("data/anomalous_index_table.tsv", function(events) {
+          events.forEach(function(d, i) {
+            console.log("in d3.tsv");
+          });
 
-        //   points=events;
+          points = events;
 
         //   //Leaftlet clusters  
         //   markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
@@ -429,9 +423,9 @@
         // }
         //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS****
 
-        //   //call fns defined in display_fns.js
-        //   initCrossfilter();
-        //   eventList(); //renders Extreme Events Table
+          //call fns defined in display_fns.js
+          initCrossfilter();
+          eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
 
         //   // Render the total number of events in tsv file
@@ -439,7 +433,7 @@
         //     .text(filter.size());
 
 
-        //}); //end d3.tsv
+        }); //end d3.tsv
 
         //Change mouse to pointer when hovering over Event Table rows
         //need window.onload because Id element doesn't exist yet

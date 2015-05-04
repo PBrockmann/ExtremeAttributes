@@ -1318,18 +1318,20 @@ pre code {
     width: 41.66666666666667%;
   }
   .col-md-4 {
-    width: 33.33333333333333%;
+    /*width: 33.33333333333333%;*/
+    width: 17%;
   }
   .col-md-3 {
     /*width: 25%;*/
-    width: 19%;
+    width: 15%;
   }
   .col-md-2 {
     /*width: 16.666666666666664%;*/
-    width: 14%;
+    width: 10%;
   }
   .col-md-1 {
-    width: 8.333333333333332%;
+    /*width: 8.333333333333332%;*/
+    width: 6.5%;
   }
   .col-md-pull-12 {
     right: 100%;
