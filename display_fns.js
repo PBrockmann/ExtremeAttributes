@@ -11,8 +11,6 @@ var CSUGrouping;
 var R20mmDateDimension;
 var R20mmDateGrouping;
 
-var eventDimension;
-var eventGrouping;
 var charts;
 var domCharts;
 
@@ -21,6 +19,8 @@ var lonDimension;
 var idDimension;
 var idGrouping;
 
+var datasets = ["Obs", "M1"];
+var dataset_num = [1, 2];
 
 function initCrossfilter() {
   filter = crossfilter(points);
@@ -86,22 +86,20 @@ function initCrossfilter() {
   console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
   //console.log("csuGrouping.all()[0].key: ", csuGrouping.all()[0].key);
 
-  //construct combination vector for Obs, M1, ..., Mn
-  //if there is an entry in any of the index cols, assign row value = 1
-  // var obs_points = points;
-  // for (index = 0; index < points.length; ++index) {
-  //   delete obs_points[index].M1CSU;
-  //   delete obs_points[index].ObsID;
-  //   delete obs_points[index].ObsCDD;
-  //   delete obs_points.ObsR20mm;
-  // }
-  // console.log("obs_points: ", obs_points);
-
-  //Create a new col in points obj with values = 1 if there exists an index
-  //check if points object Obs cols have an entry for CSU index
-  for (index = 0; index < idx_CSU.length; ++index) {
-    if ( points[idx_CSU[index]].ObsCSU ) points[idx_CSU[index]].Obs = "Obsservations (1950-2014)" //1;            
+  //Create a new col in points obj with values = some default string
+  for (index = 0; index < points.length; ++index) {
+    points[index].Obs = "normal year";
   }
+
+  //check if points object Obs cols have an entry for CSU index
+  markAnomalousYear(idx_CSU, dataset_num[0]);
+  markAnomalousYear(idx_ID, dataset_num[0]);
+
+  // for (index = 0; index < idx_CSU.length; ++index) {
+  //   if ( points[idx_CSU[index]].ObsCSU ) {
+  //     points[idx_CSU[index]].Obs = "Obsservations (1950-2014)"; //1; 
+  //   }
+  // }
   
   filter_obs = crossfilter(points);
 
@@ -117,7 +115,6 @@ function initCrossfilter() {
   var nd, index, counter_CSU = 0, counter_ID = 0, counter_CDD = 0, counter_R20mm = 0;
       n_datasets = 2;
       n_CSU = []; n_ID = []; n_CDD = []; n_R20mm = []; //count number of CSU entries for OBS, M1, ..., Mn, in that order
-      datasets = ["Obs", "M1"];
   for (nd = 0; nd < n_datasets; ++nd) {
     for (index = 0; index < points.length; ++index) {
         if (points[index] [datasets[nd]+"-CSU"] !== "--") counter_CSU++;
@@ -133,13 +130,6 @@ function initCrossfilter() {
   }
   
 
-
-  eventDimension = filter.dimension(
-      function(p) {        
-        return p.Type;
-      });
-  eventGrouping = eventDimension.group();
-  //eventChart  = dc.rowChart("#chart-eventType");
 
   yearDimension = filter.dimension(
       function(p) {        
@@ -199,6 +189,21 @@ function initCrossfilter() {
 
   dc.renderAll();
 
+}
+
+//check if points object Obs cols have an entry for CSU index
+function markAnomalousYear(idx_indice, dataset_num) {
+  for (index = 0; index < idx_indice.length; ++index) {
+    if (dataset_num == 1) {
+      if ( points[idx_indice[index]].ObsCSU ) {      
+        points[idx_indice[index]].Obs = "Obsservations (1950-2014)"; //1;
+      }
+    } else if (dataset_num == 2) {
+      if ( points[idx_indice[index]].M1CSU ) {
+        points[idx_indice[index]].M1 = "M1";
+      }
+    }
+  }  
 }
 
 // set visibility of markers based on crossfilter
