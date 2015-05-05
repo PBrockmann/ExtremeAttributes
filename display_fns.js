@@ -93,6 +93,7 @@ function initCrossfilter() {
 
   //check if points object Obs cols have an entry for CSU index
   markAnomalousYear(idx_CSU, dataset_num[0]);
+  //markAnomalousYear([idx_CSU, idx_ID, idx_CDD, idx_R20mm], dataset_num[0]);
   markAnomalousYear(idx_ID, dataset_num[0]);
 
   // for (index = 0; index < idx_CSU.length; ++index) {
