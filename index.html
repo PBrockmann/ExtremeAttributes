@@ -128,7 +128,7 @@
         <div class="container">
 
             <!--ROW 1-->
-            <div class="row">
+            <div class="row" style="width: 1400px;">
                 <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 50px;"></div>
 
 
@@ -141,6 +141,12 @@
                 <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 120px;">
                     <h3>Year</h3>
                     <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                </div>
+
+                 <div id="chart-dataType" class="dc-chart col-md-2" style="margin-top: 27px; margin-left: 120px;">
+                    <h3>Data</h3>
+                    <a class="reset" href="javascript:obsChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
 

@@ -31,16 +31,108 @@ function initCrossfilter() {
   idGrouping = idDimension.group(function(id) { return id; });
 
 
-  
+  var idx_CSU = [], idx_ID = [], idx_CDD = [], idx_R20mm = []; counter_CSU = 0; counter_ID = 0; counter_CDD = 0; counter_R20mm = 0;
   var indexDimension = filter.dimension(
-      function(p) {
-        console.log("p.Index", p.Index);
+      function(p, idx) {
+        console.log("p.Index:", p.Index);      
+        if (p.Index == "CSU (days)") {                
+          idx_CSU[counter_CSU] = idx;
+          counter_CSU++;          
+        }
+        if (p.Index == "ID (days)") {                
+          idx_ID[counter_ID] = idx;
+          counter_ID++;          
+        }
+        if (p.Index == "CDD (days)") {                
+          idx_CDD[counter_CDD] = idx;
+          counter_CDD++;          
+        }
+        if (p.Index == "R20mm (mm)") {                
+          idx_R20mm[counter_R20mm] = idx;
+          counter_R20mm++;          
+        }    
+        
         return p.Index;
       });
+ 
+
   var indexGrouping = indexDimension.group();
   indexChart  = dc.rowChart("#chart-indexType");
   
+  console.log("idx_CSU: ", idx_CSU);
+  console.log("idx_ID: ", idx_ID);
+  console.log("idx_CDD: ", idx_CDD);
+  console.log("idx_R20mm: ", idx_R20mm);
+  console.log("indexDimension: ", indexDimension);
+  console.log("indexGrouping: ", indexGrouping);
+  console.log("indexGrouping.all(): ", indexGrouping.all());
+  console.log("indexGrouping.all()[0]: ", indexGrouping.all()[0]);
+  console.log("indexGrouping.all()[0].key: ", indexGrouping.all()[0].key);
+
+  //try to filter only rows of type = CSU (days)  
+  var csuDimension = filter.dimension(
+   
+      function(p, idx) {
+        console.log("p.ObsCSU: ", p.ObsCSU);
+        return p.ObsCSU;
+            
+  });
+  console.log("csuDimension: ", csuDimension);
+  var csuGrouping = csuDimension.group();
+
+  console.log("csuGrouping: ", csuGrouping);
+  console.log("csuGrouping.all(): ", csuGrouping.all());
+  console.log("csuGrouping.all()[0]: ", csuGrouping.all()[0]);
+  console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
+  //console.log("csuGrouping.all()[0].key: ", csuGrouping.all()[0].key);
+
+  //construct combination vector for Obs, M1, ..., Mn
+  //if there is an entry in any of the index cols, assign row value = 1
+  // var obs_points = points;
+  // for (index = 0; index < points.length; ++index) {
+  //   delete obs_points[index].M1CSU;
+  //   delete obs_points[index].ObsID;
+  //   delete obs_points[index].ObsCDD;
+  //   delete obs_points.ObsR20mm;
+  // }
+  // console.log("obs_points: ", obs_points);
+
+  //Create a new col in points obj with values = 1 if there exists an index
+  //check if points object Obs cols have an entry for CSU index
+  for (index = 0; index < idx_CSU.length; ++index) {
+    if ( points[idx_CSU[index]].ObsCSU ) points[idx_CSU[index]].Obs = "Obsservations (1950-2014)" //1;            
+  }
   
+  filter_obs = crossfilter(points);
+
+  obsDimension = filter_obs.dimension(
+      function(p) {        
+        return p.Obs;
+      });
+  obsGrouping = obsDimension.group();
+  obsChart  = dc.rowChart("#chart-dataType");
+  
+
+  
+  var nd, index, counter_CSU = 0, counter_ID = 0, counter_CDD = 0, counter_R20mm = 0;
+      n_datasets = 2;
+      n_CSU = []; n_ID = []; n_CDD = []; n_R20mm = []; //count number of CSU entries for OBS, M1, ..., Mn, in that order
+      datasets = ["Obs", "M1"];
+  for (nd = 0; nd < n_datasets; ++nd) {
+    for (index = 0; index < points.length; ++index) {
+        if (points[index] [datasets[nd]+"-CSU"] !== "--") counter_CSU++;
+        if (points[index] [datasets[nd]+"-ID"] !== "--") counter_ID++;
+        if (points[index] [datasets[nd]+"-CDD"] !== "--") counter_CDD++;
+        if (points[index] [datasets[nd]+"-R20mm"] !== "--") counter_R20mm++;
+    }
+    n_CSU[nd] = counter_CSU;
+    n_ID[nd] = counter_ID;
+    n_CDD[nd] = counter_CDD;
+    n_R20mm[nd] = counter_R20mm;
+    counter_CSU = 0, counter_ID = 0, counter_CDD = 0, counter_R20mm = 0; //clear counters
+  }
+  
+
 
   eventDimension = filter.dimension(
       function(p) {        
@@ -92,7 +184,18 @@ function initCrossfilter() {
     .x(d3.scale.linear().domain([minYear, maxYear]))
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
-  var yAxis_yearChart = yearChart.yAxis().ticks(6);  
+  var yAxis_yearChart = yearChart.yAxis().ticks(6);
+
+  obsChart
+    .width(200) //svg width
+    .height(200) //svg height
+    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
+    .dimension(obsDimension)
+    .group(obsGrouping)
+    .on("preRedraw",update0)
+    .colors(d3.scale.category20()) 
+    .elasticX(true)
+    .gap(0);
 
   dc.renderAll();
 

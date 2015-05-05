@@ -1,18 +1,18 @@
-Year	Region	Type	Season	Index	Avg-CSU	Avg-ID	Avg-CDD	Avg-R20mm	Obs-CSU	Obs-ID	Obs-CDD	Obs-R20mm	M1-CSU	M1-ID	M1-CDD	M1-R20mm
-1950	Alsace,  Champagne-Ardenne et Lorraine	precipitation	Fall	"R20mm (mm)"	--	--	--	17	--	--	--	11	--	--	--	13
-1960	Bretagne	drought	Spring	"CDD (days)"	--	--	22	--	--	--	26	--	--	--	29	--
-1970	Bourgogne et Franche-Comté	drought	Spring	"CDD (days)"	--	--	17	--	--	--	15	--	--	--	19	--
-1980	Aquitaine, Limousin et Poitou-Charentes	"extreme cold"	Winter	"ID (days)"	--	11	--	--	--	10	--	--	--	13	--	--
-1990	Provence-Alpes-Côte d'Azur	"extreme cold"	Winter	"ID (days)"	--	9	--	--	--	3	--	--	--	7	--	--
-2000	Nord-Pas-de-Calais et Picardie	"extreme cold"	Winter	"ID (days)"	--	15	--	--	--	20	--	--	--	18	--	--
-2001	Auvergne et Rhône-Alpes	heatwave	Summer	"CSU (days)"	33	--	--	--	29	--	--	--	23	--	--	--
-2005	Pays de la Loire	heatwave	Summer	"CSU (days)"	31	--	--	--	37	--	--	--	33	--	--	--
-2005	Centre-Val de Loire	heatwave	Summer	"CSU (days)"	35	--	--	--	31	--	--	--	30	--	--	--
-2006	Languedoc-Roussillon et Midi-Pyrénées	precipitation	Fall	"R20mm (mm)"	--	--	--	22	--	--	--	18	--	--	--	12
-2010	Île-de-France	precipitation	Fall	"R20mm (mm)"	--	--	--	66	--	--	--	88	--	--	--	82
-2010	Centre-Val de Loire	precipitation	Fall	"R20mm (mm)"	--	--	--	61	--	--	--	75	--	--	--	79
-2010	Auvergne et Rhône-Alpes	precipitation	Fall	"R20mm (mm)"	--	--	--	66	--	--	--	78	--	--	--	89
-2012	Centre-Val de Loire	heatwave	Summer	"CSU (days)"	9	--	--	--	4	--	--	--	6	--	--	--
-2014	Normandie	heatwave	Summer	"CSU (days)"	19	--	--	--	28	--	--	--	31	--	--	--
-2021	Normandie	heatwave	Summer	"CSU (days)"	29	--	--	--	33	--	--	--	44	--	--	--
-2021	Bretagne	drought	Spring	"CDD (days)"	--	--	12	--	--	--	20	--	--	--	21	--
+Year	Region	Type	Season	Index	AvgCSU	AvgID	AvgCDD	AvgR20mm	ObsCSU	ObsID	ObsCDD	ObsR20mm	M1CSU	M1ID	M1CDD	M1R20mm
+1950	Alsace,  Champagne-Ardenne et Lorraine	precipitation	Fall	"R20mm (mm)"		17		11		13
+1960	Bretagne	drought	Spring	"CDD (days)"		22		26		29	
+1970	Bourgogne et Franche-Comté	drought	Spring	"CDD (days)"		17		15		19	
+1980	Aquitaine, Limousin et Poitou-Charentes	"extreme cold"	Winter	"ID (days)"		11		10		13	
+1990	Provence-Alpes-Côte d'Azur	"extreme cold"	Winter	"ID (days)"		9		3		7	
+2000	Nord-Pas-de-Calais et Picardie	"extreme cold"	Winter	"ID (days)"		15		20		18	
+2001	Auvergne et Rhône-Alpes	heatwave	Summer	"CSU (days)"	33		29		23	
+2005	Pays de la Loire	heatwave	Summer	"CSU (days)"	31		37		33	
+2005	Centre-Val de Loire	heatwave	Summer	"CSU (days)"	35		31		30	
+2006	Languedoc-Roussillon et Midi-Pyrénées	precipitation	Fall	"R20mm (mm)"		22		18		12
+2010	Île-de-France	precipitation	Fall	"R20mm (mm)"		66		88		82
+2010	Centre-Val de Loire	precipitation	Fall	"R20mm (mm)"		61		75		79
+2010	Auvergne et Rhône-Alpes	precipitation	Fall	"R20mm (mm)"		66		78		89
+2012	Centre-Val de Loire	heatwave	Summer	"CSU (days)"	9		4		6	
+2014	Normandie	heatwave	Summer	"CSU (days)"	19		28		31	
+2021	Normandie	heatwave	Summer	"CSU (days)"	29		33		44	
+2021	Bretagne	drought	Spring	"CDD (days)"		12		20		21	
