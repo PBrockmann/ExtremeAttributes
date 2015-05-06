@@ -38,8 +38,7 @@ function initCrossfilter() {
 
   var idx_CSU = [], idx_ID = [], idx_CDD = [], idx_R20mm = []; counter_CSU = 0; counter_ID = 0; counter_CDD = 0; counter_R20mm = 0;
   var indexDimension = filter.dimension(
-      function(p, idx) {
-        console.log("p.Index:", p.Index);      
+      function(p, idx) {        
         if (p.Index == "CSU (days)") {                
           idx_CSU[counter_CSU] = idx;
           counter_CSU++;          
@@ -63,11 +62,7 @@ function initCrossfilter() {
 
   var indexGrouping = indexDimension.group();
   indexChart  = dc.rowChart("#chart-indexType");
-  
-  console.log("idx_CSU: ", idx_CSU);
-  console.log("idx_ID: ", idx_ID);
-  console.log("idx_CDD: ", idx_CDD);
-  console.log("idx_R20mm: ", idx_R20mm);
+    
   console.log("indexDimension: ", indexDimension);
   console.log("indexGrouping: ", indexGrouping);
   console.log("indexGrouping.all(): ", indexGrouping.all());
@@ -75,20 +70,19 @@ function initCrossfilter() {
   console.log("indexGrouping.all()[0].key: ", indexGrouping.all()[0].key);
 
   //try to filter only rows of type = CSU (days)  
-  var csuDimension = filter.dimension(
-   
+  var csuDimension = filter.dimension(   
       function(p, idx) {
-        console.log("p.ObsCSU: ", p.ObsCSU);
+        //console.log("p.ObsCSU: ", p.ObsCSU);
         return p.ObsCSU;
-            
-  });
+      }
+  );
   console.log("csuDimension: ", csuDimension);
   var csuGrouping = csuDimension.group();
 
   console.log("csuGrouping: ", csuGrouping);
   console.log("csuGrouping.all(): ", csuGrouping.all());
   console.log("csuGrouping.all()[0]: ", csuGrouping.all()[0]);
-  console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
+  //console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
   //console.log("csuGrouping.all()[0].key: ", csuGrouping.all()[0].key);
 
 
@@ -106,12 +100,27 @@ function initCrossfilter() {
   obsGrouping = obsDimension.group();
   obsChart  = dc.rowChart("#chart-dataType");
 
+  newM = {}; counter=0;
   M1Dimension = filter_obs.dimension(
-      function(p) {
-        console.log("p.M1: ", p.M1); 
-        return p.M1;
-      });
+      function(p, idx) {
+        if (p.M1 != "0") { newM[counter++] = p.M1;
+        //return p.M1;           
+        }
+        return newM;
+      }      
+  );
   M1Grouping = M1Dimension.group();
+  M1Grouping.all()[0].key=M1Grouping.all()[0].key[0]; //hack
+  M1Grouping.all()[0].value=counter; //hack
+
+  //http://stackoverflow.com/questions/25445447/dc-js-line-chart-breaking-and-dropping-to-0-on-null-values-in-the-dimension
+  // var expectedGroup2 = {
+  //   all:function () {
+  //     return expectedGroup.all().filter(function(d) {
+  //       return d.value != 0;
+  //     })
+  //   }
+  // };
   M1Chart  = dc.rowChart("#chart-M1dataType");
   
 
@@ -183,7 +192,7 @@ function initCrossfilter() {
   obsChart
     .width(200) //svg width
     .height(70) //svg height
-    .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
+    .margins({top: 10, right: 10, bottom: 30, left: 2})
     .dimension(obsDimension)
     .group(obsGrouping)
     .on("preRedraw",update0)
@@ -196,11 +205,10 @@ function initCrossfilter() {
 
   M1Chart
     .width(200) //svg width
-    .height(80) //svg height
-    .margins({top: 10, right: 10, bottom: 30, left: 10})
+    .height(70) //svg height
+    .margins({top: 10, right: 10, bottom: 30, left: 2})
     .dimension(M1Dimension)
     .group(M1Grouping)
-    //.x(d3.scale.linear().range([0,(M1Chart.width-50)]).domain([0,100]))
     .on("preRedraw",update0)
     .colors(d3.scale.category20())
     //.elasticX(true)
@@ -217,9 +225,9 @@ function initCrossfilter() {
 
 //check if points object Obs cols have an entry for CSU index
 function markAnomalousYear(col_names, dataset, label) {
-  console.log("dataset: ", dataset);
+  //console.log("dataset: ", dataset);
   for (var i = 0; i < points.length; i++) {
-    points[i][dataset] = "Normal Year";
+    points[i][dataset] = "0";
     for (var j = 0; j < col_names.length; j++) {
       if (points[i][col_names[j]]) {
         points[i][dataset] = label;
