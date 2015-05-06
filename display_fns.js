@@ -93,8 +93,8 @@ function initCrossfilter() {
 
 
   //mark anaomalous years for each dataset
-  markAnomalousYear(titles_obs, datasets[0]); //OBS
-  markAnomalousYear(titles_M1, datasets[1]); //M1
+  markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
+  markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
   
   
   filter_obs = crossfilter(points);
@@ -105,6 +105,14 @@ function initCrossfilter() {
       });
   obsGrouping = obsDimension.group();
   obsChart  = dc.rowChart("#chart-dataType");
+
+  M1Dimension = filter_obs.dimension(
+      function(p) {
+        console.log("p.M1: ", p.M1); 
+        return p.M1;
+      });
+  M1Grouping = M1Dimension.group();
+  M1Chart  = dc.rowChart("#chart-M1dataType");
   
 
   
@@ -174,27 +182,48 @@ function initCrossfilter() {
 
   obsChart
     .width(200) //svg width
-    .height(200) //svg height
+    .height(70) //svg height
     .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
     .dimension(obsDimension)
     .group(obsGrouping)
     .on("preRedraw",update0)
     .colors(d3.scale.category20()) 
-    .elasticX(true)
+    //.elasticX(true)
     .gap(0);
+
+  obsChart.x(d3.scale.linear().range([0,(obsChart.width()-50)]).domain([0,20]));
+  obsChart.xAxis().scale(obsChart.x()).ticks(5);  
+
+  M1Chart
+    .width(200) //svg width
+    .height(80) //svg height
+    .margins({top: 10, right: 10, bottom: 30, left: 10})
+    .dimension(M1Dimension)
+    .group(M1Grouping)
+    //.x(d3.scale.linear().range([0,(M1Chart.width-50)]).domain([0,100]))
+    .on("preRedraw",update0)
+    .colors(d3.scale.category20())
+    //.elasticX(true)
+    .gap(0);
+
+  M1Chart.x(d3.scale.linear().range([0,(M1Chart.width()-50)]).domain([0,20]));
+  M1Chart.xAxis().scale(M1Chart.x()).ticks(5);
+
+      
 
   dc.renderAll();
 
 }
 
 //check if points object Obs cols have an entry for CSU index
-function markAnomalousYear(col_names, dataset) {
+function markAnomalousYear(col_names, dataset, label) {
   console.log("dataset: ", dataset);
   for (var i = 0; i < points.length; i++) {
+    points[i][dataset] = "Normal Year";
     for (var j = 0; j < col_names.length; j++) {
       if (points[i][col_names[j]]) {
-        points[i][dataset] = "Abnormal Year";
-      }
+        points[i][dataset] = label;
+      } 
     }    
   }
 }
