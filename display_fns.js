@@ -130,8 +130,7 @@ function initCrossfilter() {
       v.AnomYear.forEach (function(val, idx) {
          p[val] = (p[val] || 0) - 1; //decrement counts
       });
-      return p;
-     
+      return p;     
   }
 
   function reduceInitial() {
