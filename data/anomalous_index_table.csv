@@ -1,5 +1,5 @@
 Year,Region,Type,Season,Index,AvgCSU,AvgID,AvgCDD,AvgR20mm,ObsCSU,ObsID,ObsCDD,ObsR20mm,M1CSU,M1ID,M1CDD,M1R20mm
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm (mm),,,,17,,,,11,,,,13
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm (mm),,,,17,,,,11,,,,
 1960,Bretagne,drought,Spring,CDD (days),,,22,,,,26,,,,29,
 1970,Bourgogne et Franche-Comté,drought,Spring,CDD (days),,,17,,,,15,,,,19,
 1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID (days),,11,,,,10,,,,13,,
