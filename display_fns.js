@@ -19,10 +19,15 @@ var lonDimension;
 var idDimension;
 var idGrouping;
 
+var index_types = ["CSU", "ID", "CDD", "R20mm"];
 var datasets = ["Obs", "M1"];
-var dataset_num = [1, 2];
 
 function initCrossfilter() {
+  //some housekeeping
+  titles = [index for (index in points[0])]; //column titles for points obj array
+  titles_obs = [titles[9], titles[10], titles[11], titles[12]]; //col titles for OBS data
+  titles_M1 = [titles[13], titles[14], titles[15], titles[16]]; //col titles for M1 data
+
   filter = crossfilter(points);
   console.log('in initCrossfilter');
 
@@ -86,23 +91,11 @@ function initCrossfilter() {
   console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
   //console.log("csuGrouping.all()[0].key: ", csuGrouping.all()[0].key);
 
-  //Create a new col in points obj with values = some default string
-  for (index = 0; index < points.length; ++index) {
-    points[index].Obs = "normal year";
-  }
 
-  //check if points object Obs cols have an entry for CSU index
-  var tmp = [idx_CSU, idx_ID, idx_CDD, idx_R20mm];
-  console.log('tmp: ', tmp);
-  markAnomalousYear([idx_CSU, idx_ID, idx_CDD, idx_R20mm]);
-  //markAnomalousYear([idx_CSU, idx_ID, idx_CDD, idx_R20mm], dataset_num[0]);
-  //markAnomalousYear(idx_ID, dataset_num[0]);
-
-  // for (index = 0; index < idx_CSU.length; ++index) {
-  //   if ( points[idx_CSU[index]].ObsCSU ) {
-  //     points[idx_CSU[index]].Obs = "Obsservations (1950-2014)"; //1; 
-  //   }
-  // }
+  //mark anaomalous years for each dataset
+  markAnomalousYear(titles_obs, datasets[0]); //OBS
+  markAnomalousYear(titles_M1, datasets[1]); //M1
+  
   
   filter_obs = crossfilter(points);
 
@@ -195,35 +188,17 @@ function initCrossfilter() {
 }
 
 //check if points object Obs cols have an entry for CSU index
-function markAnomalousYear(idx_indice) {  
-  for (j = 0; j < idx_indice.length; ++j) { //loop through number of index arrays    
-    index_array = idx_indice[j]; //store jth array
-    for (k = 0; k < index_array.length; ++k) { //loop through each index array
-      if (j == 0) { //CSU array
-        if ( points[index_array[k]].ObsCSU ) {      
-          points[index_array[k]].Obs = "Obsservations (1950-2014)";}
-        if ( points[index_array[k]].M1CSU ) {      
-          points[index_array[k]].M1 = "Obsservations (1950-2014)";}
-      } else if (j == 1) { //ID array
-          if ( points[index_array[k]].ObsID ) {      
-            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
-          if ( points[index_array[k]].M1ID ) {      
-            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
-      } else if (j == 2) { //CDD array
-          if ( points[index_array[k]].ObsCDD ) {      
-            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
-          if ( points[index_array[k]].M1CDD ) {      
-            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
-      } else if (j == 3) { //R20mm array
-          if ( points[index_array[k]].ObsR20mm ) {      
-            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
-          if ( points[index_array[k]].M1R20mm ) {      
-            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
+function markAnomalousYear(col_names, dataset) {
+  console.log("dataset: ", dataset);
+  for (var i = 0; i < points.length; i++) {
+    for (var j = 0; j < col_names.length; j++) {
+      if (points[i][col_names[j]]) {
+        points[i][dataset] = "Abnormal Year";
       }
-    }
-    index_array = []; //clear
-  }  
+    }    
+  }
 }
+  
 
 // set visibility of markers based on crossfilter
 function updateMarkers() {
