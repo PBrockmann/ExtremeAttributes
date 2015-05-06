@@ -100,48 +100,44 @@ function initCrossfilter() {
   obsGrouping = obsDimension.group();
   obsChart  = dc.rowChart("#chart-dataType");
 
-  newM = {}; counter=0;
-  M1Dimension = filter_obs.dimension(
-      function(p, idx) {
-        if (p.M1 != "0") { newM[counter++] = p.M1;
-        //return p.M1;           
-        }
-        return newM;
-      }      
-  );
-  M1Grouping = M1Dimension.group();
-  M1Grouping.all()[0].key=M1Grouping.all()[0].key[0]; //hack
-  M1Grouping.all()[0].value=counter; //hack
+  // newM = {}; counter=0;
+  // M1Dimension = filter_obs.dimension(
+  //     function(p, idx) {
+  //       if (p.M1 != "0") { newM[counter++] = p.M1;
+  //       //return p.M1;           
+  //       }
+  //       return newM;
+  //     }      
+  // );
+  // M1Grouping = M1Dimension.group();
+  // M1Grouping.all()[0].key=M1Grouping.all()[0].key[0]; //hack
+  // M1Grouping.all()[0].value=counter; //hack
+  // M1Chart  = dc.rowChart("#chart-M1dataType");
 
-  //http://stackoverflow.com/questions/25445447/dc-js-line-chart-breaking-and-dropping-to-0-on-null-values-in-the-dimension
-  // var expectedGroup2 = {
-  //   all:function () {
-  //     return expectedGroup.all().filter(function(d) {
-  //       return d.value != 0;
-  //     })
-  //   }
-  // };
-  M1Chart  = dc.rowChart("#chart-M1dataType");
-  
+  //http://jsfiddle.net/djmartin_umich/m7V89/#base
+  //http://stackoverflow.com/questions/17524627/is-there-a-way-to-tell-crossfilter-to-treat-elements-of-array-as-separate-record
 
-  
-  var nd, index, counter_CSU = 0, counter_ID = 0, counter_CDD = 0, counter_R20mm = 0;
-      n_datasets = 2;
-      n_CSU = []; n_ID = []; n_CDD = []; n_R20mm = []; //count number of CSU entries for OBS, M1, ..., Mn, in that order
-  for (nd = 0; nd < n_datasets; ++nd) {
-    for (index = 0; index < points.length; ++index) {
-        if (points[index] [datasets[nd]+"-CSU"] !== "--") counter_CSU++;
-        if (points[index] [datasets[nd]+"-ID"] !== "--") counter_ID++;
-        if (points[index] [datasets[nd]+"-CDD"] !== "--") counter_CDD++;
-        if (points[index] [datasets[nd]+"-R20mm"] !== "--") counter_R20mm++;
-    }
-    n_CSU[nd] = counter_CSU;
-    n_ID[nd] = counter_ID;
-    n_CDD[nd] = counter_CDD;
-    n_R20mm[nd] = counter_R20mm;
-    counter_CSU = 0, counter_ID = 0, counter_CDD = 0, counter_R20mm = 0; //clear counters
+  function reduceAdd(p, v) {
+    if (v.AnomYear[0] === "") return p;    // skip empty values
+      v.AnomYear.forEach (function(val, idx) {
+         p[val] = (p[val] || 0) + 1; //increment counts
+      });
+      return p;
   }
-  
+
+  function reduceRemove(p, v) {
+    if (v.AnomYear[0] === "") return p;    // skip empty values
+      v.AnomYear.forEach (function(val, idx) {
+         p[val] = (p[val] || 0) - 1; //decrement counts
+      });
+      return p;
+     
+  }
+
+  function reduceInitial() {
+    return {};  
+  }
+
 
 
   yearDimension = filter.dimension(
@@ -203,19 +199,19 @@ function initCrossfilter() {
   obsChart.x(d3.scale.linear().range([0,(obsChart.width()-50)]).domain([0,20]));
   obsChart.xAxis().scale(obsChart.x()).ticks(5);  
 
-  M1Chart
-    .width(200) //svg width
-    .height(70) //svg height
-    .margins({top: 10, right: 10, bottom: 30, left: 2})
-    .dimension(M1Dimension)
-    .group(M1Grouping)
-    .on("preRedraw",update0)
-    .colors(d3.scale.category20())
-    //.elasticX(true)
-    .gap(0);
+  // M1Chart
+  //   .width(200) //svg width
+  //   .height(70) //svg height
+  //   .margins({top: 10, right: 10, bottom: 30, left: 2})
+  //   .dimension(M1Dimension)
+  //   .group(M1Grouping)
+  //   .on("preRedraw",update0)
+  //   .colors(d3.scale.category20())
+  //   //.elasticX(true)
+  //   .gap(0);
 
-  M1Chart.x(d3.scale.linear().range([0,(M1Chart.width()-50)]).domain([0,20]));
-  M1Chart.xAxis().scale(M1Chart.x()).ticks(5);
+  // M1Chart.x(d3.scale.linear().range([0,(M1Chart.width()-50)]).domain([0,20]));
+  // M1Chart.xAxis().scale(M1Chart.x()).ticks(5);
 
       
 
