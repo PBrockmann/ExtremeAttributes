@@ -92,9 +92,11 @@ function initCrossfilter() {
   }
 
   //check if points object Obs cols have an entry for CSU index
-  markAnomalousYear(idx_CSU, dataset_num[0]);
+  var tmp = [idx_CSU, idx_ID, idx_CDD, idx_R20mm];
+  console.log('tmp: ', tmp);
+  markAnomalousYear([idx_CSU, idx_ID, idx_CDD, idx_R20mm]);
   //markAnomalousYear([idx_CSU, idx_ID, idx_CDD, idx_R20mm], dataset_num[0]);
-  markAnomalousYear(idx_ID, dataset_num[0]);
+  //markAnomalousYear(idx_ID, dataset_num[0]);
 
   // for (index = 0; index < idx_CSU.length; ++index) {
   //   if ( points[idx_CSU[index]].ObsCSU ) {
@@ -193,17 +195,33 @@ function initCrossfilter() {
 }
 
 //check if points object Obs cols have an entry for CSU index
-function markAnomalousYear(idx_indice, dataset_num) {
-  for (index = 0; index < idx_indice.length; ++index) {
-    if (dataset_num == 1) {
-      if ( points[idx_indice[index]].ObsCSU ) {      
-        points[idx_indice[index]].Obs = "Obsservations (1950-2014)"; //1;
-      }
-    } else if (dataset_num == 2) {
-      if ( points[idx_indice[index]].M1CSU ) {
-        points[idx_indice[index]].M1 = "M1";
+function markAnomalousYear(idx_indice) {  
+  for (j = 0; j < idx_indice.length; ++j) { //loop through number of index arrays    
+    index_array = idx_indice[j]; //store jth array
+    for (k = 0; k < index_array.length; ++k) { //loop through each index array
+      if (j == 0) { //CSU array
+        if ( points[index_array[k]].ObsCSU ) {      
+          points[index_array[k]].Obs = "Obsservations (1950-2014)";}
+        if ( points[index_array[k]].M1CSU ) {      
+          points[index_array[k]].M1 = "Obsservations (1950-2014)";}
+      } else if (j == 1) { //ID array
+          if ( points[index_array[k]].ObsID ) {      
+            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
+          if ( points[index_array[k]].M1ID ) {      
+            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
+      } else if (j == 2) { //CDD array
+          if ( points[index_array[k]].ObsCDD ) {      
+            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
+          if ( points[index_array[k]].M1CDD ) {      
+            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
+      } else if (j == 3) { //R20mm array
+          if ( points[index_array[k]].ObsR20mm ) {      
+            points[index_array[k]].Obs = "Obsservations (1950-2014)";}
+          if ( points[index_array[k]].M1R20mm ) {      
+            points[index_array[k]].M1 = "Obsservations (1950-2014)";}  
       }
     }
+    index_array = []; //clear
   }  
 }
 
