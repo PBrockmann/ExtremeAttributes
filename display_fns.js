@@ -19,10 +19,7 @@ var index_types = ["CSU", "ID", "CDD", "R20mm"];
 var datasets = ["Obs", "M1"];
 
 function initCrossfilter() {
-  //some housekeeping
-  titles = [index for (index in points[0])]; //column titles for points obj array
-  titles_obs = [titles[9], titles[10], titles[11], titles[12]]; //col titles for OBS data
-  titles_M1 = [titles[13], titles[14], titles[15], titles[16]]; //col titles for M1 data
+  
 
   filter = crossfilter(points);
   console.log('in initCrossfilter');
@@ -32,26 +29,8 @@ function initCrossfilter() {
   idGrouping = idDimension.group(function(id) { return id; });
 
 
-  var idx_CSU = [], idx_ID = [], idx_CDD = [], idx_R20mm = []; counter_CSU = 0; counter_ID = 0; counter_CDD = 0; counter_R20mm = 0;
   var indexDimension = filter.dimension(
-      function(p, idx) {        
-        if (p.Index == "CSU (days)") {                
-          idx_CSU[counter_CSU] = idx;
-          counter_CSU++;          
-        }
-        if (p.Index == "ID (days)") {                
-          idx_ID[counter_ID] = idx;
-          counter_ID++;          
-        }
-        if (p.Index == "CDD (days)") {                
-          idx_CDD[counter_CDD] = idx;
-          counter_CDD++;          
-        }
-        if (p.Index == "R20mm (mm)") {                
-          idx_R20mm[counter_R20mm] = idx;
-          counter_R20mm++;          
-        }    
-        
+      function(p) {       
         return p.Index;
       });
  
@@ -60,102 +39,9 @@ function initCrossfilter() {
   indexChart  = dc.rowChart("#chart-indexType");  
   
   //mark anaomalous years for each dataset
-  markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
-  markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
+  //markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
+  //markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
 
-
-  //###start stackoverflow method###
-  //http://jsfiddle.net/djmartin_umich/m7V89/#base
-  //http://stackoverflow.com/questions/17524627/is-there-a-way-to-tell-crossfilter-to-treat-elements-of-array-as-separate-record
-
- 
-
-  function reduceAdd(p, v) {    
-    v.AnomYear = [v.Obs, v.M1]; //make col entries into array of strings
-    if (v.AnomYear[0] === "") return p;    // skip empty values    
-    v.AnomYear.forEach (function(val, idx) {
-      p[val] = (p[val] || 0) + 1; //increment counts
-    });
-    
-    //delete counts of zero (these are the normal years)   
-    delete p[0];
-   
-    return p;
-  }
-
-  function reduceRemove(p, v) {
-    if (v.AnomYear[0] === "") return p;    // skip empty values
-      v.AnomYear.forEach (function(val, idx) {
-         p[val] = (p[val] || 0) - 1; //decrement counts
-      });    
-      return p;     
-  }
-
-  function reduceInitial() {
-    return {};  
-  }
-
-  var anomYearDim = filter.dimension(function(d){ 
-    d.AnomYear = [d.Obs, d.M1];
-    return d.AnomYear;
-  });  
-  var anomYearGroup = anomYearDim.groupAll().reduce(reduceAdd, reduceRemove, reduceInitial).value();
-
-
-  // hack to make dc.js charts work
-  anomYearGroup.all = function() {
-    var newObject = [];
-    for (var key in this) {
-      if (this.hasOwnProperty(key) && key != "all" && key != "top") {
-        newObject.push({
-          key: key,
-          value: this[key]
-        });
-      }
-    }
-    return newObject;
-  };
-
-  anomYearGroup.top = function(count) {
-    var newObject = this.all();
-     newObject.sort(function(a, b){return b.value - a.value});
-    return newObject.slice(0, count);
-  };
-
-  var anomYearChart = dc.rowChart("#chart-anomYear");
-    
-  anomYearChart
-      .renderLabel(true)
-      .width(150) //svg width
-      .height(100) //svg height
-      .margins({top: 10, right: 10, bottom: 30, left: 2})
-      .dimension(anomYearDim)
-      .group(anomYearGroup)
-      //.cap(2) //this displays an "Others" category
-      .ordering(function(d){return -d.value;})
-      .xAxis().ticks(3);
-
-  anomYearChart.filterHandler (function (dimension, filters) {
-         dimension.filter(null);
-         console.log("dimension: ", dimension);
-         console.log("filters: ", filters);
-         console.log("dimension.filter(null): ", dimension.filter(null));
-          if (filters.length === 0)
-              dimension.filter(null);
-          else
-              dimension.filterFunction(function (d) {
-                console.log("d: ", d);
-                  for (var i=0; i < d.length; i++) {
-                      if (filters.indexOf(d[i]) >= 0) return true;
-                  }
-                  return false;
-              });
-      return filters; 
-      }
-  );
-
-
-  //###end stackoverflow method###
 
   yearDimension = filter.dimension(
       function(p) {        
