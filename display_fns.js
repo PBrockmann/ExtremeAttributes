@@ -6,10 +6,6 @@ var markers = [] ;
 var grat;
 
 var filter;
-var CSUDimension;
-var CSUGrouping;
-var R20mmDateDimension;
-var R20mmDateGrouping;
 
 var charts;
 var domCharts;
@@ -66,15 +62,16 @@ function initCrossfilter() {
   //mark anaomalous years for each dataset
   markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
   markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
-  
 
 
   //###start stackoverflow method###
   //http://jsfiddle.net/djmartin_umich/m7V89/#base
   //http://stackoverflow.com/questions/17524627/is-there-a-way-to-tell-crossfilter-to-treat-elements-of-array-as-separate-record
 
+ 
+
   function reduceAdd(p, v) {    
-    v.AnomYear = [v.Obs, v.M1]; //make col entries into array of strings   
+    v.AnomYear = [v.Obs, v.M1]; //make col entries into array of strings
     if (v.AnomYear[0] === "") return p;    // skip empty values    
     v.AnomYear.forEach (function(val, idx) {
       p[val] = (p[val] || 0) + 1; //increment counts
@@ -98,7 +95,10 @@ function initCrossfilter() {
     return {};  
   }
 
-  var anomYearDim = filter.dimension(function(d){ return d.AnomYear;});  
+  var anomYearDim = filter.dimension(function(d){ 
+    d.AnomYear = [d.Obs, d.M1];
+    return d.AnomYear;
+  });  
   var anomYearGroup = anomYearDim.groupAll().reduce(reduceAdd, reduceRemove, reduceInitial).value();
 
 
@@ -136,11 +136,15 @@ function initCrossfilter() {
       .xAxis().ticks(3);
 
   anomYearChart.filterHandler (function (dimension, filters) {
-         dimension.filter(null);   
+         dimension.filter(null);
+         console.log("dimension: ", dimension);
+         console.log("filters: ", filters);
+         console.log("dimension.filter(null): ", dimension.filter(null));
           if (filters.length === 0)
               dimension.filter(null);
           else
               dimension.filterFunction(function (d) {
+                console.log("d: ", d);
                   for (var i=0; i < d.length; i++) {
                       if (filters.indexOf(d[i]) >= 0) return true;
                   }
