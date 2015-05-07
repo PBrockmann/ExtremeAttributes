@@ -98,7 +98,7 @@ function initCrossfilter() {
         return p.Obs;
       });
   obsGrouping = obsDimension.group();
-  obsChart  = dc.rowChart("#chart-dataType");
+
 
   // newM = {}; counter=0;
   // M1Dimension = filter_obs.dimension(
@@ -114,15 +114,25 @@ function initCrossfilter() {
   // M1Grouping.all()[0].value=counter; //hack
   // M1Chart  = dc.rowChart("#chart-M1dataType");
 
+  //###start stackoverflow method###
   //http://jsfiddle.net/djmartin_umich/m7V89/#base
   //http://stackoverflow.com/questions/17524627/is-there-a-way-to-tell-crossfilter-to-treat-elements-of-array-as-separate-record
 
   function reduceAdd(p, v) {
+    // console.log("p:", p);
+    // console.log("v.A:", v.A);
+    // console.log("v.B:", v.B);
+    // console.log("combine:", [v.A, v.B]);
+    v.AnomYear = [v.A, v.B]; //make col entries into array of strings
+    console.log("v.AnomYear: ", v.AnomYear); 
     if (v.AnomYear[0] === "") return p;    // skip empty values
-      v.AnomYear.forEach (function(val, idx) {
-         p[val] = (p[val] || 0) + 1; //increment counts
-      });
-      return p;
+    v.AnomYear.forEach (function(val, idx) {
+      console.log("val anomYear: ", val);
+      p[val] = (p[val] || 0) + 1; //increment counts
+    });
+    
+    console.log("p anomYear:", p);
+    return p;
   }
 
   function reduceRemove(p, v) {
@@ -137,7 +147,59 @@ function initCrossfilter() {
     return {};  
   }
 
+  var anomYearDim = filter.dimension(function(d){ return d.AnomYear;});
+  var anomYearGroup = anomYearDim.groupAll().reduce(reduceAdd, reduceRemove, reduceInitial).value();
 
+
+  // hack to make dc.js charts work
+  anomYearGroup.all = function() {
+    var newObject = [];
+    for (var key in this) {
+      if (this.hasOwnProperty(key) && key != "all" && key != "top") {
+        newObject.push({
+          key: key,
+          value: this[key]
+        });
+      }
+    }
+    return newObject;
+  };
+  console.log("anomYearGroup: ", anomYearGroup);
+
+  anomYearGroup.top = function(count) {
+    var newObject = this.all();
+     newObject.sort(function(a, b){return b.value - a.value});
+    return newObject.slice(0, count);
+  };
+
+  var barChart = dc.rowChart("#chart-anomYear");
+    
+  barChart
+      .renderLabel(true)
+      .height(200)
+      .dimension(anomYearDim)
+      .group(anomYearGroup)
+      //.cap(2)
+      .ordering(function(d){return -d.value;})
+      .xAxis().ticks(3);
+
+  barChart.filterHandler (function (dimension, filters) {
+         dimension.filter(null);   
+          if (filters.length === 0)
+              dimension.filter(null);
+          else
+              dimension.filterFunction(function (d) {
+                  for (var i=0; i < d.length; i++) {
+                      if (filters.indexOf(d[i]) >= 0) return true;
+                  }
+                  return false;
+              });
+      return filters; 
+      }
+  );
+
+
+  //###end stackoverflow method###
 
   yearDimension = filter.dimension(
       function(p) {        
@@ -183,36 +245,7 @@ function initCrossfilter() {
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
   var yAxis_yearChart = yearChart.yAxis().ticks(6);
-
-  obsChart
-    .width(200) //svg width
-    .height(70) //svg height
-    .margins({top: 10, right: 10, bottom: 30, left: 2})
-    .dimension(obsDimension)
-    .group(obsGrouping)
-    .on("preRedraw",update0)
-    .colors(d3.scale.category20()) 
-    //.elasticX(true)
-    .gap(0);
-
-  obsChart.x(d3.scale.linear().range([0,(obsChart.width()-50)]).domain([0,20]));
-  obsChart.xAxis().scale(obsChart.x()).ticks(5);  
-
-  // M1Chart
-  //   .width(200) //svg width
-  //   .height(70) //svg height
-  //   .margins({top: 10, right: 10, bottom: 30, left: 2})
-  //   .dimension(M1Dimension)
-  //   .group(M1Grouping)
-  //   .on("preRedraw",update0)
-  //   .colors(d3.scale.category20())
-  //   //.elasticX(true)
-  //   .gap(0);
-
-  // M1Chart.x(d3.scale.linear().range([0,(M1Chart.width()-50)]).domain([0,20]));
-  // M1Chart.xAxis().scale(M1Chart.x()).ticks(5);
-
-      
+  
 
   dc.renderAll();
 
