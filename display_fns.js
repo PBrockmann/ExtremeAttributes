@@ -61,77 +61,28 @@ function initCrossfilter() {
  
 
   var indexGrouping = indexDimension.group();
-  indexChart  = dc.rowChart("#chart-indexType");
-    
-  console.log("indexDimension: ", indexDimension);
-  console.log("indexGrouping: ", indexGrouping);
-  console.log("indexGrouping.all(): ", indexGrouping.all());
-  console.log("indexGrouping.all()[0]: ", indexGrouping.all()[0]);
-  console.log("indexGrouping.all()[0].key: ", indexGrouping.all()[0].key);
-
-  //try to filter only rows of type = CSU (days)  
-  var csuDimension = filter.dimension(   
-      function(p, idx) {
-        //console.log("p.ObsCSU: ", p.ObsCSU);
-        return p.ObsCSU;
-      }
-  );
-  console.log("csuDimension: ", csuDimension);
-  var csuGrouping = csuDimension.group();
-
-  console.log("csuGrouping: ", csuGrouping);
-  console.log("csuGrouping.all(): ", csuGrouping.all());
-  console.log("csuGrouping.all()[0]: ", csuGrouping.all()[0]);
-  //console.log("csuGrouping.all()[0]: ", csuGrouping.all().length);
-  //console.log("csuGrouping.all()[0].key: ", csuGrouping.all()[0].key);
-
-
+  indexChart  = dc.rowChart("#chart-indexType");  
+  
   //mark anaomalous years for each dataset
   markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
   markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
   
-  
-  filter_obs = crossfilter(points);
 
-  obsDimension = filter_obs.dimension(
-      function(p) {        
-        return p.Obs;
-      });
-  obsGrouping = obsDimension.group();
-
-
-  // newM = {}; counter=0;
-  // M1Dimension = filter_obs.dimension(
-  //     function(p, idx) {
-  //       if (p.M1 != "0") { newM[counter++] = p.M1;
-  //       //return p.M1;           
-  //       }
-  //       return newM;
-  //     }      
-  // );
-  // M1Grouping = M1Dimension.group();
-  // M1Grouping.all()[0].key=M1Grouping.all()[0].key[0]; //hack
-  // M1Grouping.all()[0].value=counter; //hack
-  // M1Chart  = dc.rowChart("#chart-M1dataType");
 
   //###start stackoverflow method###
   //http://jsfiddle.net/djmartin_umich/m7V89/#base
   //http://stackoverflow.com/questions/17524627/is-there-a-way-to-tell-crossfilter-to-treat-elements-of-array-as-separate-record
 
-  function reduceAdd(p, v) {
-    // console.log("p:", p);
-    // console.log("v.A:", v.A);
-    // console.log("v.B:", v.B);
-    // console.log("combine:", [v.A, v.B]);
-    v.AnomYear = [v.A, v.B]; //make col entries into array of strings
-    console.log("v.AnomYear: ", v.AnomYear); 
-    if (v.AnomYear[0] === "") return p;    // skip empty values
+  function reduceAdd(p, v) {    
+    v.AnomYear = [v.Obs, v.M1]; //make col entries into array of strings   
+    if (v.AnomYear[0] === "") return p;    // skip empty values    
     v.AnomYear.forEach (function(val, idx) {
-      console.log("val anomYear: ", val);
       p[val] = (p[val] || 0) + 1; //increment counts
     });
     
-    console.log("p anomYear:", p);
+    //delete counts of zero (these are the normal years)   
+    delete p[0];
+   
     return p;
   }
 
@@ -139,7 +90,7 @@ function initCrossfilter() {
     if (v.AnomYear[0] === "") return p;    // skip empty values
       v.AnomYear.forEach (function(val, idx) {
          p[val] = (p[val] || 0) - 1; //decrement counts
-      });
+      });    
       return p;     
   }
 
@@ -147,7 +98,7 @@ function initCrossfilter() {
     return {};  
   }
 
-  var anomYearDim = filter.dimension(function(d){ return d.AnomYear;});
+  var anomYearDim = filter.dimension(function(d){ return d.AnomYear;});  
   var anomYearGroup = anomYearDim.groupAll().reduce(reduceAdd, reduceRemove, reduceInitial).value();
 
 
@@ -164,7 +115,6 @@ function initCrossfilter() {
     }
     return newObject;
   };
-  console.log("anomYearGroup: ", anomYearGroup);
 
   anomYearGroup.top = function(count) {
     var newObject = this.all();
@@ -172,18 +122,20 @@ function initCrossfilter() {
     return newObject.slice(0, count);
   };
 
-  var barChart = dc.rowChart("#chart-anomYear");
+  var anomYearChart = dc.rowChart("#chart-anomYear");
     
-  barChart
+  anomYearChart
       .renderLabel(true)
-      .height(200)
+      .width(150) //svg width
+      .height(100) //svg height
+      .margins({top: 10, right: 10, bottom: 30, left: 2})
       .dimension(anomYearDim)
       .group(anomYearGroup)
-      //.cap(2)
+      //.cap(2) //this displays an "Others" category
       .ordering(function(d){return -d.value;})
       .xAxis().ticks(3);
 
-  barChart.filterHandler (function (dimension, filters) {
+  anomYearChart.filterHandler (function (dimension, filters) {
          dimension.filter(null);   
           if (filters.length === 0)
               dimension.filter(null);
