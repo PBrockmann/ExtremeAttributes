@@ -1,0 +1,25 @@
+Year,Region,Type,Season,Index,Data,Value
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU,Obs,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID,Obs,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD,Obs,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm,Obs,11
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm,M1,
+1960,Bretagne,drought,Spring,CSU,Obs,
+1960,Bretagne,drought,Spring,ID,Obs,
+1960,Bretagne,drought,Spring,CDD,Obs,12
+1960,Bretagne,drought,Spring,R20mm,Obs,
+1960,Bretagne,drought,Spring,CSU,M1,
+1960,Bretagne,drought,Spring,ID,M1,
+1960,Bretagne,drought,Spring,CDD,M1,
+1960,Bretagne,drought,Spring,R20mm,M1,
+1970,Bourgogne,drought,Spring,CSU,Obs,
+1970,Bourgogne,drought,Spring,ID,Obs,
+1970,Bourgogne,drought,Spring,CDD,Obs,4
+1970,Bourgogne,drought,Spring,R20mm,Obs,
+1970,Bourgogne,drought,Spring,CSU,M1,
+1970,Bourgogne,drought,Spring,ID,M1,
+1970,Bourgogne,drought,Spring,CDD,M1,9
+1970,Bourgogne,drought,Spring,R20mm,M1,

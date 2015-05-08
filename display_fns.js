@@ -36,35 +36,47 @@ function initCrossfilter() {
  
 
   var indexGrouping = indexDimension.group();
-  indexChart  = dc.rowChart("#chart-indexType");  
+  indexChart  = dc.rowChart("#chart-indexType");
   
   //mark anaomalous years for each dataset
   //markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
   //markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
 
   anomYearDim = filter.dimension(
-    function (d) {
-      console.log("d.Data: ", d.Data);
+    function (d, k) {
       return d.Data; //type of dataset (e.g. Obs, M1, etc)
     });
-  anomYearGroup = anomYearDim.groupAll().reduce(
-    function(p,v) { return (v.Data !== undefined) ? p+1 : 0; },
-    function(p,v) { return (v.Data !== undefined) ? p-1 : 0; },
-    function() { return 0; });
+  var anomYearGroup = anomYearDim.group().reduceSum(function(d) {    
+    return (d.Value !== "");
+  });
+  print_filter("anomYearGroup");
+  anomYearChart  = dc.rowChart("#chart-anomYear");
 
-  // anomYearGroup = anomYearDim.group().reduceCount(
-  //   function(d) {
-  //     console.log("d.Value: ", d.Value);
-  //     return d.Value
-  //   });
-  console.log("anomYearDim: ", anomYearDim);
-  console.log("anomYearGroup: ", anomYearGroup);
+  // anomYearGroup = anomYearDim.groupAll().reduce(
+  //   function(p,v) { return (v.Data !== undefined) ? p+1 : 0; },
+  //   function(p,v) { return (v.Data !== undefined) ? p-1 : 0; },
+  //   function() { return 0; });
 
-  var tempCount = anomYearDim.groupAll().reduceCount().value();
-  console.log("tempCount :"+tempCount); // 4
-  var tempSum = anomYearDim.groupAll().reduceSum(function(d) {return d.Data;}).value();
-  console.log("tempSum :"+tempSum);
+  // var tempCount = anomYearDim.groupAll().reduceCount(function(d) {return d.Value;}).value();
+  // console.log("tempCount :"+tempCount); // 4
+  // var tempSum = anomYearDim.groupAll().reduceSum(function(d) {return d.Value;}).value();
+  // console.log("tempSum :"+tempSum);
 
+  //   // row chart Day of Week
+  // var dayOfWeekDim = filter.dimension(function (d) {
+  //   var day = d.Data;
+  //   switch (day) {
+  //     case 0:
+  //       return "Obs";
+  //     case 1:
+  //       return "M1";      
+  //   }
+  // });
+  // var dayOfWeekGroup = dayOfWeekDim.group();
+  // var dayOfWeekCount = dayOfWeekDim.groupAll().reduceCount(function(d) {return d.Value;}).value();
+  // console.log("dayOfWeekCount :"+dayOfWeekCount); // 4
+  // var dayOfWeekSum = dayOfWeekDim.groupAll().reduceSum(function(d) {return d.Value;}).value();
+  // console.log("dayOfWeekSum :"+dayOfWeekSum);
 
   yearDimension = filter.dimension(
       function(p) {        
@@ -110,9 +122,30 @@ function initCrossfilter() {
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
   var yAxis_yearChart = yearChart.yAxis().ticks(6);
+
+  anomYearChart
+    .width(200) //svg width
+    .height(80) //svg height
+    .margins({top: 10, right: 10, bottom: 30, left: 5})
+    .dimension(anomYearDim)
+    .group(anomYearGroup)
+    .on("preRedraw",update0)
+    .colors(d3.scale.category20()) 
+    .elasticX(true)
+    .gap(0);
+
+  xAxis_indexChart = indexChart.xAxis().ticks(4);
   
 
   dc.renderAll();
+
+  function print_filter(filter){
+    var f=eval(filter);
+    if (typeof(f.length) != "undefined") {}else{}
+    if (typeof(f.top) != "undefined") {f=f.top(Infinity);}else{}
+    if (typeof(f.dimension) != "undefined") {f=f.dimension(function(d) { return "";}).top(Infinity);}else{}
+    console.log(filter+"("+f.length+") = "+JSON.stringify(f).replace("[","[\n\t").replace(/}\,/g,"},\n\t").replace("]","\n]"));
+  } 
 
 }
 
