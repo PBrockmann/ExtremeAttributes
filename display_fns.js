@@ -35,19 +35,20 @@ function initCrossfilter() {
       });
  
 
-  var indexGrouping = indexDimension.group();
+  //var indexGroup = indexDimension.group();
+  var indexGroup = indexDimension.group().reduceSum(function(d) { //NB: reduceCount gives wrong answer
+    return (d.Value !== ""); //do not count empty rows
+  });
   indexChart  = dc.rowChart("#chart-indexType");
   
-  //mark anaomalous years for each dataset
-  //markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
-  //markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
+
 
   anomYearDim = filter.dimension(
-    function (d, k) {
+    function (d) {
       return d.Data; //type of dataset (e.g. Obs, M1, etc)
     });
-  var anomYearGroup = anomYearDim.group().reduceSum(function(d) {    
-    return (d.Value !== "");
+  var anomYearGroup = anomYearDim.group().reduceSum(function(d) { //NB: reduceCount gives wrong answer
+    return (d.Value !== ""); //do not count empty rows
   });
   print_filter("anomYearGroup");
   anomYearChart  = dc.rowChart("#chart-anomYear");
@@ -96,7 +97,7 @@ function initCrossfilter() {
     .height(200) //svg height
     .margins({top: 10, right: 10, bottom: 30, left: 10})    // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
     .dimension(indexDimension)
-    .group(indexGrouping)
+    .group(indexGroup)
     .on("preRedraw",update0)
     .colors(d3.scale.category20()) 
     .elasticX(true)
@@ -149,19 +150,6 @@ function initCrossfilter() {
 
 }
 
-//check if points object Obs cols have an entry for CSU index
-function markAnomalousYear(col_names, dataset, label) {
-  //console.log("dataset: ", dataset);
-  for (var i = 0; i < points.length; i++) {
-    points[i][dataset] = "0";
-    for (var j = 0; j < col_names.length; j++) {
-      if (points[i][col_names[j]]) {
-        points[i][dataset] = label;
-      } 
-    }    
-  }
-}
-  
 
 // set visibility of markers based on crossfilter
 function updateMarkers() {
