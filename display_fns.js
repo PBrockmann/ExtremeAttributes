@@ -30,7 +30,7 @@ function initCrossfilter() {
 
 
   var indexDimension = filter.dimension(
-      function(p) {       
+      function(p) {
         return p.Index;
       });
  
@@ -41,6 +41,29 @@ function initCrossfilter() {
   //mark anaomalous years for each dataset
   //markAnomalousYear(titles_obs, datasets[0], "Obs (1950-2014)"); //OBS
   //markAnomalousYear(titles_M1, datasets[1], "Model M1"); //M1
+
+  anomYearDim = filter.dimension(
+    function (d) {
+      console.log("d.Data: ", d.Data);
+      return d.Data; //type of dataset (e.g. Obs, M1, etc)
+    });
+  anomYearGroup = anomYearDim.groupAll().reduce(
+    function(p,v) { return (v.Data !== undefined) ? p+1 : 0; },
+    function(p,v) { return (v.Data !== undefined) ? p-1 : 0; },
+    function() { return 0; });
+
+  // anomYearGroup = anomYearDim.group().reduceCount(
+  //   function(d) {
+  //     console.log("d.Value: ", d.Value);
+  //     return d.Value
+  //   });
+  console.log("anomYearDim: ", anomYearDim);
+  console.log("anomYearGroup: ", anomYearGroup);
+
+  var tempCount = anomYearDim.groupAll().reduceCount().value();
+  console.log("tempCount :"+tempCount); // 4
+  var tempSum = anomYearDim.groupAll().reduceSum(function(d) {return d.Data;}).value();
+  console.log("tempSum :"+tempSum);
 
 
   yearDimension = filter.dimension(
