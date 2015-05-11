@@ -140,7 +140,7 @@ function initCrossfilter() {
   function reduceAdd(p, v) {    
       if (v.Value) ++p.count;     
       if (v.Value) p.total += parseInt(v.Value);
-      console.log("p.total: ", p.total);
+      //console.log("p.total: ", p.total);
       if (p.count == 0) {
         p.average = 0;        
       } else {
@@ -174,7 +174,7 @@ function initCrossfilter() {
       .dimension(tableDimGroup)
       .group(function(d) { return "Events Table"
        })
-      .size(30)
+      .size(5)
       .columns([
         function(d) { return d.key; },
         function(d) { return d.value.count; },
@@ -289,7 +289,7 @@ function updateMarkers() {
 function update0() {
   //updateMarkers();
   updateList();
-  console.log("selected: ", d3.select("#active").text(filter.groupAll().value()));
+  console.log("selected: ", filter.groupAll().value());
   d3.select("#active").text(filter.groupAll().value());
 }
 
@@ -361,8 +361,52 @@ function eventList() {
 
 
         //Extreme Events table -- row values
+
+
+        var tmp = 0;
         var pointIds = idGrouping.all();
-        for (var i = 0; i < pointIds.length; i++) {       
+
+        //Find unique year indices and loop through them
+        idx_year = []; yr = 0; count = 0; val_sum = 0;
+        //for (var i = 0; i < pointIds.length; i++) { 
+        for (var i = 0; i < 17; i++) {   
+          if (points[i].Year != yr) {
+            yr = points[i].Year;              
+            idx_year[count] = i;            
+            ++count;
+            val_sum += parseInt(points[i].Value);
+          }              
+          // if (points[i].Year == yr && points[i].Value) {                    
+          //           val_sum += parseInt(points[i].Value);                    
+          //         }
+          // avg_Value = val_sum / count;
+          // console.log("avg_Value: ", avg_Value);
+        }
+
+
+        
+        for (var j = 0; j < idx_year.length; j++) {    
+          i = idx_year[j];     
+          var eventItem = d3.select("#eventsList2")
+                .append("div")
+                      .attr("class", "eventItem row")
+                      .style("text-align", "left")                
+                      .attr("id", (i+1).toString())
+                      .on('click', popupfromlist);
+                eventItem.append("div")
+                      .attr("class", "col-md-1")                         
+                      .style("text-align", "left")
+                      .attr("title", "#"+(i+1).toString())
+                      .text("#"+(i+1).toString());
+                eventItem.append("div")
+                      .attr("class", "col-md-2")
+                      .style("text-align", "left")
+                      .attr("title", points[i].Year)  
+                      .text(points[i].Year);
+
+        }
+
+        for (var i = 0; i < pointIds.length; i++) {          
           var eventItem = d3.select("#eventsList")
                 .append("div")
                 .attr("class", "eventItem row")
@@ -397,8 +441,17 @@ function eventList() {
           eventItem.append("div")
                 .attr("class", "col-md-1")
                 .style("text-align", "right")
-                .attr("title", points[i].CSU)
-                .text(points[i].CSU);
+                //.attr("title", points[i].CSU)
+                //.text(points[i].CSU);
+                .text(function() {
+                  //console.log("i, year: ", i, parseInt(points[i].Value));
+                  if (points[i].Year == 1950 && points[i].Value) {                    
+                    tmp += parseInt(points[i].Value);                    
+                  } else {                     
+                    tmp = points[i].Value; }
+                  //return points[i].CSU;
+                  return tmp;
+                });
           eventItem.append("div")
                 .attr("class", "col-md-1")
                 .style("text-align", "right")

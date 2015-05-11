@@ -190,6 +190,15 @@
             </div>
             <!--end ROW 2-->
 
+            <!--ROW 3-->
+            <div class="row">
+                <div class='span12'>
+                    <h2>Summary2</h2>
+                  <div id="eventsList2" class="col-md-5" style="width: 710px; max-height: 200px; overflow-y: auto;"></div>
+                </div>             
+            </div>
+            <!--end ROW 3-->
+
 
         </div>
         <!-- /.container -->
@@ -376,8 +385,8 @@
 
         //READ IN TSV FILE FOR dc.js
         //d3.tsv("data/anomalous_index_table.tsv", function(events) {
-        //d3.csv("data/anomalous_index_table_pivot.csv", function(events) {  
-        d3.csv("data/test_table_pivot.csv", function(events) {  
+        d3.csv("data/anomalous_index_table_pivot.csv", function(events) {  
+        //d3.csv("data/test_table_pivot.csv", function(events) {  
           events.forEach(function(d, i) {
             console.log("in d3.tsv");
           });
