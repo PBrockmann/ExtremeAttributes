@@ -174,7 +174,7 @@ function initCrossfilter() {
       .dimension(tableDimGroup)
       .group(function(d) { return "Events Table"
        })
-      .size(5)
+      .size(2)
       .columns([
         function(d) { return d.key; },
         function(d) { return d.value.count; },
@@ -343,36 +343,42 @@ function eventList() {
           .style("text-align", "left")
           .text("Season");
         eventItem.append("div")
-          .attr("class", "col-md-1")
+          .attr("class", "col-md-3")
           .style("text-align", "left")
-          .text("CSU");
+          .text("Index");
         eventItem.append("div")
-              .attr("class", "col-md-1")
+          .attr("class", "col-md-2")
           .style("text-align", "left")
-          .text("ID");
+          .text("Dataset");
         eventItem.append("div")
-              .attr("class", "col-md-1")
+              .attr("class", "col-md-2")
           .style("text-align", "left")
-          .text("CDD");
-        eventItem.append("div")
-              .attr("class", "col-md-1")
-          .style("text-align", "left")
-          .text("R20mm");    
+          .text("#events");
+        // eventItem.append("div")
+        //       .attr("class", "col-md-1")
+        //   .style("text-align", "left")
+        //   .text("CDD");
+        // eventItem.append("div")
+        //       .attr("class", "col-md-1")
+        //   .style("text-align", "left")
+        //   .text("R20mm");    
 
 
         //Extreme Events table -- row values
 
 
-        var tmp = 0;
+        var tmp = 0; 
         var pointIds = idGrouping.all();
 
         //Find unique year indices and loop through them
-        idx_year = []; yr = 0; count = 0; val_sum = 0;
+        idx_year = []; yr = 0; count = 0; val_sum = 0; fake_avg = [];
         //for (var i = 0; i < pointIds.length; i++) { 
-        for (var i = 0; i < 17; i++) {   
-          if (points[i].Year != yr) {
+        for (var i = 0; i < 26; i++) {   
+          if (points[i].Year != yr && points[i].Value) {
             yr = points[i].Year;              
-            idx_year[count] = i;            
+            idx_year[count] = i;
+            fake_avg[count] = points[i].Value;        
+            console.log("fake_avg: ", fake_avg);
             ++count;
             val_sum += parseInt(points[i].Value);
           }              
@@ -384,7 +390,7 @@ function eventList() {
         }
 
 
-        
+        //eventsList2        
         for (var j = 0; j < idx_year.length; j++) {    
           i = idx_year[j];     
           var eventItem = d3.select("#eventsList2")
@@ -403,6 +409,11 @@ function eventList() {
                       .style("text-align", "left")
                       .attr("title", points[i].Year)  
                       .text(points[i].Year);
+                eventItem.append("div")
+                      .attr("class", "col-md-2")
+                      .style("text-align", "left")
+                      //.attr("title", points[i].Year)  
+                      .text(fake_avg[j]);
 
         }
 
@@ -439,6 +450,16 @@ function eventList() {
                 .attr("title", points[i].Season)
                 .text(points[i].Season);
           eventItem.append("div")
+                .attr("class", "col-md-3")
+                .style("text-align", "left")
+                .attr("title", points[i].Index)
+                .text(points[i].Index);
+          eventItem.append("div")
+                .attr("class", "col-md-2")
+                .style("text-align", "left")
+                .attr("title", points[i].Data)
+                .text(points[i].Data);            
+          eventItem.append("div")
                 .attr("class", "col-md-1")
                 .style("text-align", "right")
                 //.attr("title", points[i].CSU)
@@ -452,21 +473,21 @@ function eventList() {
                   //return points[i].CSU;
                   return tmp;
                 });
-          eventItem.append("div")
-                .attr("class", "col-md-1")
-                .style("text-align", "right")
-                .attr("title", points[i].ID)
-                .text(points[i].ID);          
-          eventItem.append("div")
-                .attr("class", "col-md-1")
-                .style("text-align", "right")
-                .attr("title", points[i].CDD)                  
-                .text(points[i].CDD);
-          eventItem.append("div")
-                .attr("class", "col-md-1")
-                .style("text-align", "right")
-                .attr("title", points[i].R20mm)        
-                .text(points[i].R20mm);
+          // eventItem.append("div")
+          //       .attr("class", "col-md-1")
+          //       .style("text-align", "right")
+          //       .attr("title", points[i].ID)
+          //       .text(points[i].ID);          
+          // eventItem.append("div")
+          //       .attr("class", "col-md-1")
+          //       .style("text-align", "right")
+          //       .attr("title", points[i].CDD)                  
+          //       .text(points[i].CDD);
+          // eventItem.append("div")
+          //       .attr("class", "col-md-1")
+          //       .style("text-align", "right")
+          //       .attr("title", points[i].R20mm)        
+          //       .text(points[i].R20mm);
         }
 }
 

@@ -1,137 +1,137 @@
 Year,Region,Type,Season,Index,Data,Value
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU (days),Obs,4
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID (days),Obs,
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD (days),Obs,
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm (mm),Obs,11
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU (days),M1,
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID (days),M1,
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD (days),M1,
-1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm (mm),M1,
-1960,Bretagne,drought,Spring,CSU (days),Obs,
-1960,Bretagne,drought,Spring,ID (days),Obs,
-1960,Bretagne,drought,Spring,CDD (days),Obs,12
-1960,Bretagne,drought,Spring,R20mm (mm),Obs,
-1960,Bretagne,drought,Spring,CSU (days),M1,
-1960,Bretagne,drought,Spring,ID (days),M1,
-1960,Bretagne,drought,Spring,CDD (days),M1,
-1960,Bretagne,drought,Spring,R20mm (mm),M1,
-1970,Bourgogne et Franche-Comté,drought,Spring,CSU (days),Obs,
-1970,Bourgogne et Franche-Comté,drought,Spring,ID (days),Obs,
-1970,Bourgogne et Franche-Comté,drought,Spring,CDD (days),Obs,4
-1970,Bourgogne et Franche-Comté,drought,Spring,R20mm (mm),Obs,
-1970,Bourgogne et Franche-Comté,drought,Spring,CSU (days),M1,
-1970,Bourgogne et Franche-Comté,drought,Spring,ID (days),M1,
-1970,Bourgogne et Franche-Comté,drought,Spring,CDD (days),M1,9
-1970,Bourgogne et Franche-Comté,drought,Spring,R20mm (mm),M1,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CSU (days),Obs,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID (days),Obs,20
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CDD (days),Obs,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,R20mm (mm),Obs,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CSU (days),M1,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID (days),M1,26
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CDD (days),M1,
-1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,R20mm (mm),M1,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CSU (days),Obs,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,ID (days),Obs,13
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CDD (days),Obs,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,R20mm (mm),Obs,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CSU (days),M1,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,ID (days),M1,18
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CDD (days),M1,
-1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,R20mm (mm),M1,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CSU (days),Obs,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,ID (days),Obs,14
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CDD (days),Obs,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,R20mm (mm),Obs,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CSU (days),M1,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,ID (days),M1,18
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CDD (days),M1,
-2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,R20mm (mm),M1,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,CSU (days),Obs,33
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,ID (days),Obs,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,CDD (days),Obs,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,R20mm (mm),Obs,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,CSU (days),M1,31
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,ID (days),M1,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,CDD (days),M1,
-2001,Auvergne et Rhône-Alpes,heatwave,Summer,R20mm (mm),M1,
-2005,Pays de la Loire,heatwave,Summer,CSU (days),Obs,15
-2005,Pays de la Loire,heatwave,Summer,ID (days),Obs,
-2005,Pays de la Loire,heatwave,Summer,CDD (days),Obs,
-2005,Pays de la Loire,heatwave,Summer,R20mm (mm),Obs,
-2005,Pays de la Loire,heatwave,Summer,CSU (days),M1,23
-2005,Pays de la Loire,heatwave,Summer,ID (days),M1,
-2005,Pays de la Loire,heatwave,Summer,CDD (days),M1,
-2005,Pays de la Loire,heatwave,Summer,R20mm (mm),M1,
-2005,Centre-Val de Loire,heatwave,Summer,CSU (days),Obs,5
-2005,Centre-Val de Loire,heatwave,Summer,ID (days),Obs,
-2005,Centre-Val de Loire,heatwave,Summer,CDD (days),Obs,
-2005,Centre-Val de Loire,heatwave,Summer,R20mm (mm),Obs,
-2005,Centre-Val de Loire,heatwave,Summer,CSU (days),M1,7
-2005,Centre-Val de Loire,heatwave,Summer,ID (days),M1,
-2005,Centre-Val de Loire,heatwave,Summer,CDD (days),M1,
-2005,Centre-Val de Loire,heatwave,Summer,R20mm (mm),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm (mm),Obs,65
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm (mm),M1,61
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD (days),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm (mm),Obs,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD (days),M1,
-2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm (mm),M1,55
-2010,Île-de-France,precipitation,Fall,CSU (days),Obs,
-2010,Île-de-France,precipitation,Fall,ID (days),Obs,
-2010,Île-de-France,precipitation,Fall,CDD (days),Obs,
-2010,Île-de-France,precipitation,Fall,R20mm (mm),Obs,46
-2010,Île-de-France,precipitation,Fall,CSU (days),M1,
-2010,Île-de-France,precipitation,Fall,ID (days),M1,
-2010,Île-de-France,precipitation,Fall,CDD (days),M1,
-2010,Île-de-France,precipitation,Fall,R20mm (mm),M1,39
-2010,Centre-Val de Loire,precipitation,Fall,CSU (days),Obs,
-2010,Centre-Val de Loire,precipitation,Fall,ID (days),Obs,
-2010,Centre-Val de Loire,precipitation,Fall,CDD (days),Obs,
-2010,Centre-Val de Loire,precipitation,Fall,R20mm (mm),Obs,11
-2010,Centre-Val de Loire,precipitation,Fall,CSU (days),M1,
-2010,Centre-Val de Loire,precipitation,Fall,ID (days),M1,
-2010,Centre-Val de Loire,precipitation,Fall,CDD (days),M1,
-2010,Centre-Val de Loire,precipitation,Fall,R20mm (mm),M1,16
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,CSU (days),Obs,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,ID (days),Obs,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,CDD (days),Obs,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,R20mm (mm),Obs,88
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,CSU (days),M1,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,ID (days),M1,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,CDD (days),M1,
-2010,Auvergne et Rhône-Alpes,precipitation,Fall,R20mm (mm),M1,99
-2012,Centre-Val de Loire,heatwave,Summer,CSU (days),Obs,
-2012,Centre-Val de Loire,heatwave,Summer,ID (days),Obs,
-2012,Centre-Val de Loire,heatwave,Summer,CDD (days),Obs,48
-2012,Centre-Val de Loire,heatwave,Summer,R20mm (mm),Obs,
-2012,Centre-Val de Loire,heatwave,Summer,CSU (days),M1,
-2012,Centre-Val de Loire,heatwave,Summer,ID (days),M1,
-2012,Centre-Val de Loire,heatwave,Summer,CDD (days),M1,68
-2012,Centre-Val de Loire,heatwave,Summer,R20mm (mm),M1,
-2014,Normandie,heatwave,Summer,CSU (days),Obs,8
-2014,Normandie,heatwave,Summer,ID (days),Obs,
-2014,Normandie,heatwave,Summer,CDD (days),Obs,
-2014,Normandie,heatwave,Summer,R20mm (mm),Obs,
-2014,Normandie,heatwave,Summer,CSU (days),M1,11
-2014,Normandie,heatwave,Summer,ID (days),M1,
-2014,Normandie,heatwave,Summer,CDD (days),M1,
-2014,Normandie,heatwave,Summer,R20mm (mm),M1,
-2021,Bretagne,drought,Spring,CSU (days),Obs,
-2021,Bretagne,drought,Spring,ID (days),Obs,
-2021,Bretagne,drought,Spring,CDD (days),Obs,17
-2021,Bretagne,drought,Spring,R20mm (mm),Obs,
-2021,Bretagne,drought,Spring,CSU (days),M1,
-2021,Bretagne,drought,Spring,ID (days),M1,
-2021,Bretagne,drought,Spring,CDD (days),M1,24
-2021,Bretagne,drought,Spring,R20mm (mm),M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU,Obs,4
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID,Obs,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD,Obs,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm,Obs,11
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CSU,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,ID,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,CDD,M1,
+1950,"Alsace,  Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm,M1,
+1960,Bretagne,drought,Spring,CSU,Obs,
+1960,Bretagne,drought,Spring,ID,Obs,
+1960,Bretagne,drought,Spring,CDD,Obs,12
+1960,Bretagne,drought,Spring,R20mm,Obs,
+1960,Bretagne,drought,Spring,CSU,M1,
+1960,Bretagne,drought,Spring,ID,M1,
+1960,Bretagne,drought,Spring,CDD,M1,
+1960,Bretagne,drought,Spring,R20mm,M1,
+1970,Bourgogne et Franche-Comté,drought,Spring,CSU,Obs,
+1970,Bourgogne et Franche-Comté,drought,Spring,ID,Obs,
+1970,Bourgogne et Franche-Comté,drought,Spring,CDD,Obs,
+1970,Bourgogne et Franche-Comté,drought,Spring,R20mm,Obs,
+1970,Bourgogne et Franche-Comté,drought,Spring,CSU,M1,
+1970,Bourgogne et Franche-Comté,drought,Spring,ID,M1,
+1970,Bourgogne et Franche-Comté,drought,Spring,CDD,M1,9
+1970,Bourgogne et Franche-Comté,drought,Spring,R20mm,M1,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CSU,Obs,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID,Obs,20
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CDD,Obs,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,R20mm,Obs,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CSU,M1,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID,M1,26
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,CDD,M1,
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,R20mm,M1,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CSU,Obs,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,ID,Obs,13
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CDD,Obs,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,R20mm,Obs,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CSU,M1,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,ID,M1,18
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,CDD,M1,
+1990,Provence-Alpes-Côte d'Azur,extreme cold,Winter,R20mm,M1,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CSU,Obs,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,ID,Obs,14
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CDD,Obs,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,R20mm,Obs,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CSU,M1,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,ID,M1,18
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,CDD,M1,
+2000,Nord-Pas-de-Calais et Picardie,extreme cold,Winter,R20mm,M1,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,CSU,Obs,33
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,ID,Obs,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,CDD,Obs,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,R20mm,Obs,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,CSU,M1,31
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,ID,M1,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,CDD,M1,
+2001,Auvergne et Rhône-Alpes,heatwave,Summer,R20mm,M1,
+2005,Pays de la Loire,heatwave,Summer,CSU,Obs,15
+2005,Pays de la Loire,heatwave,Summer,ID,Obs,
+2005,Pays de la Loire,heatwave,Summer,CDD,Obs,
+2005,Pays de la Loire,heatwave,Summer,R20mm,Obs,
+2005,Pays de la Loire,heatwave,Summer,CSU,M1,23
+2005,Pays de la Loire,heatwave,Summer,ID,M1,
+2005,Pays de la Loire,heatwave,Summer,CDD,M1,
+2005,Pays de la Loire,heatwave,Summer,R20mm,M1,
+2005,Centre-Val de Loire,heatwave,Summer,CSU,Obs,5
+2005,Centre-Val de Loire,heatwave,Summer,ID,Obs,
+2005,Centre-Val de Loire,heatwave,Summer,CDD,Obs,
+2005,Centre-Val de Loire,heatwave,Summer,R20mm,Obs,
+2005,Centre-Val de Loire,heatwave,Summer,CSU,M1,7
+2005,Centre-Val de Loire,heatwave,Summer,ID,M1,
+2005,Centre-Val de Loire,heatwave,Summer,CDD,M1,
+2005,Centre-Val de Loire,heatwave,Summer,R20mm,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm,Obs,65
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm,M1,61
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm,Obs,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CSU,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,ID,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,CDD,M1,
+2006,Languedoc-Roussillon et Midi-Pyrénées,precipitation,Fall,R20mm,M1,55
+2010,Île-de-France,precipitation,Fall,CSU,Obs,
+2010,Île-de-France,precipitation,Fall,ID,Obs,
+2010,Île-de-France,precipitation,Fall,CDD,Obs,
+2010,Île-de-France,precipitation,Fall,R20mm,Obs,46
+2010,Île-de-France,precipitation,Fall,CSU,M1,
+2010,Île-de-France,precipitation,Fall,ID,M1,
+2010,Île-de-France,precipitation,Fall,CDD,M1,
+2010,Île-de-France,precipitation,Fall,R20mm,M1,39
+2010,Centre-Val de Loire,precipitation,Fall,CSU,Obs,
+2010,Centre-Val de Loire,precipitation,Fall,ID,Obs,
+2010,Centre-Val de Loire,precipitation,Fall,CDD,Obs,
+2010,Centre-Val de Loire,precipitation,Fall,R20mm,Obs,11
+2010,Centre-Val de Loire,precipitation,Fall,CSU,M1,
+2010,Centre-Val de Loire,precipitation,Fall,ID,M1,
+2010,Centre-Val de Loire,precipitation,Fall,CDD,M1,
+2010,Centre-Val de Loire,precipitation,Fall,R20mm,M1,16
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,CSU,Obs,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,ID,Obs,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,CDD,Obs,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,R20mm,Obs,88
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,CSU,M1,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,ID,M1,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,CDD,M1,
+2010,Auvergne et Rhône-Alpes,precipitation,Fall,R20mm,M1,99
+2012,Centre-Val de Loire,heatwave,Summer,CSU,Obs,
+2012,Centre-Val de Loire,heatwave,Summer,ID,Obs,
+2012,Centre-Val de Loire,heatwave,Summer,CDD,Obs,48
+2012,Centre-Val de Loire,heatwave,Summer,R20mm,Obs,
+2012,Centre-Val de Loire,heatwave,Summer,CSU,M1,
+2012,Centre-Val de Loire,heatwave,Summer,ID,M1,
+2012,Centre-Val de Loire,heatwave,Summer,CDD,M1,68
+2012,Centre-Val de Loire,heatwave,Summer,R20mm,M1,
+2014,Normandie,heatwave,Summer,CSU,Obs,8
+2014,Normandie,heatwave,Summer,ID,Obs,
+2014,Normandie,heatwave,Summer,CDD,Obs,
+2014,Normandie,heatwave,Summer,R20mm,Obs,
+2014,Normandie,heatwave,Summer,CSU,M1,11
+2014,Normandie,heatwave,Summer,ID,M1,
+2014,Normandie,heatwave,Summer,CDD,M1,
+2014,Normandie,heatwave,Summer,R20mm,M1,
+2021,Bretagne,drought,Spring,CSU,Obs,
+2021,Bretagne,drought,Spring,ID,Obs,
+2021,Bretagne,drought,Spring,CDD,Obs,17
+2021,Bretagne,drought,Spring,R20mm,Obs,
+2021,Bretagne,drought,Spring,CSU,M1,
+2021,Bretagne,drought,Spring,ID,M1,
+2021,Bretagne,drought,Spring,CDD,M1,24
+2021,Bretagne,drought,Spring,R20mm,M1,
