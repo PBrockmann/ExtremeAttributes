@@ -157,7 +157,7 @@
                  
                     <h3>Summary</h3>
                     <div id="totals">
-                        <span id="active">-</span> out of <span id="total">-</span> events selected.
+                        <span id="active">-</span> of <span id="total">-</span> rows selected.
                     </div>
                     <div id="eventsListTitle" class="col-md-5" style="width: 700px;"></div>
                     <div id="eventsList" class="col-md-5" style="width: 710px; max-height: 200px; overflow-y: auto;"></div>
@@ -169,35 +169,41 @@
 
             <!--ROW 2-->
             <div class="row">
-                <div class='span12'>
+                <div class='span6'>
                   <table class='table table-hover' id='dc-table-graph'>
+                    <thead>
+                      <tr class='header'>
+                        <th>Year</th>
+                        <th>Count</th>
+                        <th>Total</th>
+                        <th>Avg</th>                       
+                      </tr>
+                    </thead>
+                  </table>
+                </div>        
+            </div>
+            <!--end ROW 2-->
+
+            <!--ROW 3-->
+            <div class="row">
+                <div class='span6'>
+                  <table class='table table-hover' id='dc-table-graph2'>
                     <thead>
                       <tr class='header'>
                         <th>Year</th>
                         <th>Region</th>
                         <th>Type</th>
                         <th>Season</th>
-                        <th>Data</th>
                         <th>Index</th>
-                        <th>Value</th>
+                        <th>Dataset</th>
+                        <th>#times above threshold</th>                        
                       </tr>
                     </thead>
                   </table>
-                </div>
-
-             
-
-            </div>
-            <!--end ROW 2-->
-
-            <!--ROW 3-->
-            <div class="row">
-                <div class='span12'>
-                    <h5>Summary2</h5>
-                  <div id="eventsList2" class="col-md-5" style="width: 710px; max-height: 200px; overflow-y: auto;"></div>
-                </div>             
+                </div>        
             </div>
             <!--end ROW 3-->
+           
 
 
         </div>
@@ -450,9 +456,7 @@
           eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
 
-        //   // Render the total number of events in tsv file
-        //   d3.selectAll("#total")
-        //     .text(filter.size());
+  
 
 
         }); //end d3.tsv
