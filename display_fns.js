@@ -61,7 +61,7 @@ function initCrossfilter() {
   yearGrouping = yearDimension.group().reduceSum(function(d) {
     return d.Value;
   });
-  print_filter("yearGrouping");
+  //print_filter("yearGrouping");
   yearChart  = dc.barChart("#chart-eventYear");
 
   minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
@@ -83,6 +83,7 @@ function initCrossfilter() {
   yearChart
     .width(200)
     .height(200)
+    .margins({top: 10, right: 30, bottom: 30, left: 40})
     .centerBar(true) //ensure that the bar for the bar graph is centred on the ticks on the x axis
     .elasticY(true)
     .dimension(yearDimension)
@@ -98,6 +99,7 @@ function initCrossfilter() {
     .xAxis().ticks(3).tickFormat(d3.format("d"));
 
   var yAxis_yearChart = yearChart.yAxis().ticks(6);
+  
 
   anomYearChart
     .width(200) //svg width
@@ -112,10 +114,32 @@ function initCrossfilter() {
 
   xAxis_anomYearChart = anomYearChart.xAxis().ticks(4);
 
-  
- 
-
   dc.renderAll();
+
+  //Add axis labels
+  //http://stackoverflow.com/questions/21114336/how-to-add-axis-labels-for-row-chart-using-dc-js-or-d3-js
+  function AddXAxis(chartToUpdate, displayText)
+  {
+      chartToUpdate.svg()
+                  .append("text")
+                  .attr("class", "x-axis-label")
+                  .attr("text-anchor", "middle")
+                  .attr("x", chartToUpdate.width()/2)
+                  .attr("y", chartToUpdate.height())
+                  .text(displayText);
+  }
+  AddXAxis(indexChart, "#times indices > threshold");
+  AddXAxis(anomYearChart, "#times dataset indices > threshold");
+
+  yearChart.svg()
+           .append("text")
+           .attr("class", "x-axis-label")
+           .attr("text-anchor", "middle")
+           .attr("x", -90)
+           .attr("y", -1)
+           .attr("dy", ".75em")
+           .attr("transform", "rotate(-90)")
+           .text("#times indices > thresh");
 
   function print_filter(filter){
     var f=eval(filter);
@@ -143,7 +167,6 @@ function updateMarkers() {
 function update0() {
   //updateMarkers();
   updateList();
-  console.log("selected: ", filter.groupAll().value());
   d3.select("#active").text(filter.groupAll().value());
 }
 

@@ -64,9 +64,13 @@
         }
         
         .place-label {
-            /* fill: #444; */
-            
+            /* fill: #444; */            
             fill: #8e8e8e;
+        }
+
+        .x-axis-label {           
+            font-size: 12px;
+            fill: #505050; 
         }
         
         text {
@@ -98,6 +102,9 @@
         .col-md-4 {
             /*width: 33.33333333333333%;*/
             width: 17%;
+        }
+         .col-md-3b {            
+            width: 12%;
         }
         .col-md-3 {
             /*width: 25%;*/
@@ -154,7 +161,7 @@
                 <div id="chart-indexType" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 50px;">
                     <h3>Index</h3>
                     <a class="reset" href="javascript:indexChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-                    <span class="reset" style="display: none;"><span class="filter"></span></span>
+                    <span class="reset" style="display: none;"><span class="filter"></span></span>                                       
                 </div>
 
                 <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 120px;">
@@ -163,9 +170,9 @@
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
 
-                <div id="chart-anomYear" class="dc-chart col-md-3" style="margin-top: 0px; margin-left: 120px;">
+                <div id="chart-anomYear" class="dc-chart col-md-3b" style="margin-top: 0px; margin-left: 120px;">
                     <h3>Datasets</h3>
-                    <h5>Number of anomalous events</h5>
+                    <h5>Select observations or model data</h5>                    
                     <a class="reset" href="javascript:anomYearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
