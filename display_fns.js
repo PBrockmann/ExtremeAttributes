@@ -1,7 +1,4 @@
-
-//var map;
 var markers = [] ;
-//var markerGroup ;
 
 var grat;
 
@@ -70,9 +67,6 @@ function initCrossfilter() {
   minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
   maxYear = parseInt(yearDimension.top(1)[0].Year) + 5; 
 
-  // xAxis_yearChart = yearChart.xAxis();
-  // xAxis_yearChart.ticks(6);  //.tickFormat(d3.format(".0f"));
-
   indexChart
     .width(200) //svg width
     .height(200) //svg height
@@ -118,154 +112,7 @@ function initCrossfilter() {
 
   xAxis_anomYearChart = anomYearChart.xAxis().ticks(4);
 
-  var dataTable2 = dc.dataTable("#dc-table-graph2");
-  dataTable2.width(960).height(800)
-    .dimension(yearDimension)
-    .group(function(d) { return "Events Table2"
-     })
-    .size(30)
-    .columns([
-      function(d) { return d.Year; },
-      function(d) { return d.Region; },
-      function(d) { return d.Type; },
-      function(d) { return d.Season; },
-      function(d) { return d.Data; },
-      function(d) { return d.Index; },
-      function(d) { return d.Value; }
-      //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
-      //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
-    ])
-    .sortBy(function(d){ return d.Year; })
-    .order(d3.ascending);
-
-  tableDimension = filter.dimension(
-    function (d) {
-      return d.Year;
-  });
-  var tableDimGroup = tableDimension.group().reduce(reduceAdd, reduceRemove, reduceInitial);
-
-  function reduceAdd(p, v) {    
-      if (v.Value) ++p.count;     
-      if (v.Value) p.total += parseInt(v.Value);
-      //console.log("p.total: ", p.total);
-      if (p.count == 0) {
-        p.average = 0;        
-      } else {
-          p.average = p.total / p.count;
-      };
-      
-      return p;
-    }
-
-    function reduceRemove(p, v) {
-      if (v.Value) --p.count;
-      if (p.total) p.total -= parseInt(v.Value);
-      if (p.count == 0) {
-        p.average = 0;
-      } else {
-        p.average = p.total / p.count;
-      };
-      return p;
-    }
-
-    function reduceInitial() {
-            return {
-                count: 0,
-                total: 0,
-                average: 0
-            };
-    }
-
-    var dataTable = dc.dataTable("#dc-table-graph");
-    dataTable.width(960).height(800)
-      .dimension(tableDimGroup)
-      .group(function(d) { return "Events Table"
-       })
-      .size(8)
-      .columns([
-        function(d) { return d.key; },
-        function(d) { return d.value.count; },
-        function(d) { return d.value.total; },
-        function(d) { return d.value.average; }
-        //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
-        //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
-      ])
-      .sortBy(function(d){ return d.key; })
-      .order(d3.ascending);
-
-
-
-  //https://becomingadatascientist.wordpress.com/tag/crossfilter-js/
-  // var cityDimensionGroup = yearDimension.group().reduce(
-  //       //add
-  //       function(p,v){
-  //           ++p.count;
-  //           p.review_sum += v.Value;  //v.review_count;        
-  //           p.review_avg = p.review_sum / p.count;            
-  //           return p;
-  //       },
-  //       //remove
-  //       function(p,v){
-  //           --p.count;
-  //           p.review_sum -= v.Value;  //v.review_count;            
-  //           p.review_avg = p.review_sum / p.count;            
-  //           return p;
-  //       },
-  //       //init
-  //       function(p,v){          
-  //           return {count:0, review_sum: 0, review_avg: 0};
-  //       }
-  //   );
-
-  // var dataTable2 = dc.dataTable("#dc-table-graph");
-  // dataTable2.width(800).height(800)
-  //   .dimension(cityDimensionGroup)
-  //   .group(function(d) { return "List of all Selected Businesses"
-  //    })
-  //   .size(100)
-  //   .columns([
-  //       function(d) { return d.Year; },
-  //       function(d) { return d.Region; },
-  //       function(d) { return d.Type; },
-  //       function(d) { return d.Season; }
-  //       //function(d) { return d.review_sum; }
-  //       //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.latitude + '+' + d.longitude +"\" target=\"_blank\">Map</a>"}
-  //   ])
-  //   .sortBy(function(d){ return d.Year; })
-  //   // (optional) sort order, :default ascending
-  //   .order(d3.ascending);
- 
- //Doesn't work:
- //http://www.codeproject.com/Articles/703261/Making-Dashboards-with-Dc-js-Part-3-Tips-and-Trick
-  // var datatable   = dc.dataTable("#dc-table-graph");
-  // var tableGroup = yearDimension.group().reduce(
-  //   function reduceAdd(p,v) {
-  //     p[v.Index] = v.Value;
-  //     p["Year"]= v.Year;
-  //     return p;
-  //   },
-  //   function reduceRemove(p,v) {
-  //     p[v.Index] = 0;
-  //     p["Year"]=v.Year;
-      
-  //     return p;
-  //   },
-  //   function reduceInitial() { return {}; }
-  // ); 
-
-  // datatable.width(960).height(800)
-  //     .dimension(tableGroup)
-  //     .group(function(d) {console.log("d.value.Year: ", d.value.Year); return d.value.Year;})
-  //     .size(30)
-  //     // dynamic columns creation using an array of closures
-  //     .columns([
-  //         function(d) {return d.key; },
-  //         function(d) {return d.value.CSU;},
-  //         function(d) {return d.value.ID;},
-  //         function(d) {return d.value.CDD;},
-  //         function(d) {return d.value.R20mm;}
-  //         //function(d) {return d.value.http_200+d.value.http_302+d.value.http_404;}
-  //     ]);
+  
  
 
   dc.renderAll();
@@ -358,9 +205,9 @@ function eventList() {
           .style("text-align", "left")
           .text("Dataset");
         eventItem.append("div")
-              .attr("class", "col-md-2")
+              .attr("class", "col-md-4")
           .style("text-align", "left")
-          .text("#times above threshold");  
+          .text("#times > thresh");  
 
 
         //Extreme Events table -- row values
@@ -409,8 +256,8 @@ function eventList() {
                 .attr("title", points[i].Data)
                 .text(points[i].Data);            
           eventItem.append("div")
-                .attr("class", "col-md-1")
-                .style("text-align", "right")
+                .attr("class", "col-md-4")
+                .style("text-align", "center")
                 .attr("title", points[i].Value)
                 .text(points[i].Value);          
         }
