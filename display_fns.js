@@ -50,7 +50,7 @@ function initCrossfilter() {
   var anomYearGroup = anomYearDim.group().reduceSum(function(d) {
     return d.Value;
   });
-  print_filter("anomYearGroup");
+  //print_filter("anomYearGroup");
   anomYearChart  = dc.rowChart("#chart-anomYear");
 
   yearDimension = filter.dimension(

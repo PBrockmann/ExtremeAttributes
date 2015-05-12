@@ -47,6 +47,7 @@
     <script src="geojson/FRA_admin_lines_countrybd.geojson" type="text/javascript"></script>
     <!--For d3 map layer -->
     <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script type="text/javascript" src="lib/tooltip.js"></script>
 
     <style>
         /*Map overlay*/
@@ -117,6 +118,16 @@
           .col-md-1 {
             /*width: 8.333333333333332%;*/
             width: 1.5%;
+        }
+        .tooltip{ background-color:rgba(68,136,187,0.5);;
+          margin: 10px;
+          height: 50px;
+          width: 150px;
+          padding-left: 10px; 
+          padding-top: 10px;
+        -webkit-border-radius:10px;
+        -moz-border-radius:10px;
+        border-radius:10px;
         }
 
     </style>
@@ -255,13 +266,20 @@
 
                 var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
                 var bounds = d3.geo.bounds(adminunits);
-
-
+                
                 //Extract the admin zone boundaries
                 var feature = g.selectAll('path')
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append('path');
+                    // .call(d3.helper.tooltip(
+                    //     function(d, i){
+                    //       //return "<b>"+d.properties.name + "</b><br/>pop: ";
+                    //       return "<b>HELLO</b>";
+                    //     }
+                    // ));
+                    //invisible: http://stackoverflow.com/questions/21515047/how-can-i-bind-d3-map-tooltips-to-leaflets-popuppane
+                    //console.log("feature: ", feature.__data__);
 
                 //Extract the place name labels
                 var places = g.selectAll('.place-label')
@@ -290,6 +308,8 @@
                                      .attr("class", "station-marker")
                                      .style("opacity", .6)                                     
                                      .attr("r", 5); 
+
+
 
                 map.on('viewreset', resetMap); //called when map is zoomed in or out
                 resetMap();
