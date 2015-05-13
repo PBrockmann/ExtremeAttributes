@@ -392,6 +392,107 @@
 
                     } //end resetMap()
 
+                    //http://bl.ocks.org/milkbread/6040213
+                    //console.log(admin)
+                    //READ ALL EXISTING ARCS
+      
+                 
+                    console.log("admin.objects.FRA_admin12.geometries[0]: ", admin.objects.FRA_admin12.geometries[0].arcs);
+                    console.log("admin.objects.FRA_admin12.geometries.length: ", admin.objects.FRA_admin12.geometries.length)
+                    var regions = admin.objects.FRA_admin12.geometries;                                
+
+                                        
+                    for (var i = 0; i < regions.length; ++i) {
+                        //console.log(regions[index].arcs);
+                        //regions_arcs[i] = regions[i].arcs;
+                   
+                        //console.log("i: ", i);
+                        //GET THE MEMBERS OF CURRENT ARC
+                        var members = regions[i];
+                        var popupContent = 'Region: <br>';
+                        console.log("members: ", members);
+
+                        members.popupContent = popupContent + "<b>" + members.properties.name + "<br>";                        
+
+                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
+                        // console.log(arcFeature)
+
+                        // //ADD ALL MEMBERS TO THE 'POPUPCONTENT'
+                        //members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
+                        // //GET THE Feature OF THE ARC
+                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
+                        // //console.log(i)
+                        // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
+                        // arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
+                        //MAKE A POLYLINE USING THE ARCFEATURE
+                        // for (var j=0;j<members.length;j++){
+                        //     console.log(j)
+                        //     //DEFINE THE COLOR...NEEDS A MORE COMPLICATED SOLUTION FOR COMPLETELY AUTOMATIC ATTRIBUTION
+                        //     switch (j){
+                        //         case 0: color='#f00'; weight=5;
+                        //             break;
+                        //         case 1: color='#00f'; weight=3.5;
+                        //             break;
+                        //         case 2: color='#0f0'; weight=2;
+                        //             break;
+                        //     }
+                        //     var polyline = L.polyline(arcFeature.geometry.coordinates, {color: color, weight: weight, opacity:1})
+                        //         .bindPopup(popupContent)
+                        //         .addTo(map);
+                        //         //console.log(polyline)
+                        //     overlays["Polyline"+i+"_"+j] = polyline;                            
+                        //}
+                        
+                    }
+                    
+                    //admin.arcs.map(function(arc, i){   
+                        //console.log("i: ", i);
+                        //GET THE MEMBERS OF CURRENT ARC
+                        // var members = getMembers(i);
+                        // var popupContent = 'Hey, hey ... I belong to: <br>';
+                        //console.log("i: ", i); //i up to 529
+                        //console.log("members.size: ", members.size);
+
+                        // //ADD ALL MEMBERS TO THE 'POPUPCONTENT'
+                        // members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
+                        // //GET THE Feature OF THE ARC
+                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
+                        // //console.log(i)
+                        // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
+                        // arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
+                        //MAKE A POLYLINE USING THE ARCFEATURE
+                        // for (var j=0;j<members.length;j++){
+                        //     console.log(j)
+                        //     //DEFINE THE COLOR...NEEDS A MORE COMPLICATED SOLUTION FOR COMPLETELY AUTOMATIC ATTRIBUTION
+                        //     switch (j){
+                        //         case 0: color='#f00'; weight=5;
+                        //             break;
+                        //         case 1: color='#00f'; weight=3.5;
+                        //             break;
+                        //         case 2: color='#0f0'; weight=2;
+                        //             break;
+                        //     }
+                        //     var polyline = L.polyline(arcFeature.geometry.coordinates, {color: color, weight: weight, opacity:1})
+                        //         .bindPopup(popupContent)
+                        //         .addTo(map);
+                        //         //console.log(polyline)
+                        //     overlays["Polyline"+i+"_"+j] = polyline;    
+                        
+                        // }
+                        
+                    //})
+                    // function getMembers(arc_id){
+                    //     var members = [];
+                    //     //CHECK FOR EXISTENCE OF ARC WITHIN EACH LINESTRING ... !!!VERYHARD CODED!!!
+                    //     admin.objects.FRA_admin12.geometries.forEach(function(feature){                           
+                    //         //console.log('indexof: '+feature.arcs.indexOf(arc_id))
+                    //         //if(feature.arcs.indexOf(arc_id)!=-1)members.push(feature.properties)
+                    //         members.push(feature.properties)
+                    //     })
+                    //     //console.log('members.name:',arc_id, members[arc_id].name)
+                    //     return members;
+                    // }
+
 
             }); //end d3.json
         }); //end d3.tsv
