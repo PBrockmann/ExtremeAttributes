@@ -401,62 +401,38 @@
                     console.log("admin.objects.FRA_admin12.geometries.length: ", admin.objects.FRA_admin12.geometries.length)
                     var regions = admin.objects.FRA_admin12.geometries;                                
 
-                                        
-                    for (var i = 0; i < regions.length; ++i) {
-                        //console.log(regions[index].arcs);
-                        //regions_arcs[i] = regions[i].arcs;
+                    var members = [];                    
+                    // for (var i = 0; i < regions.length; ++i) {
+                    //     //console.log(regions[index].arcs);
+                    //     //regions_arcs[i] = regions[i].arcs;
                    
-                        //console.log("i: ", i);
-                        //GET THE MEMBERS OF CURRENT ARC
-                        var members = regions[i];
-                        var popupContent = 'Region: <br>';
-                        console.log("members: ", members);
-
-                        members.popupContent = popupContent + "<b>" + members.properties.name + "<br>";                        
-
-                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
-                        // console.log(arcFeature)
-
-                        // //ADD ALL MEMBERS TO THE 'POPUPCONTENT'
-                        //members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
-                        // //GET THE Feature OF THE ARC
-                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
-                        // //console.log(i)
-                        // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
-                        // arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
-                        //MAKE A POLYLINE USING THE ARCFEATURE
-                        // for (var j=0;j<members.length;j++){
-                        //     console.log(j)
-                        //     //DEFINE THE COLOR...NEEDS A MORE COMPLICATED SOLUTION FOR COMPLETELY AUTOMATIC ATTRIBUTION
-                        //     switch (j){
-                        //         case 0: color='#f00'; weight=5;
-                        //             break;
-                        //         case 1: color='#00f'; weight=3.5;
-                        //             break;
-                        //         case 2: color='#0f0'; weight=2;
-                        //             break;
-                        //     }
-                        //     var polyline = L.polyline(arcFeature.geometry.coordinates, {color: color, weight: weight, opacity:1})
-                        //         .bindPopup(popupContent)
-                        //         .addTo(map);
-                        //         //console.log(polyline)
-                        //     overlays["Polyline"+i+"_"+j] = polyline;                            
-                        //}
+                    //     //console.log("i: ", i);
+                    //     //GET THE MEMBERS OF CURRENT ARC
+                    //     members[i] = regions[i].properties.name;                        
                         
-                    }
-                    
-                    //admin.arcs.map(function(arc, i){   
-                        //console.log("i: ", i);
-                        //GET THE MEMBERS OF CURRENT ARC
-                        // var members = getMembers(i);
-                        // var popupContent = 'Hey, hey ... I belong to: <br>';
-                        //console.log("i: ", i); //i up to 529
-                        //console.log("members.size: ", members.size);
+                    // }
 
-                        // //ADD ALL MEMBERS TO THE 'POPUPCONTENT'
-                        // members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
-                        // //GET THE Feature OF THE ARC
-                        // var arcFeature = topojson.feature(admin, {type: 'Polygon', arcs:[i], members:members});
+                    //Make an "arcs2" element in admin obj that lists arcs for FRA_admin12 regions ONLY
+                    var arcs2 = [];
+                    admin.objects.FRA_admin12.geometries.forEach(function(feature){
+                      arcs2.push(feature.arcs);//NB: push works for arrays only, not objs
+                    })
+                    admin.arcs2 = arcs2;
+                    console.log("admin after push: ", admin);                   
+                    
+                    admin.arcs2.map(function(arc, i){   
+                        //console.log("i, arc: ", i, arc);
+                        //GET THE MEMBERS OF CURRENT ARC
+                        var members = getMembers(i);
+                        //console.log('members',i, members)
+                        var popupContent = "Region: <br>";                        
+                        members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
+
+                        polygonType = admin.objects.FRA_admin12.geometries[i].type;
+                        //console.log("polygonType: ", polygonType);
+
+                        //GET THE Feature OF THE ARC
+                        var arcFeature = topojson.feature(admin);
                         // //console.log(i)
                         // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
                         // arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
@@ -480,18 +456,17 @@
                         
                         // }
                         
-                    //})
-                    // function getMembers(arc_id){
-                    //     var members = [];
-                    //     //CHECK FOR EXISTENCE OF ARC WITHIN EACH LINESTRING ... !!!VERYHARD CODED!!!
-                    //     admin.objects.FRA_admin12.geometries.forEach(function(feature){                           
-                    //         //console.log('indexof: '+feature.arcs.indexOf(arc_id))
-                    //         //if(feature.arcs.indexOf(arc_id)!=-1)members.push(feature.properties)
-                    //         members.push(feature.properties)
-                    //     })
-                    //     //console.log('members.name:',arc_id, members[arc_id].name)
-                    //     return members;
-                    // }
+                    })
+                    function getMembers(arc_id){
+                        var members = [];
+                        admin.objects.FRA_admin12.geometries.forEach(function(feature){
+                            //is this if condition really necessary?
+                            //if(feature.arcs.indexOf(arc_id)!=-1) members.push(feature.properties)
+                            members.push(feature.properties)
+                        })
+                        //console.log('members: ', members);
+                        return members;
+                    }
 
 
             }); //end d3.json
