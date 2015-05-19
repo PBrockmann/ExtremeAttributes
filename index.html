@@ -250,17 +250,7 @@
             }).addTo(map);
         var overlays = {};
 
-        // //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
-        // var tip = d3.tip()
-        //   .attr('class', 'd3-tip')
-        //   //.offset([-10, 0])
-        //   .html(function(d) {
-        //     //return "<strong>Hello:</strong>";
-        //     console.log("d: ", d);
-        //     return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: <span id='active'></span> ";
-        //   })
-
-
+      
         //d3 + Leaflet + topojson    
         var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
@@ -286,16 +276,14 @@
             regionGroup.all().forEach(function(d, i) {
                 console.log("d.key; d.value: ", d.key +";"+ d.value);
             });
-
-            
-            
+                    
 
             //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
             var totAnom;
             var tip = d3.tip()
               .attr('class', 'd3-tip')
               //.offset([-10, 0])
-              .html(function(d) {                
+              .html(function(d) { //get #anomalies for each region     
                 regionGroup.all().forEach(function(r, i) {
                     if (r.key == d.properties.name) {
                         console.log("r.key; r.value: ", r.key +";"+ r.value);
@@ -303,7 +291,7 @@
                     }
                 });
 
-                //var totAnom = regionGroup.all()[0].value;
+                //text to display in popup window
                 return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
               })
             svg.call(tip);  
@@ -319,19 +307,20 @@
                     var bounds = d3.geo.bounds(adminunits);
                     
                     //Extract the admin zone boundaries
-                    var feature = g.selectAll('path')
+                    var feature = g.selectAll("path")
                         .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                         .enter()
-                        .append('path')
-                        .on('mouseover', tip.show)
-                        .on('mouseout', tip.hide);                   
+                        .append("path")
+                        .on("mouseover", tip.show)
+                        .on("mouseout", tip.hide)
+                        .on("click", tip.hide);                   
 
                     //Extract the place name labels
-                    var places = g.selectAll('.place-label')
+                    var places = g.selectAll(".place-label")
                         .data(topojson.feature(admin, admin.objects.FRA_places).features)
                         .enter()
-                        .append('text')
-                        .attr('class', 'place-label');
+                        .append("text")
+                        .attr("class", "place-label");
 
                     //Define city markers using the coordinates associated with FRA_places              
                     var cityMarker = g.selectAll("circle")
@@ -618,16 +607,6 @@
         //   markerGroup.addLayer(markers[i]);        
         // }
         //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS****
-
-          //call fns defined in display_fns.js
-        //   initCrossfilter();
-        //   eventList(); //renders Table
-        // //   update1(); //updates number of Event Types selected
-
-  
-
-
-        // }); //end d3 csv read file
 
         //Change mouse to pointer when hovering over Event Table rows
         //need window.onload because Id element doesn't exist yet

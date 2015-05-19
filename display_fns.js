@@ -174,17 +174,7 @@ function updateMarkers() {
 function update0() {
   //updateMarkers();
   updateList();
-  console.log("updateList regionGroup.all(): ", regionGroup.all());
-
-  anomRegions = [];
-  for (var i = 0; i < regionGroup.all().length; i++) {    
-    if (regionGroup.all()[i].value > 0) {
-      anomRegions.push(regionGroup.all()[i]);
-    }    
-  }
-  console.log("anomRegions: ", anomRegions);
-
-
+  //console.log("updateList regionGroup.all(): ", regionGroup.all());
 
   //d3.select("#active").text(filter.groupAll().value());
   d3.select("#active").text(function (d) {
