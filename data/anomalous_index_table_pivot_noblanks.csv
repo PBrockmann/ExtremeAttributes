@@ -1,0 +1,32 @@
+Year,Region,Type,Season,Index,Data,Value
+1950,"Alsace, Champagne-Ardenne et Lorraine",precipitation,Fall,CSU,Obs,4
+1950,"Alsace, Champagne-Ardenne et Lorraine",precipitation,Fall,R20mm,Obs,11
+1960,"Bretagne",drought,Spring,CDD,Obs,12
+1970,"Bourgogne et Franche-Comté",drought,Spring,CDD,M1,9
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID,Obs,20
+1980,"Aquitaine, Limousin et Poitou-Charentes",extreme cold,Winter,ID,M1,26
+1990,"Provence-Alpes-Côte d'Azur",extreme cold,Winter,ID,Obs,13
+1990,"Provence-Alpes-Côte d'Azur",extreme cold,Winter,ID,M1,18
+2000,"Nord-Pas-de-Calais et Picardie",extreme cold,Winter,ID,Obs,14
+2000,"Nord-Pas-de-Calais et Picardie",extreme cold,Winter,ID,M1,18
+2001,"Auvergne et Rhône-Alpes",heatwave,Summer,CSU,Obs,33
+2001,"Auvergne et Rhône-Alpes",heatwave,Summer,CSU,M1,31
+2005,"Pays de la Loire",heatwave,Summer,CSU,Obs,15
+2005,"Pays de la Loire",heatwave,Summer,CSU,M1,23
+2005,"Centre-Val de Loire",heatwave,Summer,CSU,Obs,5
+2005,"Centre-Val de Loire",heatwave,Summer,CSU,M1,7
+2006,"Languedoc-Roussillon et Midi-Pyrénées",precipitation,Fall,R20mm,Obs,65
+2006,"Languedoc-Roussillon et Midi-Pyrénées",precipitation,Fall,R20mm,M1,61
+2006,"Languedoc-Roussillon et Midi-Pyrénées",precipitation,Fall,R20mm,M1,55
+2010,"Île-de-France",precipitation,Fall,R20mm,Obs,46
+2010,"Île-de-France",precipitation,Fall,R20mm,M1,39
+2010,"Centre-Val de Loire",precipitation,Fall,R20mm,Obs,11
+2010,"Centre-Val de Loire",precipitation,Fall,R20mm,M1,16
+2010,"Auvergne et Rhône-Alpes",precipitation,Fall,R20mm,Obs,88
+2010,"Auvergne et Rhône-Alpes",precipitation,Fall,R20mm,M1,99
+2012,"Centre-Val de Loire",heatwave,Summer,CDD,Obs,48
+2012,"Centre-Val de Loire",heatwave,Summer,CDD,M1,68
+2014,"Normandie",heatwave,Summer,CSU,Obs,8
+2014,"Normandie",heatwave,Summer,CSU,M1,11
+2021,"Bretagne",drought,Spring,CDD,Obs,17
+2021,"Bretagne",drought,Spring,CDD,M1,24

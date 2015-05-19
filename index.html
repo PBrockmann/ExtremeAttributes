@@ -47,7 +47,6 @@
     <script src="geojson/FRA_admin_lines_countrybd.geojson" type="text/javascript"></script>
     <!--For d3 map layer -->
     <script src="http://d3js.org/topojson.v1.min.js"></script>
-    <script type="text/javascript" src="lib/tooltip.js"></script>
     <script type="text/javascript" src="lib/d3tip.js"></script>
 
     <style>
@@ -119,18 +118,7 @@
           .col-md-1 {
             /*width: 8.333333333333332%;*/
             width: 1.5%;
-        }
-        .tooltip{ background-color:rgba(68,136,187,0.5);;
-          margin: 10px;
-          height: 50px;
-          width: 150px;
-          padding-left: 10px; 
-          padding-top: 10px;
-        -webkit-border-radius:10px;
-        -moz-border-radius:10px;
-        border-radius:10px;
-         z-index: 1;
-        }
+        }     
 
         .d3-tip {
           line-height: 1;
@@ -262,279 +250,305 @@
             }).addTo(map);
         var overlays = {};
 
-        //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
-        var tip = d3.tip()
-          .attr('class', 'd3-tip')
-          .offset([-10, 0])
-          .html(function(d) {
-            //return "<strong>Hello:</strong>";
-            console.log("d: ", d);
-            return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
-          })
+        // //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
+        // var tip = d3.tip()
+        //   .attr('class', 'd3-tip')
+        //   //.offset([-10, 0])
+        //   .html(function(d) {
+        //     //return "<strong>Hello:</strong>";
+        //     console.log("d: ", d);
+        //     return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: <span id='active'></span> ";
+        //   })
 
 
         //d3 + Leaflet + topojson    
         var svg = d3.select(map.getPanes().overlayPane).append("svg"),
             g = svg.append("g").attr("class", "leaflet-zoom-hide");
 
-        svg.call(tip);
+        //svg.call(tip);
 
         var path = d3.geo.path().projection(projectPoint);
 
-        
+        //TRY READING CSV AS PARENT LOOP
+        d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {  
+            events.forEach(function(d, i) {
+            console.log("in d3.tsv");
+            });
 
-        //Read in admin and place name overlays for base Leaflet map of France      
-        d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
-            if (error) return console.error(error);
+            points = events;
+            initCrossfilter();
+            eventList(); //renders Table
+            //   update1(); //updates number of Event Types selected
 
-            //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
-            d3.json("geojson/cities.geojson", function(error, data) {
+            //console.log("from index.html: ", anomRegions[0].key);
+            console.log("from index.html: ", regionGroup.all()[0].key);
 
-                var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
-                var bounds = d3.geo.bounds(adminunits);
-                
-                //Extract the admin zone boundaries
-                var feature = g.selectAll('path')
-                    .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
-                    .enter()
-                    .append('path')
-                    .on('mouseover', tip.show)
-                    .on('mouseout', tip.hide);
-                    // .call(d3.helper.tooltip(
-                    //     function(d, i){
-                    //       //return "<b>"+d.properties.name + "</b><br/>pop: ";
-                    //       return "<b>HELLO</b>";
-                    //     }
-                    // ));
-                    //invisible: http://stackoverflow.com/questions/21515047/how-can-i-bind-d3-map-tooltips-to-leaflets-popuppane
-                    //console.log("feature: ", feature.__data__);
+            regionGroup.all().forEach(function(d, i) {
+                console.log("d.key; d.value: ", d.key +";"+ d.value);
+            });
 
-                //Extract the place name labels
-                var places = g.selectAll('.place-label')
-                    .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                    .enter()
-                    .append('text')
-                    .attr('class', 'place-label');
+            
+            
 
-                //Define city markers using the coordinates associated with FRA_places              
-                var cityMarker = g.selectAll("circle")
-                    .data(topojson.feature(admin, admin.objects.FRA_places).features)
-                    .enter()
-                    .append("circle")
-                    .style("stroke", "black")
-                    .style("opacity", 0.6)
-                    .style("fill", "#8e8e8e")
-                    .attr("class", "city-marker")
-                    .attr("r", 2);
+            //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
+            var totAnom;
+            var tip = d3.tip()
+              .attr('class', 'd3-tip')
+              //.offset([-10, 0])
+              .html(function(d) {                
+                regionGroup.all().forEach(function(r, i) {
+                    if (r.key == d.properties.name) {
+                        console.log("r.key; r.value: ", r.key +";"+ r.value);
+                        totAnom = r.value;
+                    }
+                });
 
-                //note: needs to be transformed in resetMap() like the other g nodes in order to stay in place at different zoom levels
-                var stationMarker = g.selectAll(".station-marker")
-                                     .data(data.features)
-                                     //.data(data)
-                                     .enter()
-                                     .append("circle")
-                                     .attr("class", "station-marker")
-                                     .style("opacity", .6)                                     
-                                     .attr("r", 5); 
+                //var totAnom = regionGroup.all()[0].value;
+                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
+              })
+            svg.call(tip);  
 
+            //Read in admin and place name overlays for base Leaflet map of France      
+            d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
+                if (error) return console.error(error);
 
-                map.on('viewreset', resetMap); //called when map is zoomed in or out
-                resetMap();
+                //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
+                d3.json("geojson/cities.geojson", function(error, data) {
 
-                // Reposition the SVG to cover the features.
-                function resetMap() {
-                        //set opacity of labels and markers depending on zoom level
-                        var currentZoom = map.getZoom();
-                        //console.log("currentZoom", currentZoom);
-                        //if currentZoom <= 4, don't display place labels                        
-                        g.selectAll(".place-label").attr("opacity", currentZoom <= 4 ? 0 : 1);                        
+                    var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
+                    var bounds = d3.geo.bounds(adminunits);
+                    
+                    //Extract the admin zone boundaries
+                    var feature = g.selectAll('path')
+                        .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
+                        .enter()
+                        .append('path')
+                        .on('mouseover', tip.show)
+                        .on('mouseout', tip.hide);                   
 
-                        //adjust station marker radius as a fn of zoom level
-                        g.selectAll(".station-marker").attr("r", function () {                
-                            if (currentZoom == 5) return 4;
-                            else if (currentZoom <= 4 && currentZoom >= 3) return 2;
-                            else if (currentZoom < 3) return 0;
-                            else return 5;
-                        });                                
-                        
-                        //adjust city marker opacity as a fn of zoom level
-                        g.selectAll(".city-marker").style("opacity", function () {                
-                            if (currentZoom == 5) return 0.5;
-                            else if (currentZoom <= 4 && currentZoom >= 3) return 0.2;
-                            else if (currentZoom < 3) return 0;
-                            else return 0.6;
-                        });
+                    //Extract the place name labels
+                    var places = g.selectAll('.place-label')
+                        .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                        .enter()
+                        .append('text')
+                        .attr('class', 'place-label');
+
+                    //Define city markers using the coordinates associated with FRA_places              
+                    var cityMarker = g.selectAll("circle")
+                        .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                        .enter()
+                        .append("circle")
+                        .style("stroke", "black")
+                        .style("opacity", 0.6)
+                        .style("fill", "#8e8e8e")
+                        .attr("class", "city-marker")
+                        .attr("r", 2);
+
+                    //note: needs to be transformed in resetMap() like the other g nodes in order to stay in place at different zoom levels
+                    var stationMarker = g.selectAll(".station-marker")
+                                         .data(data.features)
+                                         //.data(data)
+                                         .enter()
+                                         .append("circle")
+                                         .attr("class", "station-marker")
+                                         .style("opacity", .6)                                     
+                                         .attr("r", 5); 
 
 
-                        var bottomLeft = projectPoint(bounds[0]),
-                            topRight = projectPoint(bounds[1]);
+                    map.on('viewreset', resetMap); //called when map is zoomed in or out
+                    resetMap();
 
-                        svg.attr('width', topRight[0] - bottomLeft[0])
-                            .attr('height', bottomLeft[1] - topRight[1])
-                            .style('margin-left', bottomLeft[0] + 'px')
-                            .style('margin-top', topRight[1] + 'px');
+                    // Reposition the SVG to cover the features.
+                    function resetMap() {
+                            //set opacity of labels and markers depending on zoom level
+                            var currentZoom = map.getZoom();
+                            //console.log("currentZoom", currentZoom);
+                            //if currentZoom <= 4, don't display place labels                        
+                            g.selectAll(".place-label").attr("opacity", currentZoom <= 4 ? 0 : 1);                        
 
-                        var translation = -bottomLeft[0] + ',' + -topRight[1];
-                        g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
-
-                        //Plot the admin zone boundaries
-                        feature.attr('d', path);                       
-
-                        //Plot the place names
-                        places.attr('name', function(d) {
-                                return d.properties.name;
-                            })
-                            .attr('class', 'place-label')
-                            .attr('transform', function(d) {
-                                return 'translate(' + path.centroid(d) + ')';
-                            })
-                            .attr('x', -20)
-                            .attr('dy', '.35em')
-                            .text(function(d) {
-                                return d.properties.name;
-                            });
-
-                        //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
-                        svg.selectAll(".place-label")
-                            .attr("x", function(d) {
-                                return d.geometry.coordinates[0] > -1 ? 6 : -6;
-                            })
-                            .style("text-anchor", function(d) {
-                                return d.geometry.coordinates[0] > -1 ? "start" : "end";
+                            //adjust station marker radius as a fn of zoom level
+                            g.selectAll(".station-marker").attr("r", function () {                
+                                if (currentZoom == 5) return 4;
+                                else if (currentZoom <= 4 && currentZoom >= 3) return 2;
+                                else if (currentZoom < 3) return 0;
+                                else return 5;
+                            });                                
+                            
+                            //adjust city marker opacity as a fn of zoom level
+                            g.selectAll(".city-marker").style("opacity", function () {                
+                                if (currentZoom == 5) return 0.5;
+                                else if (currentZoom <= 4 && currentZoom >= 3) return 0.2;
+                                else if (currentZoom < 3) return 0;
+                                else return 0.6;
                             });
 
 
-                        //Plot the city markers (small circles)
-                        cityMarker.attr("transform",
-                            function(d) {
-                                return 'translate(' + path.centroid(d) + ')';
-                            }
-                        )
+                            var bottomLeft = projectPoint(bounds[0]),
+                                topRight = projectPoint(bounds[1]);
 
-                        stationMarker.attr("transform",
-                            function(d) {                                
-                                return 'translate(' + path.centroid(d) + ')';
-                            }
-                        )
+                            svg.attr('width', topRight[0] - bottomLeft[0])
+                                .attr('height', bottomLeft[1] - topRight[1])
+                                .style('margin-left', bottomLeft[0] + 'px')
+                                .style('margin-top', topRight[1] + 'px');
 
-                    } //end resetMap()
+                            var translation = -bottomLeft[0] + ',' + -topRight[1];
+                            g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
 
-                    //http://bl.ocks.org/milkbread/6040213
-                    //console.log(admin)
-                    //READ ALL EXISTING ARCS                       
-                    console.log("admin.objects.FRA_admin12.geometries[0]: ", admin.objects.FRA_admin12.geometries[0].arcs);
-                    console.log("admin.objects.FRA_admin12.geometries.length: ", admin.objects.FRA_admin12.geometries.length)
-                    console.log("admin: ", admin)
-                    
+                            //Plot the admin zone boundaries
+                            feature.attr('d', path);                       
 
-                    var topology = admin;
-                    delete topology.arcs;
-                    delete topology.objects.FRA_places;
-                    console.log("topology: ", topology); //copy admin, remove .arcs and replace with admin arcs
+                            //Plot the place names
+                            places.attr('name', function(d) {
+                                    return d.properties.name;
+                                })
+                                .attr('class', 'place-label')
+                                .attr('transform', function(d) {
+                                    return 'translate(' + path.centroid(d) + ')';
+                                })
+                                .attr('x', -20)
+                                .attr('dy', '.35em')
+                                .text(function(d) {
+                                    return d.properties.name;
+                                });
 
-                    var regions = admin.objects.FRA_admin12.geometries;                                
+                            //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
+                            svg.selectAll(".place-label")
+                                .attr("x", function(d) {
+                                    return d.geometry.coordinates[0] > -1 ? 6 : -6;
+                                })
+                                .style("text-anchor", function(d) {
+                                    return d.geometry.coordinates[0] > -1 ? "start" : "end";
+                                });
 
-                    var members = [];                    
-                    // for (var i = 0; i < regions.length; ++i) {
-                    //     //console.log(regions[index].arcs);
-                    //     //regions_arcs[i] = regions[i].arcs;
-                   
-                    //     //console.log("i: ", i);
-                    //     //GET THE MEMBERS OF CURRENT ARC
-                    //     members[i] = regions[i].properties.name;                        
+
+                            //Plot the city markers (small circles)
+                            cityMarker.attr("transform",
+                                function(d) {
+                                    return 'translate(' + path.centroid(d) + ')';
+                                }
+                            )
+
+                            stationMarker.attr("transform",
+                                function(d) {                                
+                                    return 'translate(' + path.centroid(d) + ')';
+                                }
+                            )
+
+                        } //end resetMap()
+
+                        //http://bl.ocks.org/milkbread/6040213
+                        //console.log(admin)
+                        //READ ALL EXISTING ARCS                       
                         
-                    // }
-
-                    //Make an "arcs" element in admin obj that lists arcs for FRA_admin12 regions ONLY
-                    var arcs = [];
-                    topology.objects.FRA_admin12.geometries.forEach(function(feature){
-                      arcs.push(feature.arcs);//NB: push works for arrays only, not objs
-                    })
-                    topology.arcs = arcs;
-                    console.log("topology after push: ", topology);                   
-                    
-                    topology.arcs.map(function(arc, i){   
-                        console.log("arc; i: ", arc +"; "+ i);
-                        //GET THE MEMBERS OF CURRENT ARC
-                        var one_member = [getOneMember(i)];
-                        console.log("one_member: ", one_member);
-                        var members = getMembers(i);                        
-
-                        var popupContent = "Region: <br>";                        
-                        one_member.forEach(function(d){popupContent = popupContent + "<b>" + d.name + "<br>"})
-                        // members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
-                        // console.log("members after forEach: ", members);
-                        // console.log("popupContent: ", popupContent);
+                        console.log("admin: ", admin)
                         
-                        console.log("popupContent: ", popupContent);
-                       
 
-                        polygonType = topology.objects.FRA_admin12.geometries[i].type;
-                        console.log("polygonType: ", polygonType);
+                        var topology = admin;
+                        delete topology.arcs;
+                        delete topology.objects.FRA_places;
+                        console.log("topology: ", topology); //copy admin, remove .arcs and replace with admin arcs
 
-                        //GET THE Feature OF THE ARC              
-                        //var arcFeature = topojson.feature(topology, {type: 'LineString', arcs:[i], members:members[i]});
-                        //var arcFeature = topojson.feature(topology, {type: 'LineString', arcs:[i], one_member:one_member});
-                        // var arcFeature = topojson.feature(topology, {type: polygonType, arcs:[[i]]});
-                        // console.log("arcFeature: ", arcFeature);
-                        // // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
-                        // //arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
-                        // console.log("members.length: ", members.length);
-                        // //MAKE A POLYLINE USING THE ARCFEATURE
-                        // for (var j=0;j<1;j++){
-                      
-                        //     console.log("i, j, one_member.length : ", i +","+ j +","+ one_member.length);
-                        // //     //DEFINE THE COLOR...NEEDS A MORE COMPLICATED SOLUTION FOR COMPLETELY AUTOMATIC ATTRIBUTION
-                        // //     switch (j){
-                        // //         case 0: color='#f00'; weight=5;
-                        // //             break;
-                        // //         case 1: color='#00f'; weight=3.5;
-                        // //             break;
-                        // //         case 2: color='#0f0'; weight=2;
-                        // //             break;
-                        // //     }
-                        //     console.log("arcFeature.geometry.coordinates: ", arcFeature.geometry.coordinates);
-                        //     var polyline = L.polyline(arcFeature.geometry.coordinates, {color: "blue", weight: 5, opacity:1})
-                        //         .bindPopup(popupContent)
-                        //         .addTo(map);
-                        //         //console.log(polyline)
-                        //     overlays["Polyline"+i+"_"+j] = polyline;    
-                        
-                        // }
-                        
-                    })
-                    // function getMembers(arc_id){
-                    //     var tmp = []; var members = [];
-                    //     console.log("topology.objects.FRA_admin12.geometries[arc_id].properties", topology.objects.FRA_admin12.geometries[arc_id].properties);
-                    //     //members = topology.objects.FRA_admin12.geometries[arc_id].properties;
-                    //     //members.push(topology.objects.FRA_admin12.geometries[arc_id].properties);
-                    //     topology.objects.FRA_admin12.geometries.forEach(function(feature){                                     
-                    //         tmp.push(feature.properties);
-                    //     })
-                    //     //members = topology.objects.FRA_admin12.geometries[arc_id].properties;
-                    //     members = [tmp[arc_id]];
-                    //     console.log('members: ', members);                        
-                    //     return members;
-                    // }
-                    function getMembers(arc_id){
+                        var regions = admin.objects.FRA_admin12.geometries;                                
+
                         var members = [];                        
-                        topology.objects.FRA_admin12.geometries.forEach(function(feature){
-                            members.push(feature.properties)
-                        })
-                        //console.log('arc_id, members:',arc_id, members);
-                        return members;
-                    }
-                    function getOneMember(arc_id){
-                        var member = [];                        
-                        topology.objects.FRA_admin12.geometries.forEach(function(feature){                                     
-                            member.push(feature.properties);
-                        })                                     
-                        return member[arc_id];
-                    }
-                    
+                        //     //console.log("i: ", i);
+                        //     //GET THE MEMBERS OF CURRENT ARC
+                        //     members[i] = regions[i].properties.name;                        
+                            
+                        // }
 
-            }); //end d3.json
-        }); //end d3.tsv
+                        //Make an "arcs" element in admin obj that lists arcs for FRA_admin12 regions ONLY
+                        var arcs = [];
+                        topology.objects.FRA_admin12.geometries.forEach(function(feature){
+                          arcs.push(feature.arcs);//NB: push works for arrays only, not objs
+                        })
+                        topology.arcs = arcs;
+                        console.log("topology after push: ", topology);                   
+                        
+                        topology.arcs.map(function(arc, i){   
+                            //console.log("arc; i: ", arc +"; "+ i);
+                            //GET THE MEMBERS OF CURRENT ARC
+                            var one_member = [getOneMember(i)];
+                            //console.log("one_member: ", one_member);
+                            var members = getMembers(i);                        
+
+                            var popupContent = "Region: <br>";                        
+                            one_member.forEach(function(d){popupContent = popupContent + "<b>" + d.name + "<br>"})
+                            // members.forEach(function(member){popupContent = popupContent + "<b>" + member.name + "<br>"})
+                            // console.log("members after forEach: ", members);
+                            // console.log("popupContent: ", popupContent);
+                            
+                            //console.log("popupContent: ", popupContent);
+                           
+
+                            polygonType = topology.objects.FRA_admin12.geometries[i].type;
+                            console.log("polygonType: ", polygonType);
+
+                            //GET THE Feature OF THE ARC              
+                            //var arcFeature = topojson.feature(topology, {type: 'LineString', arcs:[i], members:members[i]});
+                            //var arcFeature = topojson.feature(topology, {type: 'LineString', arcs:[i], one_member:one_member});
+                            // var arcFeature = topojson.feature(topology, {type: polygonType, arcs:[[i]]});
+                            // console.log("arcFeature: ", arcFeature);
+                            // // //D'OH...CHANGE THE COORDINATES TO FIT FOR LEAFLET-POLYLINE
+                            // //arcFeature.geometry.coordinates = arcFeature.geometry.coordinates.map(function(d){return [d[1],d[0]]})
+                            // console.log("members.length: ", members.length);
+                            // //MAKE A POLYLINE USING THE ARCFEATURE
+                            // for (var j=0;j<1;j++){
+                          
+                            //     console.log("i, j, one_member.length : ", i +","+ j +","+ one_member.length);
+                            // //     //DEFINE THE COLOR...NEEDS A MORE COMPLICATED SOLUTION FOR COMPLETELY AUTOMATIC ATTRIBUTION
+                            // //     switch (j){
+                            // //         case 0: color='#f00'; weight=5;
+                            // //             break;
+                            // //         case 1: color='#00f'; weight=3.5;
+                            // //             break;
+                            // //         case 2: color='#0f0'; weight=2;
+                            // //             break;
+                            // //     }
+                            //     console.log("arcFeature.geometry.coordinates: ", arcFeature.geometry.coordinates);
+                            //     var polyline = L.polyline(arcFeature.geometry.coordinates, {color: "blue", weight: 5, opacity:1})
+                            //         .bindPopup(popupContent)
+                            //         .addTo(map);
+                            //         //console.log(polyline)
+                            //     overlays["Polyline"+i+"_"+j] = polyline;    
+                            
+                            // }
+                            
+                        })
+                        // function getMembers(arc_id){
+                        //     var tmp = []; var members = [];
+                        //     console.log("topology.objects.FRA_admin12.geometries[arc_id].properties", topology.objects.FRA_admin12.geometries[arc_id].properties);
+                        //     //members = topology.objects.FRA_admin12.geometries[arc_id].properties;
+                        //     //members.push(topology.objects.FRA_admin12.geometries[arc_id].properties);
+                        //     topology.objects.FRA_admin12.geometries.forEach(function(feature){                                     
+                        //         tmp.push(feature.properties);
+                        //     })
+                        //     //members = topology.objects.FRA_admin12.geometries[arc_id].properties;
+                        //     members = [tmp[arc_id]];
+                        //     console.log('members: ', members);                        
+                        //     return members;
+                        // }
+                        function getMembers(arc_id){
+                            var members = [];                        
+                            topology.objects.FRA_admin12.geometries.forEach(function(feature){
+                                members.push(feature.properties)
+                            })
+                            //console.log('arc_id, members:',arc_id, members);
+                            return members;
+                        }
+                        function getOneMember(arc_id){
+                            var member = [];                        
+                            topology.objects.FRA_admin12.geometries.forEach(function(feature){                                     
+                                member.push(feature.properties);
+                            })                                     
+                            return member[arc_id];
+                        }
+                        
+
+                }); //end d3 geojson
+            }); //end d3 topojson
+
+        }); //end d3 csv read file
 
         //Use Leaflet to implement a D3 geographic projection.
         //Put outside the read file loops
@@ -546,14 +560,12 @@
         }   
 
         //READ IN TSV FILE FOR dc.js
-        //d3.tsv("data/anomalous_index_table.tsv", function(events) {
-        d3.csv("data/anomalous_index_table_pivot.csv", function(events) {  
-        //d3.csv("data/test_table_pivot.csv", function(events) {  
-          events.forEach(function(d, i) {
-            console.log("in d3.tsv");
-          });
+        // d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {  
+        //   events.forEach(function(d, i) {
+        //     console.log("in d3.tsv");
+        //   });
 
-          points = events;
+        //   points = events;
 
         //   //Leaftlet clusters  
         //   markerGroup = new L.MarkerClusterGroup({maxClusterRadius: 50, showCoverageOnHover: false});
@@ -608,14 +620,14 @@
         //map.addLayer(markerGroup); //****THIS LINE COVERS UP THE HOVER HIGHLIGHTS****
 
           //call fns defined in display_fns.js
-          initCrossfilter();
-          eventList(); //renders Table
-        //   update1(); //updates number of Event Types selected
+        //   initCrossfilter();
+        //   eventList(); //renders Table
+        // //   update1(); //updates number of Event Types selected
 
   
 
 
-        }); //end d3.tsv
+        // }); //end d3 csv read file
 
         //Change mouse to pointer when hovering over Event Table rows
         //need window.onload because Id element doesn't exist yet
@@ -623,6 +635,9 @@
         window.onload = function() {
             document.getElementById("eventsList").style.cursor = "pointer";
         }
+
+       
+
     </script>
 
 

@@ -11,6 +11,8 @@ var latDimension;
 var lonDimension;
 var idDimension;
 var idGrouping;
+var regionDim;
+var regionGroup;
 
 var index_types = ["CSU", "ID", "CDD", "R20mm"];
 var datasets = ["Obs", "M1"];
@@ -27,7 +29,12 @@ function initCrossfilter() {
   // dimension and group for looking up currently selected markers
   idDimension = filter.dimension(function(p, i) { return i; });
   idGrouping = idDimension.group(function(id) { return id; });
-
+  //regions
+  regionDim = filter.dimension(function(p, i) { return p.Region; });
+  regionGroup = regionDim.group().reduceSum(function(d) {
+    //console.log("region d.Value: ", d.Value); //individual row values
+    return d.Value;
+  });
 
   var indexDimension = filter.dimension(
       function(p) {
@@ -167,7 +174,25 @@ function updateMarkers() {
 function update0() {
   //updateMarkers();
   updateList();
-  d3.select("#active").text(filter.groupAll().value());
+  console.log("updateList regionGroup.all(): ", regionGroup.all());
+
+  anomRegions = [];
+  for (var i = 0; i < regionGroup.all().length; i++) {    
+    if (regionGroup.all()[i].value > 0) {
+      anomRegions.push(regionGroup.all()[i]);
+    }    
+  }
+  console.log("anomRegions: ", anomRegions);
+
+
+
+  //d3.select("#active").text(filter.groupAll().value());
+  d3.select("#active").text(function (d) {
+    // test = filter.groupAll();
+    // console.log("test: ", test.value());
+    return filter.groupAll().value();
+  });
+
 }
 
 // Update dc charts, map markers, list and number of selected
@@ -289,10 +314,8 @@ function eventList() {
 function updateList() {
   var pointIds = idGrouping.all();
   for (var i = 0; i < pointIds.length; i++) {
-    if (pointIds[i].value > 0)
-   $("#"+(i+1)).show();
-    else
-   $("#"+(i+1)).hide();
+    if (pointIds[i].value > 0) $("#"+(i+1)).show();
+    else $("#"+(i+1)).hide();
   }
 }
 
