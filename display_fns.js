@@ -93,12 +93,9 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function() {
                         console.log("saveRegion: ", saveRegion);                        
-                        var active   = path.active ? false : true,
-                            newStroke = active ? "red" : "#A38566";
-                        console.log("active: ", active +"; ", newStroke);
-
+                        var active   = path.active ? false : true;                        
                         if (active) { //region has been clicked once
-                            pathid = "#"+saveRegion.substring(0, 4);
+                            pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                             console.log("pathid: ", pathid);
                             d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region

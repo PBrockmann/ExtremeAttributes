@@ -172,28 +172,56 @@
 
 
                 <div id="chart-indexType" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 50px;">
-                    <h3>Index</h3>
+                    <h4>Index</h4>
                     <a class="reset" href="javascript:indexChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>                                       
                 </div>
 
                 <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 120px;">
-                    <h3>Year</h3>
+                    <h4>Year</h4>
                     <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
 
                 <div id="chart-anomYear" class="dc-chart col-md-3b" style="margin-top: 0px; margin-left: 120px;">
-                    <h3>Datasets</h3>
+                    <h4>Datasets</h4>
                     <h5>Select observations or model data</h5>                    
                     <a class="reset" href="javascript:anomYearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
                
+                <div>       
+                  <div id="summaryDiv" class="col-md-6" style="margin-top: 27px; margin-left: 50px; width=860">    
+                    <table class="table table-striped table-hover" id="dc-table-graph">
+                        <h4>Summary</h4>
+                        <thead>
+                            <!--<tr class='header'>-->
+                            <tr>
+                                <th>Year</th>
+                                <th>Region</th>
+                                <th>Type</th>
+                                <th> Season</th>
+                                <th>Index</th>
+                                <th>Data</th>
+                                <th>Value</th>
+                                </tr>
+                        </thead>
+                    </table>
+                  </div>  
+                </div>
+                
 
-                <div id="eventsListDiv" class="col-md-6" style="margin-top: 10px; margin-left: 50px; width=400">
+
+            </div> <!--end ROW 1-->
+        
+
+            <!--ROW 2-->
+            <div class="row" style="width: 660px;">      
+            
+
+              <div id="eventsListDiv" class="col-md-6" style="margin-top: 10px; margin-left: 50px; width=400">
                  
-                    <h3>Summary</h3>
+                    <h4>Summary</h4>
                     <div id="totals">
                         <span id="active">-</span> of <span id="total">-</span> rows selected.
                     </div>
@@ -202,32 +230,7 @@
 
                 </div>
 
-
-            </div>
-        
-
-            <!--ROW 2-->
-            <div class="row" style="width: 660px;">      
-              <div class="span12">
-                <!--<table class="table table-striped table-hover" id="dc-table-graph">-->
-                <table class='table table-striped table-hover' id='dc-table-graph'>
-                  <caption>Summary</caption>
-                  <thead>
-                    <!--<tr class='header'>-->
-                    <tr>
-                      <th>Year</th>
-                      <th>Region</th>
-                      <th>Type</th>
-                      <th> Season</th>
-                      <th>Index</th>
-                      <th>Data</th>
-                      <th>Value</th>
-                    </tr>
-                  </thead>
-                </table>
-              </div>
-
-            </div> <!--end ROW 2--
+            </div> <!--end ROW 2-->
            
 
 
