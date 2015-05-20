@@ -62,7 +62,7 @@ function init() {
                         totAnom = r.value;
                     }
                 });
-                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")                
+                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")                            
                 return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;                
             })
         svg.call(tip);
@@ -79,26 +79,76 @@ function init() {
                 var bounds = d3.geo.bounds(adminunits);
 
                 //Extract the admin zone boundaries
-                count = 0; savedPoints = [];
+                count = 0; savedPoints = []; idx=0;
                 var feature = g.selectAll("path")
+                    .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
+                    .enter()
+                    .append("path").attr("id", function(d) { //attach unique id to each region path
+                        idname = admin.objects.FRA_admin12.geometries[idx].properties.name.substring(0, 4);
+                        console.log("idname: ", idname);                     
+                        idx++;
+                        return idname; 
+                    })
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide)
+                    .on("click", function() {
+                        console.log("saveRegion: ", saveRegion);                        
+                        var active   = path.active ? false : true,
+                            newStroke = active ? "red" : "#A38566";
+                        console.log("active: ", active +"; ", newStroke);
+
+                        if (active) { //region has been clicked once
+                            pathid = "#"+saveRegion.substring(0, 4);
+                            console.log("pathid: ", pathid);
+                            d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
+                            //loop through events and save only those belonging to clicked region
+                            events.forEach(function(d, i) {
+                                if (d.Region == saveRegion) {                                                               
+                                    savedPoints[count] = events[i];
+                                    count++;
+                                }                            
+                            });
+                            points = []; //clear and add savedPoints
+                            points = savedPoints;
+                        } else { //region has been clicked twice
+                            count = 0; //savedPoints = 0;                          
+                            points = events; //reset points back to original events
+                        }
+                        path.active = active;
+                        initCrossfilter(); //new points array passed to crossfilter
+                        eventList(); //table updated according to new points array
+                    });
+
+                //Extract the admin zone boundaries
+                count = 0; savedPoints = [];
+                var selectRegion = g.select("path")
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append("path")
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);
-                        console.log("points[0]: ", points[0]);
+                        console.log("saveRegion: ", saveRegion);                        
+                        var active   = path.active ? false : true,
+                            newStroke = active ? "red" : "#A38566";
+                        console.log("active: ", active +"; ", newStroke);
 
-                        //loop through events and save only those belonging to clicked region
-                        events.forEach(function(d, i) {
-                            if (d.Region == saveRegion) {                                                               
-                                savedPoints[count] = events[i];
-                                count++;
-                            }                            
-                        });
-                        points = []; //clear and add savedPoints
-                        points = savedPoints;
+                        if (active) { //region has been clicked once
+                            d3.select("path").style("stroke", newStroke);
+                            //loop through events and save only those belonging to clicked region
+                            events.forEach(function(d, i) {
+                                if (d.Region == saveRegion) {                                                               
+                                    savedPoints[count] = events[i];
+                                    count++;
+                                }                            
+                            });
+                            points = []; //clear and add savedPoints
+                            points = savedPoints;
+                        } else { //region has been clicked twice
+                            count = 0; //savedPoints = 0;                          
+                            points = events; //reset points back to original events
+                        }
+                        path.active = active;
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
@@ -365,7 +415,7 @@ function initCrossfilter() {
       dataTable.width(1060).height(1000)
         .dimension(timeDimension)
         .group(function(d) { return ""})
-        //.size(10) //number of rows to display  Year,Region,Type,Season,Index,Data,Value
+        .size(points.length) //display all data
         .columns([
             function(d) { return d.Year; },
             function(d) { return d.Region; },
