@@ -14,6 +14,8 @@ var idGrouping;
 var regionDim;
 var regionGroup;
 
+var saveRegion;
+
 function init() {
     console.log("in init()!");
     
@@ -49,7 +51,7 @@ function init() {
         });
 
         //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
-        var totAnom;
+        var totAnom; 
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             //.offset([-10, 0])
@@ -60,10 +62,11 @@ function init() {
                         totAnom = r.value;
                     }
                 });
-                //text to display in popup window
-                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
+                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")                
+                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;                
             })
         svg.call(tip);
+        
 
         //Read in admin and place name overlays for base Leaflet map of France      
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
@@ -76,21 +79,28 @@ function init() {
                 var bounds = d3.geo.bounds(adminunits);
 
                 //Extract the admin zone boundaries
+                count = 0; savedPoints = [];
                 var feature = g.selectAll("path")
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append("path")
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
-                    //.on("click", tip.hide);
                     .on("click", function() {
+                        console.log("saveRegion: ", saveRegion);
                         console.log("points[0]: ", points[0]);
-                        points = [];
-                        points[0] = events[0];
-                        points[1] = events[1];
-                        console.log("points: ", points);
-                        initCrossfilter();
-                        eventList(); //renders Table
+
+                        //loop through events and save only those belonging to clicked region
+                        events.forEach(function(d, i) {
+                            if (d.Region == saveRegion) {                                                               
+                                savedPoints[count] = events[i];
+                                count++;
+                            }                            
+                        });
+                        points = []; //clear and add savedPoints
+                        points = savedPoints;
+                        initCrossfilter(); //new points array passed to crossfilter
+                        eventList(); //table updated according to new points array
                     });
 
                 //Extract the place name labels
