@@ -82,7 +82,16 @@ function init() {
                     .append("path")
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
-                    .on("click", tip.hide);
+                    //.on("click", tip.hide);
+                    .on("click", function() {
+                        console.log("points[0]: ", points[0]);
+                        points = [];
+                        points[0] = events[0];
+                        points[1] = events[1];
+                        console.log("points: ", points);
+                        initCrossfilter();
+                        eventList(); //renders Table
+                    });
 
                 //Extract the place name labels
                 var places = g.selectAll(".place-label")
@@ -335,6 +344,31 @@ function initCrossfilter() {
         .gap(0);
 
     xAxis_anomYearChart = anomYearChart.xAxis().ticks(4);
+
+     //dc dataTable
+      dataTable = dc.dataTable("#dc-table-graph");
+      // Create datatable dimension
+      var timeDimension = filter.dimension(function (d) {
+        return d.Year;
+      });
+      //dataTable
+      dataTable.width(1060).height(1000)
+        .dimension(timeDimension)
+        .group(function(d) { return ""})
+        //.size(10) //number of rows to display  Year,Region,Type,Season,Index,Data,Value
+        .columns([
+            function(d) { return d.Year; },
+            function(d) { return d.Region; },
+            function(d) { return d.Type; },
+            function(d) { return d.Season; },
+            function(d) { return d.Index; },
+            function(d) { return d.Data; },
+            function(d) { return d.Value; }            
+          //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
+          //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
+        ])
+        .sortBy(function(d){ return d.Year; })
+        .order(d3.ascending);
 
     dc.renderAll();
 
