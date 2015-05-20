@@ -14,8 +14,205 @@ var idGrouping;
 var regionDim;
 var regionGroup;
 
-var index_types = ["CSU", "ID", "CDD", "R20mm"];
-var datasets = ["Obs", "M1"];
+function init() {
+  console.log("in init()!");
+
+  //***block1
+  var maxZoom = 9;
+  var map = L.map('map').setView([47.0, 1.5], 6);
+  L.tileLayer('http://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'LSCE &copy; 2015 | Baselayer &copy; ArcGis',
+    maxZoom: maxZoom, //called "Levels of Detail"
+  }).addTo(map);
+        
+  //d3 + Leaflet + topojson    
+  var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+        g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+  var path = d3.geo.path().projection(projectPoint);
+
+  //READ CSV AS PARENT LOOP
+  d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {  
+    events.forEach(function(d, i) {
+      console.log("in d3.tsv");
+    });
+
+    points = events;
+    initCrossfilter();
+    eventList(); //renders Table
+    //   update1(); //updates number of Event Types selected
+
+    //console.log("from index.html: ", anomRegions[0].key);
+    console.log("from display_fns.js: ", regionGroup.all()[0].key);
+
+    regionGroup.all().forEach(function(d, i) {
+      console.log("d.key; d.value: ", d.key +";"+ d.value);
+    });
+                      
+    //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
+    var totAnom;
+    var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                //.offset([-10, 0])
+                .html(function(d) { //get #anomalies for each region     
+                  regionGroup.all().forEach(function(r, i) {
+                      if (r.key == d.properties.name) {
+                          console.log("r.key; r.value: ", r.key +";"+ r.value);
+                          totAnom = r.value;
+                      }
+                  });
+
+                  //text to display in popup window
+                  return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
+                })
+    svg.call(tip);
+
+        //Read in admin and place name overlays for base Leaflet map of France      
+            d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
+                if (error) return console.error(error);
+
+                //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
+                d3.json("geojson/cities.geojson", function(error, data) {
+
+                    var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
+                    var bounds = d3.geo.bounds(adminunits);
+                    
+                    //Extract the admin zone boundaries
+                    var feature = g.selectAll("path")
+                        .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
+                        .enter()
+                        .append("path")
+                        .on("mouseover", tip.show)
+                        .on("mouseout", tip.hide)
+                        .on("click", tip.hide);                   
+
+                    //Extract the place name labels
+                    var places = g.selectAll(".place-label")
+                        .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                        .enter()
+                        .append("text")
+                        .attr("class", "place-label");
+
+                    //Define city markers using the coordinates associated with FRA_places              
+                    var cityMarker = g.selectAll("circle")
+                        .data(topojson.feature(admin, admin.objects.FRA_places).features)
+                        .enter()
+                        .append("circle")
+                        .style("stroke", "black")
+                        .style("opacity", 0.6)
+                        .style("fill", "#8e8e8e")
+                        .attr("class", "city-marker")
+                        .attr("r", 2);
+
+                    //note: needs to be transformed in resetMap() like the other g nodes in order to stay in place at different zoom levels
+                    var stationMarker = g.selectAll(".station-marker")
+                                         .data(data.features)
+                                         //.data(data)
+                                         .enter()
+                                         .append("circle")
+                                         .attr("class", "station-marker")
+                                         .style("opacity", .6)                                     
+                                         .attr("r", 5); 
+
+
+                    map.on('viewreset', resetMap); //called when map is zoomed in or out
+                    resetMap();
+
+                    // Reposition the SVG to cover the features.
+                    function resetMap() {
+                            //set opacity of labels and markers depending on zoom level
+                            var currentZoom = map.getZoom();
+                            //console.log("currentZoom", currentZoom);
+                            //if currentZoom <= 4, don't display place labels                        
+                            g.selectAll(".place-label").attr("opacity", currentZoom <= 4 ? 0 : 1);                        
+
+                            //adjust station marker radius as a fn of zoom level
+                            g.selectAll(".station-marker").attr("r", function () {                
+                                if (currentZoom == 5) return 4;
+                                else if (currentZoom <= 4 && currentZoom >= 3) return 2;
+                                else if (currentZoom < 3) return 0;
+                                else return 5;
+                            });                                
+                            
+                            //adjust city marker opacity as a fn of zoom level
+                            g.selectAll(".city-marker").style("opacity", function () {                
+                                if (currentZoom == 5) return 0.5;
+                                else if (currentZoom <= 4 && currentZoom >= 3) return 0.2;
+                                else if (currentZoom < 3) return 0;
+                                else return 0.6;
+                            });
+
+
+                            var bottomLeft = projectPoint(bounds[0]),
+                                topRight = projectPoint(bounds[1]);
+
+                            svg.attr('width', topRight[0] - bottomLeft[0])
+                                .attr('height', bottomLeft[1] - topRight[1])
+                                .style('margin-left', bottomLeft[0] + 'px')
+                                .style('margin-top', topRight[1] + 'px');
+
+                            var translation = -bottomLeft[0] + ',' + -topRight[1];
+                            g.attr('transform', 'translate(' + -bottomLeft[0] + ',' + -topRight[1] + ')');
+
+                            //Plot the admin zone boundaries
+                            feature.attr('d', path);                       
+
+                            //Plot the place names
+                            places.attr('name', function(d) {
+                                    return d.properties.name;
+                                })
+                                .attr('class', 'place-label')
+                                .attr('transform', function(d) {
+                                    return 'translate(' + path.centroid(d) + ')';
+                                })
+                                .attr('x', -20)
+                                .attr('dy', '.35em')
+                                .text(function(d) {
+                                    return d.properties.name;
+                                });
+
+                            //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
+                            svg.selectAll(".place-label")
+                                .attr("x", function(d) {
+                                    return d.geometry.coordinates[0] > -1 ? 6 : -6;
+                                })
+                                .style("text-anchor", function(d) {
+                                    return d.geometry.coordinates[0] > -1 ? "start" : "end";
+                                });
+
+
+                            //Plot the city markers (small circles)
+                            cityMarker.attr("transform",
+                                function(d) {
+                                    return 'translate(' + path.centroid(d) + ')';
+                                }
+                            )
+
+                            stationMarker.attr("transform",
+                                function(d) {                                
+                                    return 'translate(' + path.centroid(d) + ')';
+                                }
+                            )
+
+                        } //end resetMap()                                                                
+
+                }); //end d3 geojson
+            }); //end d3 topojson
+
+
+  }); //end d3 csv read file
+
+  //Use Leaflet to implement a D3 geographic projection.
+  //Put outside the read file loops
+  function projectPoint(x) {
+    var point = map.latLngToLayerPoint(new L.LatLng(x[1], x[0]));
+    //console.log(x[1], x[0]);
+    //console.log("point.x, point.y: ", point.x, point.y);
+    return [point.x, point.y];
+  }   
+
+//***end block1
+}
 
 function initCrossfilter() {
   
