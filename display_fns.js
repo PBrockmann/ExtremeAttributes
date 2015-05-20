@@ -13,6 +13,7 @@ var idDimension;
 var idGrouping;
 var regionDim;
 var regionGroup;
+var saveRegionGroup; //regionGroup when no regions or filters are selected
 
 var saveRegion;
 
@@ -40,6 +41,7 @@ function init() {
 
         points = events;
         initCrossfilter();
+        saveRegionGroup = regionGroup;
         eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
 
@@ -55,8 +57,10 @@ function init() {
         var tip = d3.tip()
             .attr('class', 'd3-tip')
             //.offset([-10, 0])
-            .html(function(d) { //get #anomalies for each region     
-                regionGroup.all().forEach(function(r, i) {
+            .html(function(d) { //get #anomalies for each region
+                //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
+                saveRegionGroup.all().forEach(function(r, i) {
+                    console.log("r.key; d.properties.name: ", r.key +"; "+ d.properties.name);
                     if (r.key == d.properties.name) {
                         console.log("r.key; r.value: ", r.key + ";" + r.value);
                         totAnom = r.value;
@@ -85,18 +89,18 @@ function init() {
                     .enter()
                     .append("path").attr("id", function(d) { //attach unique id to each region path
                         idname = admin.objects.FRA_admin12.geometries[idx].properties.name.substring(0, 4);
-                        console.log("idname: ", idname);                     
+                        //console.log("idname: ", idname);                     
                         idx++;
                         return idname; 
                     })
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);                        
-                        var active   = path.active ? false : true;                        
-                        if (active) { //region has been clicked once
+                        console.log("saveRegion: ", saveRegion);
+                        var active   = path.active ? false : true;
+                        console.log("active: ", active);          
+                        //if (active) { //region has been clicked once
                             pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
-                            console.log("pathid: ", pathid);
                             d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region
                             events.forEach(function(d, i) {
@@ -107,11 +111,12 @@ function init() {
                             });
                             points = []; //clear and add savedPoints
                             points = savedPoints;
-                        } else { //region has been clicked twice
-                            count = 0; //savedPoints = 0;                          
-                            points = events; //reset points back to original events
-                        }
-                        path.active = active;
+                        // } else { //region has been clicked twice
+                        //     d3.selectAll("path").style("stroke", "#A38566").style("stroke-width", "0.5px");
+                        //     count = 0; //savedPoints = 0;                          
+                        //     points = events; //reset points back to original events
+                        // }
+                        //path.active = active;
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
