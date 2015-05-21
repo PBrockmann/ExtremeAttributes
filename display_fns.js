@@ -108,52 +108,49 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);
-                        console.log("active_flag: ", active_flag);
+                        console.log("saveRegion: ", saveRegion);                        
                         pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                         var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
-                        console.log("this_active: ", this_active);
+  
 
-                        //console.log("path.active: ", path.active);
-                        // if (this_active == 0) { //region was not previously "ON"
-                        //     console.log("here");
-                        //     path.active = false;
-                        // }
-                        //console.log("path.active after this_active check: ", path.active);
-
-                        // var active   = path.active ? false : true;
-                        // console.log("active after ?: ", active);
-
-                        if (this_active == 0) { //region was not previously "ON"
-                            console.log("here");
-                            active = true;
-                        } else if (this_active == 1) active = false;
-                        console.log("active: ", active);
-                         
-                        
-                        
+                        if (this_active == 0) active = true; //region was not previously "ON"
+                        else if (this_active == 1) active = false;
+          
                             
-                        if (active) { //turn region "ON"
+                        if (active) { //turn region "ON"                            
+                            console.log("active_flag: ", active_flag);
                             active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
-                            console.log("active_flag: ", active_flag);                    
-                            console.log("this_active after if: ", active_flag[id_name.indexOf(saveRegion.substring(0, 4))]);                                                         
-                            //pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
+                            console.log("this_active: ", this_active);
+                            console.log("savedPoints: ", savedPoints);
                             d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region
-                            events.forEach(function(d, i) {
-                                if (d.Region == saveRegion) {                                                               
-                                    savedPoints[count] = events[i];
-                                    count++;
-                                }                            
+
+                            //check if savedRegion is already in savedPoints
+                            regionExists = 0;
+                            savedPoints.forEach(function(d, i) {
+                                if (d.Region == saveRegion) {
+                                    regionExists = 1;
+                                    points = []; //clear and add savedPoints
+                                    points = savedPoints;
+                                }
                             });
-                            points = []; //clear and add savedPoints
-                            points = savedPoints;  
-                        } else { //turn region "OFF"
-                            console.log("this_active after else: ", this_active);
+
+                            if (regionExists == 0) {
+                                events.forEach(function(d, i) {
+                                    if (d.Region == saveRegion) {                                                               
+                                        savedPoints[count] = events[i];
+                                        count++;
+                                    }                            
+                                });
+                                points = []; //clear and add savedPoints
+                                points = savedPoints;
+                                console.log("savedPoints again: ", savedPoints);
+                            }
+                        } else { //turn region "OFF"                            
                             if (this_active == 1) { //region was "ON" previously
                                 active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"
                                 console.log("need to remove region from savedPoints: ", saveRegion);
-                                console.log("savedPoints:", savedPoints);
+                                console.log("savedPoints to remove:", savedPoints);
 
                                 // //remove this region's data from savedPoints
                                 // tmp = []; tmp_count = 0;
@@ -169,9 +166,7 @@ function init() {
                             d3.select(pathid).style("stroke", "#A38566").style("stroke-width", "0.5px");
                         //     count = 0; //savedPoints = 0;                          
                             points = events; //reset points back to original events                                
-                        }
-                        //path.active = active;
-                        //console.log("path.active after all: ", path.active);
+                        }                
                         
                         
                         initCrossfilter(); //new points array passed to crossfilter
