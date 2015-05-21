@@ -14,6 +14,7 @@ var idGrouping;
 var regionDim;
 var regionGroup;
 var saveRegionGroup; //regionGroup when no regions or filters are selected
+var active_flag = []; //stores if region has been clicked
 
 var saveRegion;
 
@@ -60,9 +61,9 @@ function init() {
             .html(function(d) { //get #anomalies for each region
                 //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
                 saveRegionGroup.all().forEach(function(r, i) {
-                    console.log("r.key; d.properties.name: ", r.key +"; "+ d.properties.name);
+                    //console.log("r.key; d.properties.name: ", r.key +"; "+ d.properties.name);
                     if (r.key == d.properties.name) {
-                        console.log("r.key; r.value: ", r.key + ";" + r.value);
+                        //console.log("r.key; r.value: ", r.key + ";" + r.value);
                         totAnom = r.value;
                     }
                 });
@@ -75,21 +76,32 @@ function init() {
         //Read in admin and place name overlays for base Leaflet map of France      
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
             if (error) return console.error(error);
+            console.log("admin: ", admin);
+
 
             //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
             d3.json("geojson/cities.geojson", function(error, data) {
 
                 var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
                 var bounds = d3.geo.bounds(adminunits);
+                
+                for (var j=0; j < adminunits.features.length; j++){
+                    active_flag[j] = 0;                             
+                };
+                // adminunits.features.forEach(function(d, i) {
+                //     console.log("active_flag");
+                //     active_flag.push = [0];
+                // });
+                console.log("active_flag: ", active_flag);
 
                 //Extract the admin zone boundaries
-                count = 0; savedPoints = []; idx=0;
+                count = 0; savedPoints = []; idx=0; id_name = [];
                 var feature = g.selectAll("path")
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append("path").attr("id", function(d) { //attach unique id to each region path
                         idname = admin.objects.FRA_admin12.geometries[idx].properties.name.substring(0, 4);
-                        //console.log("idname: ", idname);                     
+                        id_name.push(idname); //placeholder for admin names                                    
                         idx++;
                         return idname; 
                     })
@@ -97,10 +109,35 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function() {
                         console.log("saveRegion: ", saveRegion);
-                        var active   = path.active ? false : true;
-                        console.log("active: ", active);          
-                        //if (active) { //region has been clicked once
-                            pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
+                        console.log("active_flag: ", active_flag);
+                        pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
+                        var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
+                        console.log("this_active: ", this_active);
+
+                        //console.log("path.active: ", path.active);
+                        // if (this_active == 0) { //region was not previously "ON"
+                        //     console.log("here");
+                        //     path.active = false;
+                        // }
+                        //console.log("path.active after this_active check: ", path.active);
+
+                        // var active   = path.active ? false : true;
+                        // console.log("active after ?: ", active);
+
+                        if (this_active == 0) { //region was not previously "ON"
+                            console.log("here");
+                            active = true;
+                        } else if (this_active == 1) active = false;
+                        console.log("active: ", active);
+                         
+                        
+                        
+                            
+                        if (active) { //turn region "ON"
+                            active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
+                            console.log("active_flag: ", active_flag);                    
+                            console.log("this_active after if: ", active_flag[id_name.indexOf(saveRegion.substring(0, 4))]);                                                         
+                            //pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                             d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region
                             events.forEach(function(d, i) {
@@ -110,13 +147,33 @@ function init() {
                                 }                            
                             });
                             points = []; //clear and add savedPoints
-                            points = savedPoints;
-                        // } else { //region has been clicked twice
-                        //     d3.selectAll("path").style("stroke", "#A38566").style("stroke-width", "0.5px");
+                            points = savedPoints;  
+                        } else { //turn region "OFF"
+                            console.log("this_active after else: ", this_active);
+                            if (this_active == 1) { //region was "ON" previously
+                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"
+                                console.log("need to remove region from savedPoints: ", saveRegion);
+                                console.log("savedPoints:", savedPoints);
+
+                                // //remove this region's data from savedPoints
+                                // tmp = []; tmp_count = 0;
+                                // savedPoints.forEach(function (d, i) {
+                                //     if (d.Region != saveRegion) {
+                                //         tmp[tmp_count] = savedPoints[i];
+                                //         tmp_count++;
+                                //     }
+                                //     savedPoints = [];
+                                //     savedPoints = tmp;        
+                                // });
+                            }
+                            d3.select(pathid).style("stroke", "#A38566").style("stroke-width", "0.5px");
                         //     count = 0; //savedPoints = 0;                          
-                        //     points = events; //reset points back to original events
-                        // }
+                            points = events; //reset points back to original events                                
+                        }
                         //path.active = active;
+                        //console.log("path.active after all: ", path.active);
+                        
+                        
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
