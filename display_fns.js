@@ -10,8 +10,8 @@ var domCharts;
 var latDimension;
 var lonDimension;
 var idDimension;
-var idGrouping;
-var regionDim;
+var idGroup;
+//var regionDimension;
 var regionGroup;
 var saveRegionGroup; //regionGroup when no regions or filters are selected
 
@@ -155,8 +155,8 @@ function init() {
                             console.log("in else")                        
                             if (this_active == 1) { //region was "ON" previously
                                 active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"
-                                console.log("need to remove region from savedPoints: ", saveRegion);
-                                console.log("savedPoints to remove:", savedPoints);
+                                // console.log("need to remove region from savedPoints: ", saveRegion);
+                                // console.log("savedPoints to remove:", savedPoints);
 
                                 if (active_flag.indexOf(1) == -1) points = events; //no regions are selected
                                 else {
@@ -320,67 +320,41 @@ function init() {
 }
 
 function initCrossfilter() {
-
-    //console.log("points in crossfilter: ", points);
-    filter = crossfilter(points);
+    
     console.log('in initCrossfilter');
+    filter = crossfilter(points);
+   
 
-    d3.selectAll("#total").text(filter.size()); // total number of events
-    d3.select("#active").text(filter.groupAll().value()); //total number selected       
-
-    // dimension and group for looking up currently selected markers
-    idDimension = filter.dimension(function(p, i) {
-        return i;
-    });
-    idGrouping = idDimension.group(function(id) {
-        return id;
-    });
-    //regions
-    regionDim = filter.dimension(function(p, i) {
-        return p.Region;
-    });
-    regionGroup = regionDim.group().reduceSum(function(d) {
-        //console.log("region d.Value: ", d.Value); //individual row values
-        return d.Value;
-    });
-
-    var indexDimension = filter.dimension(
-        function(p) {
-            return p.Index;
-        });
-
-
-    //var indexGroup = indexDimension.group();
-    var indexGroup = indexDimension.group().reduceSum(function(d) {
-        return d.Value;
-    });
+    //charts
     indexChart = dc.rowChart("#chart-indexType");
-
-
-
-    anomYearDim = filter.dimension(
-        function(d) {
-            return d.Data; //type of dataset (e.g. Obs, M1, etc)
-        });
-    var anomYearGroup = anomYearDim.group().reduceSum(function(d) {
-        return d.Value;
-    });
-    //print_filter("anomYearGroup");
     anomYearChart = dc.rowChart("#chart-anomYear");
-
-    yearDimension = filter.dimension(
-        function(p) {
-            return Math.round(p.Year);
-        });
-    //yearGrouping = yearDimension.group(); //counts number of years regardless of whether d.value is empty
-    yearGrouping = yearDimension.group().reduceSum(function(d) {
-        return d.Value;
-    });
-    //print_filter("yearGrouping");
     yearChart = dc.barChart("#chart-eventYear");
+
+    // set crossfilter
+    var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
+        regionDimension = filter.dimension(function(p, i) { return p.Region; }),
+        indexDimension = filter.dimension(function(p) { return p.Index; }),
+        anomYearDimension = filter.dimension(function(d) { return d.Data; }),
+        yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
+        indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
+        anomYearGroup = anomYearDimension.group().reduceSum(function(d) { return d.Value; });    
+        
+    
+    //global
+    idDimension = filter.dimension(function(p, i) { return i; });
+    idGroup = idDimension.group(function(id) { return id; });
+    regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+       
+    //yearGroup = yearDimension.group(); //counts number of years regardless of whether d.value is empty
+    
+    //print_filter("yearGroup");
+    
 
     minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
     maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
+
+    d3.selectAll("#total").text(filter.size()); // total number of events
+    d3.select("#active").text(filter.groupAll().value()); //total number selected
 
     indexChart
         .width(200) //svg width
@@ -412,7 +386,7 @@ function initCrossfilter() {
         .centerBar(true) //ensure that the bar for the bar graph is centred on the ticks on the x axis
         .elasticY(true)
         .dimension(yearDimension)
-        .group(yearGrouping)
+        .group(yearGroup)
         .on("preRedraw", update0)
         .colors(d3.scale.category20c())
         //.elasticX(true)
@@ -435,7 +409,7 @@ function initCrossfilter() {
             bottom: 30,
             left: 5
         })
-        .dimension(anomYearDim)
+        .dimension(anomYearDimension)
         .group(anomYearGroup)
         .on("preRedraw", update0)
         .colors(d3.scale.category20())
@@ -514,7 +488,7 @@ function initCrossfilter() {
 
 // set visibility of markers based on crossfilter
 function updateMarkers() {
-    var pointIds = idGrouping.all();
+    var pointIds = idGroup.all();
     for (var i = 0; i < pointIds.length; i++) {
         if (pointIds[i].value > 0)
             markerGroup.addLayer(markers[i]);
@@ -602,7 +576,7 @@ function eventList() {
 
 
     //Extreme Events table -- row values
-    var pointIds = idGrouping.all();
+    var pointIds = idGroup.all();
 
     for (var i = 0; i < pointIds.length; i++) {
         var eventItem = d3.select("#eventsList")
@@ -655,7 +629,7 @@ function eventList() {
 }
 
 function updateList() {
-    var pointIds = idGrouping.all();
+    var pointIds = idGroup.all();
     for (var i = 0; i < pointIds.length; i++) {
         if (pointIds[i].value > 0) $("#" + (i + 1)).show();
         else $("#" + (i + 1)).hide();
