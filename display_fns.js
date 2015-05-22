@@ -51,13 +51,6 @@ function init() {
         eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
 
-        //console.log("from index.html: ", anomRegions[0].key);
-        console.log("from display_fns.js: ", regionGroup.all()[0].key);
-
-        regionGroup.all().forEach(function(d, i) {
-            console.log("d.key; d.value: ", d.key + ";" + d.value);
-        });
-
         //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
         var totAnom; 
         var tip = d3.tip()
@@ -97,7 +90,7 @@ function init() {
                 for (var j=0; j < adminunits.features.length; j++){
                     active_flag[j] = 0;                             
                 };    
-                console.log("active_flag: ", active_flag);
+                //console.log("active_flag: ", active_flag);
 
                 //Extract the admin zone boundaries
                 count = 0; savedPoints = []; idx=0; id_name = [];
@@ -114,8 +107,7 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function() {
                         console.log("saveRegion: ", saveRegion);
-                        regionToPassToDC.push(saveRegion);                                            
-                        console.log("regionToPassToDC: ", regionToPassToDC);
+                        regionToPassToDC.push(saveRegion);                                                                    
 
                         pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                         var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
@@ -123,36 +115,17 @@ function init() {
 
                         if (this_active == 0) active = true; //region was not previously "ON"
                         else if (this_active == 1) active = false;
-                        console.log("active: ", active);
+                        //console.log("active: ", active);
           
                             
                         if (active) { //turn region "ON"                            
                             console.log("active_flag: ", active_flag);
                             active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
-                            console.log("this_active: ", this_active);                            
+                            //console.log("this_active: ", this_active);                            
                             d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
                                              .style("stroke", "brown").style("stroke-width", "2px");
 
-
-                            //check if savedRegion is already in savedPoints
-                            regionExists = 0;
-                            savedPoints.forEach(function(d, i) {
-                                if (d.Region == saveRegion) {
-                                    regionExists = 1;                                    
-                                }
-                            });
-
-                            if (regionExists == 0) { console.log("region doesn't exist");
-                                events.forEach(function(d, i) {
-                                    if (d.Region == saveRegion) {
-                                        console.log("d.Region; saveRegion: ", d.Region +";"+ saveRegion);                                              
-                                        savedPoints.push(events[i]);                                        
-                                        count++;
-                                    }
-                                });        
-                            }
-                        } else { //turn region "OFF"    
-                            console.log("in else")                        
+                        } else { //turn region "OFF"                                                
                             if (this_active == 1) { //region was "ON" previously
                                 active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"    
 
@@ -174,8 +147,7 @@ function init() {
                               
                         }              
                         
-                        initCrossfilter(); //new points array passed to crossfilter
-                        //eventList(); //table updated according to new points array
+                        initCrossfilter(); //new points array passed to crossfilter                        
                     });
 
                 //Update popup window based on selections in dc chart filters
@@ -335,8 +307,7 @@ function initCrossfilter() {
     minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
     maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
 
-    d3.selectAll("#total").text(filter.size()); // total number of events
-    d3.select("#active").text(filter.groupAll().value()); //total number selected
+    
 
     indexChart
         .width(200) //svg width
@@ -407,7 +378,7 @@ function initCrossfilter() {
         return d.Year;
       });
       //dataTable
-      dataTable.width(1060).height(1000)
+    dataTable.width(1060).height(1000)
         .dimension(timeDimension)
         .group(function(d) { return ""})
         .size(points.length) //display all data
@@ -425,22 +396,25 @@ function initCrossfilter() {
         .sortBy(function(d){ return d.Year; })
         .order(d3.ascending);
 
-        regionChart
-            .width(350).height(500)
-            .dimension(regionDimension)
-            .group(regionGroup)
-            .elasticX(true)
-            .on("filtered", updateSelectors);
+    regionChart
+        .width(350).height(500)
+        .dimension(regionDimension)
+        .group(regionGroup)
+        .elasticX(true)
+        .on("filtered", updateSelectors);
 
-        function updateSelectors() {
-            //console.log(regionChart.filters());
-        }
+    function updateSelectors() {
+        //console.log(regionChart.filters());
+    }
       
-        if (regionToPassToDC != 0) {
-            regionToPassToDC.forEach(function (d, i) {
-                regionChart.filter(regionToPassToDC[i]);
-            });
-        }
+    if (regionToPassToDC != 0) {
+        regionToPassToDC.forEach(function (d, i) {
+            regionChart.filter(regionToPassToDC[i]);
+        });
+    }
+
+    d3.selectAll("#total").text(filter.size()); // total number of events
+    d3.select("#active").text(filter.groupAll().value()); //total number selected
 
     dc.renderAll();
 
