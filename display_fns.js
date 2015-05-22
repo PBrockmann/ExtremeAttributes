@@ -58,7 +58,7 @@ function init() {
         //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
         var totAnom; 
         var tip = d3.tip()
-            .attr('class', 'd3-tip')
+            .attr("class", "d3-tip")
             //.offset([-10, 0])
             .html(function(d) { //get #anomalies for each region
                 //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
@@ -69,7 +69,11 @@ function init() {
                         totAnom = r.value;
                     }
                 });
-                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")                            
+                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
+                // pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
+                // console.log("pathid in mouseover: ", pathid);
+                // d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px")
+                                                   
                 return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;                
             })
         svg.call(tip);
@@ -89,11 +93,7 @@ function init() {
                 
                 for (var j=0; j < adminunits.features.length; j++){
                     active_flag[j] = 0;                             
-                };
-                // adminunits.features.forEach(function(d, i) {
-                //     console.log("active_flag");
-                //     active_flag.push = [0];
-                // });
+                };    
                 console.log("active_flag: ", active_flag);
 
                 //Extract the admin zone boundaries
@@ -124,7 +124,7 @@ function init() {
                             console.log("active_flag: ", active_flag);
                             active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
                             console.log("this_active: ", this_active);
-                            console.log("savedPoints: ", savedPoints);
+                            //console.log("savedPoints: ", savedPoints);
                             d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
                                              .style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region
@@ -143,15 +143,14 @@ function init() {
                                 events.forEach(function(d, i) {
                                     if (d.Region == saveRegion) {
                                         console.log("d.Region; saveRegion: ", d.Region +";"+ saveRegion);                                              
-                                        savedPoints.push(events[i]);
-                                        //savedPoints[count] = events[i];
+                                        savedPoints.push(events[i]);                                        
                                         count++;
-                                    }                            
+                                    }
                                 });
                                 points = []; //clear and add savedPoints
                                 points = savedPoints;
-                                console.log("points again: ", points);
-                                console.log("active: ", active);
+                                //console.log("points again: ", points);
+                                //console.log("active: ", active);
                             }
                         } else { //turn region "OFF"    
                             console.log("in else")                        
@@ -161,7 +160,7 @@ function init() {
                                 console.log("savedPoints to remove:", savedPoints);
 
                                 if (active_flag.indexOf(1) == -1) points = events; //no regions are selected
-                                else { console.log("events: ", events);
+                                else {
                                     var tmp = [];
                                     for (var i = 0; i < active_flag.length; i++) {
                                         if (active_flag[i] == 1) { //finds selected regions
@@ -175,51 +174,24 @@ function init() {
                                     points = tmp; savedPoints = tmp;
                                }                           
                             }
-                            console.log("tmp: ", tmp);
-                            d3.select(pathid).style("stroke", "#A38566")
-                                             .style("fill-opacity", 0).style("stroke-width", "0.5px");
-                        // //     count = 0; //savedPoints = 0;                          
-                        //     // points = events; //reset points back to original events                                
+                            //cancel out fill and bold stroke-width applied on click event to turn region "ON"
+                            d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);
+                              
                         }              
                         
-                        console.log("points sent to crossfilter: ", points);
+                        //console.log("points sent to crossfilter: ", points);
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
 
-                //Extract the admin zone boundaries
-                count = 0; savedPoints = [];
+                //Update popup window based on selections in dc chart filters
+                //NB: use select("path") NOT selectAll("path") as above
                 var selectRegion = g.select("path")
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append("path")
                     .on("mouseover", tip.show)
-                    .on("mouseout", tip.hide)
-                    .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);                        
-                        var active   = path.active ? false : true,
-                            newStroke = active ? "red" : "#A38566";
-                        console.log("active: ", active +"; ", newStroke);
-
-                        if (active) { //region has been clicked once
-                            d3.select("path").style("stroke", newStroke);
-                            //loop through events and save only those belonging to clicked region
-                            events.forEach(function(d, i) {
-                                if (d.Region == saveRegion) {                                                               
-                                    savedPoints[count] = events[i];
-                                    count++;
-                                }                            
-                            });
-                            points = []; //clear and add savedPoints
-                            points = savedPoints;
-                        } else { //region has been clicked twice
-                            count = 0; //savedPoints = 0;                          
-                            points = events; //reset points back to original events
-                        }
-                        path.active = active;
-                        initCrossfilter(); //new points array passed to crossfilter
-                        eventList(); //table updated according to new points array
-                    });
+                    .on("mouseout", tip.hide);            
 
                 //Extract the place name labels
                 var places = g.selectAll(".place-label")
@@ -350,7 +322,7 @@ function init() {
 
 function initCrossfilter() {
 
-    console.log("points in crossfilter: ", points);
+    //console.log("points in crossfilter: ", points);
     filter = crossfilter(points);
     console.log('in initCrossfilter');
 
