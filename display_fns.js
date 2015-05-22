@@ -21,7 +21,6 @@ var active_flag = []; //stores if region has been clicked
 var saveRegion;
 
 //for regionChart
-var noRegionSelected;
 var regionToPassToDC = [];
 
 function init() {
@@ -114,9 +113,9 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function() {
                         console.log("saveRegion: ", saveRegion);
-                        noRegionSelected = 1;
-                        regionToPassToDC[0] = saveRegion;
-                        regionToPassToDC[1] = "Provence-Alpes-Côte d'Azur";
+                        regionToPassToDC.push(saveRegion);                     
+                        // regionToPassToDC[0] = saveRegion;
+                        // regionToPassToDC[1] = "Provence-Alpes-Côte d'Azur";
                         console.log("regionToPassToDC: ", regionToPassToDC);
 
 
@@ -444,19 +443,14 @@ function initCrossfilter() {
             .on("filtered", updateSelectors);
 
         function updateSelectors() {
-            console.log(regionChart.filters());
+            //console.log(regionChart.filters());
         }
-
-        //console.log("noRegionSelected; regionToPassToDC: ", noRegionSelected +"; "+ regionToPassToDC);
-        // if (noRegionSelected == 1) {
-        //     regionToPassToDC.forEach(function (d, i) {
-        //         console.log("in d3.tsv");        
-        //         regionChart.filter(regionToPassToDC[i]); 
-        //     });            
-        // }
-        junk = ["Bretagne", "Auvergne et Rhône-Alpes"];
-        console.log("junk: ", junk)
-        if (noRegionSelected == 1) regionChart.filter(junk);
+      
+        if (regionToPassToDC != 0) {
+            regionToPassToDC.forEach(function (d, i) {
+                regionChart.filter(regionToPassToDC[i]);
+            });
+        }
 
     dc.renderAll();
 
