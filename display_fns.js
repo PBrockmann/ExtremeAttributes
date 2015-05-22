@@ -329,6 +329,7 @@ function initCrossfilter() {
     indexChart = dc.rowChart("#chart-indexType");
     anomYearChart = dc.rowChart("#chart-anomYear");
     yearChart = dc.barChart("#chart-eventYear");
+    regionChart = dc.rowChart("#chart-region");
 
     // set crossfilter
     var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
@@ -442,6 +443,17 @@ function initCrossfilter() {
         ])
         .sortBy(function(d){ return d.Year; })
         .order(d3.ascending);
+
+        regionChart
+            .width(350).height(500)
+            .dimension(regionDimension)
+            .group(regionGroup)
+            .elasticX(true)
+            .on("filtered", updateSelectors);
+
+        function updateSelectors() {
+            console.log(regionChart.filters());
+        }
 
     dc.renderAll();
 
