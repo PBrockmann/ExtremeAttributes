@@ -14,6 +14,8 @@ var idGrouping;
 var regionDim;
 var regionGroup;
 var saveRegionGroup; //regionGroup when no regions or filters are selected
+
+var events;
 var active_flag = []; //stores if region has been clicked
 
 var saveRegion;
@@ -115,6 +117,7 @@ function init() {
 
                         if (this_active == 0) active = true; //region was not previously "ON"
                         else if (this_active == 1) active = false;
+                        console.log("active: ", active);
           
                             
                         if (active) { //turn region "ON"                            
@@ -122,7 +125,8 @@ function init() {
                             active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
                             console.log("this_active: ", this_active);
                             console.log("savedPoints: ", savedPoints);
-                            d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px");
+                            d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
+                                             .style("stroke", "brown").style("stroke-width", "2px");
                             //loop through events and save only those belonging to clicked region
 
                             //check if savedRegion is already in savedPoints
@@ -135,40 +139,50 @@ function init() {
                                 }
                             });
 
-                            if (regionExists == 0) {
+                            if (regionExists == 0) { console.log("region doesn't exist");
                                 events.forEach(function(d, i) {
-                                    if (d.Region == saveRegion) {                                                               
-                                        savedPoints[count] = events[i];
+                                    if (d.Region == saveRegion) {
+                                        console.log("d.Region; saveRegion: ", d.Region +";"+ saveRegion);                                              
+                                        savedPoints.push(events[i]);
+                                        //savedPoints[count] = events[i];
                                         count++;
                                     }                            
                                 });
                                 points = []; //clear and add savedPoints
                                 points = savedPoints;
-                                console.log("savedPoints again: ", savedPoints);
+                                console.log("points again: ", points);
+                                console.log("active: ", active);
                             }
-                        } else { //turn region "OFF"                            
+                        } else { //turn region "OFF"    
+                            console.log("in else")                        
                             if (this_active == 1) { //region was "ON" previously
                                 active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"
                                 console.log("need to remove region from savedPoints: ", saveRegion);
                                 console.log("savedPoints to remove:", savedPoints);
 
-                                // //remove this region's data from savedPoints
-                                // tmp = []; tmp_count = 0;
-                                // savedPoints.forEach(function (d, i) {
-                                //     if (d.Region != saveRegion) {
-                                //         tmp[tmp_count] = savedPoints[i];
-                                //         tmp_count++;
-                                //     }
-                                //     savedPoints = [];
-                                //     savedPoints = tmp;        
-                                // });
+                                if (active_flag.indexOf(1) == -1) points = events; //no regions are selected
+                                else { console.log("events: ", events);
+                                    var tmp = [];
+                                    for (var i = 0; i < active_flag.length; i++) {
+                                        if (active_flag[i] == 1) { //finds selected regions
+                                            for (var j = 0; j < events.length; j++) {                                                  
+                                                if (events[j].Region.substring(0, 4) == id_name[i])
+                                                    tmp.push(events[j]);
+                                            }
+                                        }
+                                    }
+                                    points = [];
+                                    points = tmp; savedPoints = tmp;
+                               }                           
                             }
-                            d3.select(pathid).style("stroke", "#A38566").style("stroke-width", "0.5px");
-                        //     count = 0; //savedPoints = 0;                          
-                            points = events; //reset points back to original events                                
-                        }                
+                            console.log("tmp: ", tmp);
+                            d3.select(pathid).style("stroke", "#A38566")
+                                             .style("fill-opacity", 0).style("stroke-width", "0.5px");
+                        // //     count = 0; //savedPoints = 0;                          
+                        //     // points = events; //reset points back to original events                                
+                        }              
                         
-                        
+                        console.log("points sent to crossfilter: ", points);
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
@@ -336,7 +350,7 @@ function init() {
 
 function initCrossfilter() {
 
-
+    console.log("points in crossfilter: ", points);
     filter = crossfilter(points);
     console.log('in initCrossfilter');
 
