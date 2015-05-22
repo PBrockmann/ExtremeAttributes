@@ -20,6 +20,10 @@ var active_flag = []; //stores if region has been clicked
 
 var saveRegion;
 
+//for regionChart
+var noRegionSelected;
+var regionToPassToDC = [];
+
 function init() {
     console.log("in init()!");
     
@@ -36,7 +40,7 @@ function init() {
 
     var path = d3.geo.path().projection(projectPoint);
 
-    //READ CSV AS PARENT LOOP
+    //READ CSV ANOMALY DATA AS PARENT LOOP
     d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {
         events.forEach(function(d, i) {
             console.log("in d3.tsv");
@@ -78,7 +82,7 @@ function init() {
         svg.call(tip);
         
 
-        //Read in admin and place name overlays for base Leaflet map of France      
+        //READ IN ADMIN AND PLACE NAME OVERLAYS FOR BASE LEAFLET MAP OF FRANCE
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
             if (error) return console.error(error);
             console.log("admin: ", admin);
@@ -109,7 +113,14 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);                        
+                        console.log("saveRegion: ", saveRegion);
+                        noRegionSelected = 1;
+                        regionToPassToDC[0] = saveRegion;
+                        regionToPassToDC[1] = "Provence-Alpes-Côte d'Azur";
+                        console.log("regionToPassToDC: ", regionToPassToDC);
+
+
+
                         pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                         var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
   
@@ -126,7 +137,7 @@ function init() {
                             //console.log("savedPoints: ", savedPoints);
                             d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
                                              .style("stroke", "brown").style("stroke-width", "2px");
-                            //loop through events and save only those belonging to clicked region
+
 
                             //check if savedRegion is already in savedPoints
                             regionExists = 0;
@@ -147,16 +158,12 @@ function init() {
                                     }
                                 });
                                 points = []; //clear and add savedPoints
-                                points = savedPoints;
-                                //console.log("points again: ", points);
-                                //console.log("active: ", active);
+                                points = savedPoints;     
                             }
                         } else { //turn region "OFF"    
                             console.log("in else")                        
                             if (this_active == 1) { //region was "ON" previously
-                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"
-                                // console.log("need to remove region from savedPoints: ", saveRegion);
-                                // console.log("savedPoints to remove:", savedPoints);
+                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"    
 
                                 if (active_flag.indexOf(1) == -1) points = events; //no regions are selected
                                 else {
@@ -178,7 +185,6 @@ function init() {
                               
                         }              
                         
-                        //console.log("points sent to crossfilter: ", points);
                         initCrossfilter(); //new points array passed to crossfilter
                         eventList(); //table updated according to new points array
                     });
@@ -228,7 +234,6 @@ function init() {
                 function resetMap() {
                         //set opacity of labels and markers depending on zoom level
                         var currentZoom = map.getZoom();
-                        //console.log("currentZoom", currentZoom);
                         //if currentZoom <= 4, don't display place labels                        
                         g.selectAll(".place-label").attr("opacity", currentZoom <= 4 ? 0 : 1);
 
@@ -264,39 +269,26 @@ function init() {
                         feature.attr('d', path);
 
                         //Plot the place names
-                        places.attr('name', function(d) {
-                                return d.properties.name;
-                            })
+                        places.attr('name', function(d) { return d.properties.name; })
                             .attr('class', 'place-label')
-                            .attr('transform', function(d) {
-                                return 'translate(' + path.centroid(d) + ')';
-                            })
+                            .attr('transform', function(d) { return 'translate(' + path.centroid(d) + ')'; })
                             .attr('x', -20)
                             .attr('dy', '.35em')
-                            .text(function(d) {
-                                return d.properties.name;
-                            });
+                            .text(function(d) { return d.properties.name; });
 
                         //Position text so that it does not overlap with city marker circles (http://bost.ocks.org/mike/map/)
                         svg.selectAll(".place-label")
-                            .attr("x", function(d) {
-                                return d.geometry.coordinates[0] > -1 ? 6 : -6;
-                            })
-                            .style("text-anchor", function(d) {
-                                return d.geometry.coordinates[0] > -1 ? "start" : "end";
-                            });
+                            .attr("x", function(d) { return d.geometry.coordinates[0] > -1 ? 6 : -6; })
+                            .style("text-anchor", function(d) { return d.geometry.coordinates[0] > -1 ? "start" : "end"; });
 
 
                         //Plot the city markers (small circles)
                         cityMarker.attr("transform",
-                            function(d) {
-                                return 'translate(' + path.centroid(d) + ')';
-                            }
+                            function(d) { return 'translate(' + path.centroid(d) + ')'; }
                         )
 
                         stationMarker.attr("transform",
-                            function(d) {
-                                return 'translate(' + path.centroid(d) + ')';
+                            function(d) { return 'translate(' + path.centroid(d) + ')';
                             }
                         )
 
@@ -454,6 +446,17 @@ function initCrossfilter() {
         function updateSelectors() {
             console.log(regionChart.filters());
         }
+
+        //console.log("noRegionSelected; regionToPassToDC: ", noRegionSelected +"; "+ regionToPassToDC);
+        // if (noRegionSelected == 1) {
+        //     regionToPassToDC.forEach(function (d, i) {
+        //         console.log("in d3.tsv");        
+        //         regionChart.filter(regionToPassToDC[i]); 
+        //     });            
+        // }
+        junk = ["Bretagne", "Auvergne et Rhône-Alpes"];
+        console.log("junk: ", junk)
+        if (noRegionSelected == 1) regionChart.filter(junk);
 
     dc.renderAll();
 
