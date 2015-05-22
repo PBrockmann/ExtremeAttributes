@@ -60,7 +60,8 @@ function init() {
         var tip = d3.tip()
             .attr("class", "d3-tip")
             //.offset([-10, 0])
-            .html(function(d) { //get #anomalies for each region
+            .html(function(d) { //get #anomalies for each region               
+
                 //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
                 saveRegionGroup.all().forEach(function(r, i) {
                     //console.log("r.key; d.properties.name: ", r.key +"; "+ d.properties.name);
@@ -70,11 +71,9 @@ function init() {
                     }
                 });
                 saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
-                // pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
-                // console.log("pathid in mouseover: ", pathid);
-                // d3.select(pathid).style("stroke", "brown").style("stroke-width", "2px")
                                                    
-                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;                
+                //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
+                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
             })
         svg.call(tip);
         
