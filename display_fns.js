@@ -76,7 +76,8 @@ function init() {
                 saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
                                                    
                 //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
-                return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
+                //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
+                return d.properties.name;
             })
         svg.call(tip);
         
@@ -113,12 +114,8 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function() {
                         console.log("saveRegion: ", saveRegion);
-                        regionToPassToDC.push(saveRegion);                     
-                        // regionToPassToDC[0] = saveRegion;
-                        // regionToPassToDC[1] = "Provence-Alpes-Côte d'Azur";
+                        regionToPassToDC.push(saveRegion);                                            
                         console.log("regionToPassToDC: ", regionToPassToDC);
-
-
 
                         pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
                         var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
@@ -132,8 +129,7 @@ function init() {
                         if (active) { //turn region "ON"                            
                             console.log("active_flag: ", active_flag);
                             active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
-                            console.log("this_active: ", this_active);
-                            //console.log("savedPoints: ", savedPoints);
+                            console.log("this_active: ", this_active);                            
                             d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
                                              .style("stroke", "brown").style("stroke-width", "2px");
 
@@ -142,9 +138,7 @@ function init() {
                             regionExists = 0;
                             savedPoints.forEach(function(d, i) {
                                 if (d.Region == saveRegion) {
-                                    regionExists = 1;
-                                    points = []; //clear and add savedPoints
-                                    points = savedPoints;
+                                    regionExists = 1;                                    
                                 }
                             });
 
@@ -155,9 +149,7 @@ function init() {
                                         savedPoints.push(events[i]);                                        
                                         count++;
                                     }
-                                });
-                                points = []; //clear and add savedPoints
-                                points = savedPoints;     
+                                });        
                             }
                         } else { //turn region "OFF"    
                             console.log("in else")                        
@@ -175,8 +167,6 @@ function init() {
                                             }
                                         }
                                     }
-                                    points = [];
-                                    points = tmp; savedPoints = tmp;
                                }                           
                             }
                             //cancel out fill and bold stroke-width applied on click event to turn region "ON"
@@ -185,7 +175,7 @@ function init() {
                         }              
                         
                         initCrossfilter(); //new points array passed to crossfilter
-                        eventList(); //table updated according to new points array
+                        //eventList(); //table updated according to new points array
                     });
 
                 //Update popup window based on selections in dc chart filters
