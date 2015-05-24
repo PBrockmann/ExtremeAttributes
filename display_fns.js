@@ -322,12 +322,14 @@ function initCrossfilter() {
         .colors(d3.scale.category20())
         .elasticX(true)
         .gap(0)
-        .on("filtered", updateMapRegion);
+        .on("filtered", function() {
+            updateMapRegion(indexChart.filters);
+        });
 
-    function updateMapRegion() {
-        console.log("updateMapRegion fn: ", indexChart.filters());
+    function updateMapRegion(chartFilter) {
+        console.log("updateMapRegion fn: ", chartFilter());
         pathid = "#Alsa";
-        if (indexChart.filters() != 0) { //an index was selected
+        if (chartFilter() != 0) { //an index was selected
             console.log("selected");
             d3.select(pathid)
               .style("fill", "brown").style("fill-opacity", 0.7)
