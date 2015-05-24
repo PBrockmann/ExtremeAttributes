@@ -328,18 +328,23 @@ function initCrossfilter() {
 
     function updateMapRegion(chartFilter) {
         console.log("updateMapRegion fn: ", chartFilter());
-        pathid = "#Alsa";
-        if (chartFilter() != 0) { //an index was selected
-            console.log("selected");
-            d3.select(pathid)
-              .style("fill", "brown").style("fill-opacity", 0.7)
-              .style("stroke", "brown").style("stroke-width", "2px");
-        } else { //no index is selected therefore remove all highlighted regions
-            console.log("unselected");
-            d3.select(pathid)
-              .style("stroke", null)
-              .style("stroke-width", null).style("fill-opacity", 0);
-        }
+
+        //find regions in regionGroup whose values are not 0, get pathid
+        //and hightlight/unhighlight depending on whether chartFilter is empty
+        regionGroup.all().forEach(function (d, i) {
+            if (regionGroup.all()[i].value != 0) {                
+                pathid = regionGroup.all()[i].key;
+                if (chartFilter() != 0) {
+                    d3.select("#"+pathid.substring(0, 4))
+                      .style("fill", "brown").style("fill-opacity", 0.7)
+                      .style("stroke", "brown").style("stroke-width", "2px");
+                } else {
+                    d3.select("#"+pathid.substring(0, 4))
+                     .style("stroke", null)
+                     .style("stroke-width", null).style("fill-opacity", 0);
+                }
+            }
+        });       
     }
 
     xAxis_indexChart = indexChart.xAxis().ticks(4);
