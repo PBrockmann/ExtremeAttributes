@@ -332,7 +332,7 @@ function initCrossfilter() {
         //find regions in regionGroup whose values are not 0, get pathid
         //and hightlight/unhighlight depending on whether chartFilter is empty
         regionGroup.all().forEach(function (d, i) {
-            if (regionGroup.all()[i].value != 0) {                
+            if (regionGroup.all()[i].value != 0) {
                 pathid = regionGroup.all()[i].key;
                 if (chartFilter() != 0) {
                     d3.select("#"+pathid.substring(0, 4))
@@ -343,6 +343,11 @@ function initCrossfilter() {
                      .style("stroke", null)
                      .style("stroke-width", null).style("fill-opacity", 0);
                 }
+            } else { //unselect any regions that may have been previously selected
+                pathid = regionGroup.all()[i].key;
+                d3.select("#"+pathid.substring(0, 4))
+                     .style("stroke", null)
+                     .style("stroke-width", null).style("fill-opacity", 0);
             }
         });       
     }
