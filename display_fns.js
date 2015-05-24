@@ -144,11 +144,14 @@ function init() {
                             }
                             //cancel out fill and bold stroke-width applied on click event to turn region "ON"
                             d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);
-                              
+                            
+                            
                         }              
                         
                         initCrossfilter(); //new points array passed to crossfilter                        
                     });
+
+                
 
                 //Update popup window based on selections in dc chart filters
                 //NB: use select("path") NOT selectAll("path") as above
@@ -270,6 +273,20 @@ function init() {
         return [point.x, point.y];
     }
     
+}
+
+function clearMap() {
+    //clear active_flag so that regions can be turned on again with .on click    
+    for (var i = 0; i < regionToPassToDC.length; i++) {
+        active_flag[active_flag.indexOf(1)] = 0;
+    }
+    regionToPassToDC = []; //clear selected regions for dc charts
+    initCrossfilter(); //update dc charts with cleared region filter
+    
+    //un-highlight all regions
+    d3.selectAll("path")
+      .style("stroke", null)
+      .style("stroke-width", null).style("fill-opacity", 0);
 }
 
 function initCrossfilter() {
@@ -414,13 +431,13 @@ function initCrossfilter() {
 
     xAxis_datasetChart = datasetChart.xAxis().ticks(4);
 
-     //dc dataTable
-      dataTable = dc.dataTable("#dc-table-graph");
-      // Create datatable dimension
-      var timeDimension = filter.dimension(function (d) {
+    //dc dataTable
+    dataTable = dc.dataTable("#dc-table-graph");
+    // Create datatable dimension
+    var timeDimension = filter.dimension(function (d) {
         return d.Year;
-      });
-      //dataTable
+    });
+    
     dataTable.width(1060).height(1000)
         .dimension(timeDimension)
         .group(function(d) { return ""})
@@ -461,6 +478,8 @@ function initCrossfilter() {
 
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
+
+    
 
     dc.renderAll();
 
