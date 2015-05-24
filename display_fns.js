@@ -127,28 +127,13 @@ function init() {
 
                         } else { //turn region "OFF"                                                
                             if (this_active == 1) { //region was "ON" previously
-                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"    
-
-                                if (active_flag.indexOf(1) == -1) points = events; //no regions are selected
-                                else {
-                                    var tmp = [];
-                                    for (var i = 0; i < active_flag.length; i++) {
-                                        if (active_flag[i] == 1) { //finds selected regions
-                                            for (var j = 0; j < events.length; j++) {                                                  
-                                                if (events[j].Region.substring(0, 4) == id_name[i])
-                                                    tmp.push(events[j]);
-                                            }
-                                        }
-                                    }
-                               }                           
+                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"                                    
                             }
                             //cancel out fill and bold stroke-width applied on click event to turn region "ON"
-                            d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);
-                            
-                            
+                            d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);                                    
                         }              
                         
-                        initCrossfilter(); //new points array passed to crossfilter                        
+                        initCrossfilter(); //send regionToPassToDC to dc region filter                        
                     });
 
                 
