@@ -280,7 +280,7 @@ function initCrossfilter() {
 
     //charts
     indexChart = dc.rowChart("#chart-indexType");
-    anomYearChart = dc.rowChart("#chart-anomYear");
+    datasetChart = dc.rowChart("#chart-dataset");
     yearChart = dc.barChart("#chart-eventYear");
     regionChart = dc.rowChart("#chart-region");
 
@@ -288,10 +288,10 @@ function initCrossfilter() {
     var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
         regionDimension = filter.dimension(function(p, i) { return p.Region; }),
         indexDimension = filter.dimension(function(p) { return p.Index; }),
-        anomYearDimension = filter.dimension(function(d) { return d.Data; }),
+        datasetDimension = filter.dimension(function(d) { return d.Data; }),
         yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
         indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
-        anomYearGroup = anomYearDimension.group().reduceSum(function(d) { return d.Value; });    
+        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });    
         
     
     //global
@@ -307,8 +307,6 @@ function initCrossfilter() {
     minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
     maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
 
-    
-
     indexChart
         .width(200) //svg width
         .height(200) //svg height
@@ -323,7 +321,24 @@ function initCrossfilter() {
         .on("preRedraw", update0)
         .colors(d3.scale.category20())
         .elasticX(true)
-        .gap(0);
+        .gap(0)
+        .on("filtered", updateMapRegion);
+
+    function updateMapRegion() {
+        console.log("updateMapRegion fn: ", indexChart.filters());
+        pathid = "#Alsa";
+        if (indexChart.filters() != 0) { //an index was selected
+            console.log("selected");
+            d3.select(pathid)
+              .style("fill", "brown").style("fill-opacity", 0.7)
+              .style("stroke", "brown").style("stroke-width", "2px");
+        } else { //no index is selected therefore remove all highlighted regions
+            console.log("unselected");
+            d3.select(pathid)
+              .style("stroke", null)
+              .style("stroke-width", null).style("fill-opacity", 0);
+        }
+    }
 
     xAxis_indexChart = indexChart.xAxis().ticks(4);
 
@@ -353,7 +368,7 @@ function initCrossfilter() {
     var yAxis_yearChart = yearChart.yAxis().ticks(6);
 
 
-    anomYearChart
+    datasetChart
         .width(200) //svg width
         .height(80) //svg height
         .margins({
@@ -362,14 +377,14 @@ function initCrossfilter() {
             bottom: 30,
             left: 5
         })
-        .dimension(anomYearDimension)
-        .group(anomYearGroup)
+        .dimension(datasetDimension)
+        .group(datasetGroup)
         .on("preRedraw", update0)
         .colors(d3.scale.category20())
         .elasticX(true)
         .gap(0);
 
-    xAxis_anomYearChart = anomYearChart.xAxis().ticks(4);
+    xAxis_datasetChart = datasetChart.xAxis().ticks(4);
 
      //dc dataTable
       dataTable = dc.dataTable("#dc-table-graph");
@@ -404,9 +419,12 @@ function initCrossfilter() {
         .on("filtered", updateSelectors);
 
     function updateSelectors() {
-        //console.log(regionChart.filters());
+        console.log("regionChart.filters(): ", regionChart.filters());
     }
       
+    console.log("regionGroup: ", regionGroup.all());
+    
+    //regionToPassToDC obtained from map click in .on("click") above
     if (regionToPassToDC != 0) {
         regionToPassToDC.forEach(function (d, i) {
             regionChart.filter(regionToPassToDC[i]);
@@ -429,9 +447,10 @@ function initCrossfilter() {
             .attr("y", chartToUpdate.height())
             .text(displayText);
     }
-    AddXAxis(indexChart, "#times indices > threshold");
-    AddXAxis(anomYearChart, "#times dataset indices > threshold");
+    AddXAxis(indexChart, "# anomalies");
+    AddXAxis(datasetChart, "# anomalies");
 
+    //add x-axis label
     yearChart.svg()
         .append("text")
         .attr("class", "x-axis-label")
@@ -440,7 +459,7 @@ function initCrossfilter() {
         .attr("y", -1)
         .attr("dy", ".75em")
         .attr("transform", "rotate(-90)")
-        .text("#times indices > thresh");
+        .text("# anomalies");
 
     function print_filter(filter) {
         var f = eval(filter);
@@ -545,7 +564,7 @@ function eventList() {
     eventItem.append("div")
         .attr("class", "col-md-4")
         .style("text-align", "left")
-        .text("#times > thresh");
+        .text("# anomalies");
 
 
     //Extreme Events table -- row values
