@@ -334,20 +334,14 @@ function initCrossfilter() {
         regionGroup.all().forEach(function (d, i) {
             if (regionGroup.all()[i].value != 0) {
                 pathid = regionGroup.all()[i].key;
-                if (chartFilter() != 0) {
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "brown").style("stroke-width", "2px");
-                } else {
-                    d3.select("#"+pathid.substring(0, 4))
-                     .style("stroke", null)
-                     .style("stroke-width", null).style("fill-opacity", 0);
-                }
+                d3.select("#"+pathid.substring(0, 4))
+                  .style("fill", "brown").style("fill-opacity", 0.7)
+                  .style("stroke", "brown").style("stroke-width", "2px");
             } else { //unselect any regions that may have been previously selected
                 pathid = regionGroup.all()[i].key;
                 d3.select("#"+pathid.substring(0, 4))
-                     .style("stroke", null)
-                     .style("stroke-width", null).style("fill-opacity", 0);
+                  .style("stroke", null)
+                  .style("stroke-width", null).style("fill-opacity", 0);
             }
         });       
     }
@@ -375,6 +369,9 @@ function initCrossfilter() {
         //.xUnits(function(){return 2;})    
         .xUnits(dc.units.integers)
         .x(d3.scale.linear().domain([minYear, maxYear]))
+        .on("filtered", function() {
+            updateMapRegion(indexChart.filters);
+        })
         .xAxis().ticks(3).tickFormat(d3.format("d"));
 
     var yAxis_yearChart = yearChart.yAxis().ticks(6);
