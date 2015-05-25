@@ -252,7 +252,7 @@ function clearMap() {
     // for (var i = 0; i < regionToPassToDC.length; i++) {
     //     active_flag[active_flag.indexOf(1)] = 0;
     // }
-    // regionToPassToDC = []; //clear selected regions for dc charts
+    regionToPassToDC = []; //clear selected regions for dc charts
     initCrossfilter(); //update dc charts with cleared region filter
     
     //un-highlight all regions
