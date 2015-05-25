@@ -253,6 +253,10 @@ function clearMap() {
     //     active_flag[active_flag.indexOf(1)] = 0;
     // }
     regionToPassToDC = []; //clear selected regions for dc charts
+    for (var j = 0; j < active_dict.length; j++) {
+        active_dict[j].value = 0;
+    }
+    //regionChart.filters = null; //DOESN'T CLEAR!!!!
     initCrossfilter(); //update dc charts with cleared region filter
     
     //un-highlight all regions
@@ -477,7 +481,6 @@ function initCrossfilter() {
                 tmp.forEach(function (p, k) {
                     regionChart.filter(tmp[k]);
                 })
-                regionChart.filter(["Bourgogne et Franche-Comté", "Centre-Val de Loire"]);
             } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
                 //turn off selected region and reset active_dict values to 0
                 d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
