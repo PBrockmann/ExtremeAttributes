@@ -21,7 +21,8 @@ var active_flag = []; //stores if region has been clicked
 var saveRegion;
 
 //for regionChart
-var regionToPassToDC = [];
+var regionToPassToDC;
+var active_dict = [];
 
 function init() {
     console.log("in init()!");
@@ -78,8 +79,16 @@ function init() {
         //READ IN ADMIN AND PLACE NAME OVERLAYS FOR BASE LEAFLET MAP OF FRANCE
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
             if (error) return console.error(error);
-            console.log("admin: ", admin);
+            //console.log("admin: ", admin);
 
+            
+            admin.objects.FRA_admin12.geometries.forEach(function (d, idx) {                
+                active_dict.push({
+                    key: d.properties.name.substring(0, 4),
+                    value: 0
+                });
+                
+            });            
 
             //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
             d3.json("geojson/cities.geojson", function(error, data) {
@@ -105,33 +114,40 @@ function init() {
                     })
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
-                    .on("click", function() {
-                        console.log("saveRegion: ", saveRegion);
-                        regionToPassToDC.push(saveRegion);                                                                    
+                    .on("click", function(d) {                        
+                        //regionToPassToDC.push(d.properties.name);
+                        regionToPassToDC = d.properties.name;
+                        console.log("regionToPassToDC: ", d.properties.name);
+                        region_id = d.properties.name.substring(0,4);
+                        //set corresponding active_dict values to 1
+                        // for (var j = 0; j < active_dict.length; j++) {                
+                        //     if (active_dict[j].key == region_id) active_dict[j].value = 1;
+                        // };
+                        // console.log("active_dict after: ", active_dict);                    
 
-                        pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
-                        var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
+                        //pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
+                        // var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
   
 
-                        if (this_active == 0) active = true; //region was not previously "ON"
-                        else if (this_active == 1) active = false;
-                        //console.log("active: ", active);
+                        // if (this_active == 0) active = true; //region was not previously "ON"
+                        // else if (this_active == 1) active = false;
+                        // //console.log("active: ", active);
           
                             
-                        if (active) { //turn region "ON"                            
-                            console.log("active_flag: ", active_flag);
-                            active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
-                            //console.log("this_active: ", this_active);                            
-                            d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
-                                             .style("stroke", "brown").style("stroke-width", "2px");
+                        // if (active) { //turn region "ON"                            
+                        //     console.log("active_flag: ", active_flag);
+                        //     active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
+                        //     //console.log("this_active: ", this_active);                            
+                        //     d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
+                        //                      .style("stroke", "brown").style("stroke-width", "2px");
 
-                        } else { //turn region "OFF"                                                
-                            if (this_active == 1) { //region was "ON" previously
-                                active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"                                    
-                            }
-                            //cancel out fill and bold stroke-width applied on click event to turn region "ON"
-                            d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);                                    
-                        }              
+                        // } else { //turn region "OFF"                                                
+                        //     if (this_active == 1) { //region was "ON" previously
+                        //         active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"                                    
+                        //     }
+                        //     //cancel out fill and bold stroke-width applied on click event to turn region "ON"
+                        //     d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);
+                        // }              
                         
                         initCrossfilter(); //send regionToPassToDC to dc region filter                        
                     });
@@ -262,10 +278,10 @@ function init() {
 
 function clearMap() {
     //clear active_flag so that regions can be turned on again with .on click    
-    for (var i = 0; i < regionToPassToDC.length; i++) {
-        active_flag[active_flag.indexOf(1)] = 0;
-    }
-    regionToPassToDC = []; //clear selected regions for dc charts
+    // for (var i = 0; i < regionToPassToDC.length; i++) {
+    //     active_flag[active_flag.indexOf(1)] = 0;
+    // }
+    // regionToPassToDC = []; //clear selected regions for dc charts
     initCrossfilter(); //update dc charts with cleared region filter
     
     //un-highlight all regions
@@ -450,17 +466,59 @@ function initCrossfilter() {
 
     function updateSelectors() {
         console.log("regionChart.filters(): ", regionChart.filters());
+
     }
       
-    console.log("regionGroup: ", regionGroup.all());
+    //console.log("regionGroup: ", regionGroup.all());
     
     //regionToPassToDC obtained from map click in .on("click") above
-    if (regionToPassToDC != 0) {
-        regionToPassToDC.forEach(function (d, i) {
-            regionChart.filter(regionToPassToDC[i]);
-        });
+    console.log("regionToPassToDC again: ", regionToPassToDC);
+    console.log("regionChart.filter() again: ", regionChart.filter());
+    // if (regionToPassToDC != 0) {
+    //     regionToPassToDC.forEach(function (d, i) {
+    //         regionChart.filter(regionToPassToDC[i]);
+    //         pathid = regionToPassToDC[i].substring(0, 4);
+    //         console.log("pathid: ", pathid);
+    //         d3.select("#"+pathid).style("fill", "brown").style("fill-opacity", 0.7)
+    //           .style("stroke", "brown").style("stroke-width", "2px");
+    //         //set corresponding active_dict values to 1
+    //         for (var j = 0; j < active_dict.length; j++) {                
+    //             if (active_dict[j].key == pathid && active_dict[j].value == 1) {
+    //                 d3.select(pathid).style("stroke", null)
+    //                   .style("stroke-width", null).style("fill-opacity", 0);
+    //                 active_dict[j].value = 0;  
+    //             };
+    //         }
+    //     });
+    // }
+    
+    if (regionToPassToDC) {
+        matchid = regionToPassToDC.substring(0, 4);
+        //debugger;
+        console.log("matchid: ", matchid);
+        //set corresponding active_dict values to 1
+        for (var j = 0; j < active_dict.length; j++) {   
+            console.log("after for loop: ", active_dict[j].key, active_dict[j].value)            
+            if (active_dict[j].key == matchid && active_dict[j].value == 0) {
+                d3.select("#"+matchid).style("fill", "brown").style("fill-opacity", 0.7)
+                  .style("stroke", "brown").style("stroke-width", "2px");
+                active_dict[j].value = 1;
+                console.log("after for loop2: ", active_dict[j].key, active_dict[j].value)
+            } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
+                console.log("in here")
+                d3.select("#"+matchid).style("stroke", null)
+                  .style("stroke-width", null).style("fill-opacity", 0);
+                  active_dict[j].value = 0;
+
+            }
+        }
+
     }
 
+
+
+
+    //console.log("active_dict after: ", active_dict);
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
 
