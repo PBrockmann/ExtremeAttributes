@@ -23,6 +23,7 @@ var saveRegion;
 //for regionChart
 var regionToPassToDC;
 var active_dict = [];
+var tmp = [];
 
 function init() {
     console.log("in init()!");
@@ -84,7 +85,7 @@ function init() {
             
             admin.objects.FRA_admin12.geometries.forEach(function (d, idx) {                
                 active_dict.push({
-                    key: d.properties.name.substring(0, 4),
+                    key: d.properties.name,
                     value: 0
                 });
                 
@@ -115,39 +116,9 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {                        
-                        //regionToPassToDC.push(d.properties.name);
+                        regionToPassToDC = null;
                         regionToPassToDC = d.properties.name;
-                        console.log("regionToPassToDC: ", d.properties.name);
-                        region_id = d.properties.name.substring(0,4);
-                        //set corresponding active_dict values to 1
-                        // for (var j = 0; j < active_dict.length; j++) {                
-                        //     if (active_dict[j].key == region_id) active_dict[j].value = 1;
-                        // };
-                        // console.log("active_dict after: ", active_dict);                    
-
-                        //pathid = "#"+saveRegion.substring(0, 4); //get pathid corresponding to selected region
-                        // var this_active = active_flag[id_name.indexOf(saveRegion.substring(0, 4))];
-  
-
-                        // if (this_active == 0) active = true; //region was not previously "ON"
-                        // else if (this_active == 1) active = false;
-                        // //console.log("active: ", active);
-          
-                            
-                        // if (active) { //turn region "ON"                            
-                        //     console.log("active_flag: ", active_flag);
-                        //     active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 1;
-                        //     //console.log("this_active: ", this_active);                            
-                        //     d3.select(pathid).style("fill", "brown").style("fill-opacity", 0.7)
-                        //                      .style("stroke", "brown").style("stroke-width", "2px");
-
-                        // } else { //turn region "OFF"                                                
-                        //     if (this_active == 1) { //region was "ON" previously
-                        //         active_flag[id_name.indexOf(saveRegion.substring(0, 4))] = 0; //restore to "OFF"                                    
-                        //     }
-                        //     //cancel out fill and bold stroke-width applied on click event to turn region "ON"
-                        //     d3.select(pathid).style("stroke", null).style("stroke-width", null).style("fill-opacity", 0);
-                        // }              
+                        console.log("regionToPassToDC: ", d.properties.name);                    
                         
                         initCrossfilter(); //send regionToPassToDC to dc region filter                        
                     });
@@ -492,33 +463,39 @@ function initCrossfilter() {
     //     });
     // }
     
+    
     if (regionToPassToDC) {
-        matchid = regionToPassToDC.substring(0, 4);
-        //debugger;
+        matchid = regionToPassToDC;
         console.log("matchid: ", matchid);
-        //set corresponding active_dict values to 1
+        //turn on selected region and set active_dict values to 1
         for (var j = 0; j < active_dict.length; j++) {   
-            console.log("after for loop: ", active_dict[j].key, active_dict[j].value)            
             if (active_dict[j].key == matchid && active_dict[j].value == 0) {
-                d3.select("#"+matchid).style("fill", "brown").style("fill-opacity", 0.7)
+                d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
                   .style("stroke", "brown").style("stroke-width", "2px");
                 active_dict[j].value = 1;
-                console.log("after for loop2: ", active_dict[j].key, active_dict[j].value)
+                tmp.push(regionToPassToDC);
+                tmp.forEach(function (p, k) {
+                    regionChart.filter(tmp[k]);
+                })
+                regionChart.filter(["Bourgogne et Franche-Comté", "Centre-Val de Loire"]);
             } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
-                console.log("in here")
-                d3.select("#"+matchid).style("stroke", null)
-                  .style("stroke-width", null).style("fill-opacity", 0);
-                  active_dict[j].value = 0;
-
+                //turn off selected region and reset active_dict values to 0
+                d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
+                  .style("stroke-width", null).style("fill-opacity", 0);                  
+                active_dict[j].value = 0; 
+                tmp = [];
+                active_dict.forEach(function (p, k) {
+                    if (active_dict[k].value == 1) {//region is highlighted
+                        console.log("active_dict in here: ", active_dict[k].key)
+                        regionChart.filter(active_dict[k].key);
+                        tmp.push(active_dict[k].key);
+                    }
+                })                  
             }
         }
 
     }
 
-
-
-
-    //console.log("active_dict after: ", active_dict);
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
 
