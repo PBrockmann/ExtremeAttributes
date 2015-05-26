@@ -252,17 +252,23 @@ function clearMap() {
     // for (var i = 0; i < regionToPassToDC.length; i++) {
     //     active_flag[active_flag.indexOf(1)] = 0;
     // }
-    regionToPassToDC = []; //clear selected regions for dc charts
-    for (var j = 0; j < active_dict.length; j++) {
-        active_dict[j].value = 0;
-    }
-    //regionChart.filters = null; //DOESN'T CLEAR!!!!
-    initCrossfilter(); //update dc charts with cleared region filter
     
     //un-highlight all regions
     d3.selectAll("path")
       .style("stroke", null)
       .style("stroke-width", null).style("fill-opacity", 0);
+
+    regionToPassToDC = []; //clear selected regions for dc charts
+    for (var j = 0; j < active_dict.length; j++) {
+        active_dict[j].value = 0; //reset to 0
+        console.log(active_dict[j].key)
+        regionChart.filter(active_dict[j].key); //pass all regions to regionChart
+        //initCrossfilter();
+    }
+    //regionChart.filters = null; //DOESN'T CLEAR!!!!
+    initCrossfilter(); //update dc charts with cleared region filter
+    
+   
 }
 
 function initCrossfilter() {
