@@ -25,6 +25,8 @@ var regionToPassToDC;
 var active_dict = [];
 var tmp = [];
 
+var clearMapFlag = 0;
+
 function init() {
     console.log("in init()!");
     
@@ -247,28 +249,9 @@ function init() {
     
 }
 
-function clearMap() {
-    //clear active_flag so that regions can be turned on again with .on click    
-    // for (var i = 0; i < regionToPassToDC.length; i++) {
-    //     active_flag[active_flag.indexOf(1)] = 0;
-    // }
-    
-    //un-highlight all regions
-    d3.selectAll("path")
-      .style("stroke", null)
-      .style("stroke-width", null).style("fill-opacity", 0);
-
-    regionToPassToDC = []; //clear selected regions for dc charts
-    for (var j = 0; j < active_dict.length; j++) {
-        active_dict[j].value = 0; //reset to 0
-        console.log(active_dict[j].key)
-        regionChart.filter(active_dict[j].key); //pass all regions to regionChart
-        //initCrossfilter();
-    }
-    //regionChart.filters = null; //DOESN'T CLEAR!!!!
-    initCrossfilter(); //update dc charts with cleared region filter
-    
-   
+function clearMap() {  
+    clearMapFlag = 1;
+    initCrossfilter(); //update dc charts with cleared region filter    
 }
 
 function initCrossfilter() {
@@ -290,14 +273,17 @@ function initCrossfilter() {
         datasetDimension = filter.dimension(function(d) { return d.Data; }),
         yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
         indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
-        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });    
+        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
+
+
         
     
     //global
     idDimension = filter.dimension(function(p, i) { return i; });
     idGroup = idDimension.group(function(id) { return id; });
     regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
-       
+
+
     //yearGroup = yearDimension.group(); //counts number of years regardless of whether d.value is empty
     
     //print_filter("yearGroup");
@@ -449,61 +435,77 @@ function initCrossfilter() {
         console.log("regionChart.filters(): ", regionChart.filters());
 
     }
-      
-    //console.log("regionGroup: ", regionGroup.all());
-    
-    //regionToPassToDC obtained from map click in .on("click") above
-    console.log("regionToPassToDC again: ", regionToPassToDC);
-    console.log("regionChart.filter() again: ", regionChart.filter());
-    // if (regionToPassToDC != 0) {
-    //     regionToPassToDC.forEach(function (d, i) {
-    //         regionChart.filter(regionToPassToDC[i]);
-    //         pathid = regionToPassToDC[i].substring(0, 4);
-    //         console.log("pathid: ", pathid);
-    //         d3.select("#"+pathid).style("fill", "brown").style("fill-opacity", 0.7)
-    //           .style("stroke", "brown").style("stroke-width", "2px");
-    //         //set corresponding active_dict values to 1
-    //         for (var j = 0; j < active_dict.length; j++) {                
-    //             if (active_dict[j].key == pathid && active_dict[j].value == 1) {
-    //                 d3.select(pathid).style("stroke", null)
-    //                   .style("stroke-width", null).style("fill-opacity", 0);
-    //                 active_dict[j].value = 0;  
-    //             };
-    //         }
-    //     });
-    // }
-    
-    
-    if (regionToPassToDC) {
-        matchid = regionToPassToDC;
-        console.log("matchid: ", matchid);
-        //turn on selected region and set active_dict values to 1
-        for (var j = 0; j < active_dict.length; j++) {   
-            if (active_dict[j].key == matchid && active_dict[j].value == 0) {
-                d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
-                  .style("stroke", "brown").style("stroke-width", "2px");
-                active_dict[j].value = 1;
-                tmp.push(regionToPassToDC);
-                tmp.forEach(function (p, k) {
-                    regionChart.filter(tmp[k]);
-                })
-            } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
-                //turn off selected region and reset active_dict values to 0
-                d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
-                  .style("stroke-width", null).style("fill-opacity", 0);                  
-                active_dict[j].value = 0; 
-                tmp = [];
-                active_dict.forEach(function (p, k) {
-                    if (active_dict[k].value == 1) {//region is highlighted
-                        console.log("active_dict in here: ", active_dict[k].key)
-                        regionChart.filter(active_dict[k].key);
-                        tmp.push(active_dict[k].key);
-                    }
-                })                  
+
+    //console.log("active_dict before updateRegionChart: ", active_dict);
+    if (clearMapFlag ==1) {
+        active_dict.forEach(function (d, i) {
+            if (active_dict[i].value == 1) {//region is highlighted
+                d3.select("#"+active_dict[i].key.substring(0, 4)).style("stroke", null)
+                  .style("stroke-width", null).style("fill-opacity", 0);
+                //active_dict[i].value = 0;
             }
+        })
+        //update dc charts
+        regionChart.filterAll(); dc.redrawAll(); //clear filter
+        // active_dict.forEach(function (d, i) {
+        //     regionChart.filter(active_dict[i].key);
+        // })
+
+        //reset to default values
+        clearMapFlag = 0;
+        // active_dict.forEach(function (d, i) {
+        //     active_dict[i].value = 0;        
+        // })
+    } else {
+        console.log("updating")
+        updateRegionChart();
+    }
+
+    function updateRegionChart() {
+        console.log("updateRegionChart");
+
+         if (regionToPassToDC) {
+            matchid = regionToPassToDC;
+            console.log("matchid: ", matchid);
+            //turn on selected region and set active_dict values to 1
+            for (var j = 0; j < active_dict.length; j++) {   
+                if (active_dict[j].key == matchid && active_dict[j].value == 0) {
+                    d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
+                      .style("stroke", "brown").style("stroke-width", "2px");
+                    active_dict[j].value = 1;
+                    tmp.push(regionToPassToDC);
+                    tmp.forEach(function (p, k) {
+                        regionChart.filter(tmp[k]);
+                    })
+                } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
+                    //turn off selected region and reset active_dict values to 0
+                    d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
+                      .style("stroke-width", null).style("fill-opacity", 0);                  
+                    active_dict[j].value = 0; 
+                    tmp = [];
+                    active_dict.forEach(function (p, k) {
+                        if (active_dict[k].value == 1) {//region is highlighted
+                            console.log("active_dict in here: ", active_dict[k].key)
+                            regionChart.filter(active_dict[k].key);
+                            tmp.push(active_dict[k].key);
+                        }
+                    })                  
+                }
+            }
+
         }
 
+
     }
+    console.log("active_dict after updateRegionChart: ", active_dict);
+      
+
+    console.log("regionToPassToDC again: ", regionToPassToDC);
+    console.log("regionChart.filter() again: ", regionChart.filter());
+
+  
+
+
 
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
