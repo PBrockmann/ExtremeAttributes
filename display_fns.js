@@ -21,9 +21,10 @@ var active_flag = []; //stores if region has been clicked
 var saveRegion;
 
 //for regionChart
-var regionToPassToDC;
+var regionToPassToDC; //one region, obtained from mouse click
+var regionToPassToDC_array = []; //array to store each regionToPassToDC
 var active_dict = [];
-var tmp = [];
+
 
 var clearMapFlag = 0;
 
@@ -433,11 +434,10 @@ function initCrossfilter() {
 
     function updateSelectors() {
         console.log("regionChart.filters(): ", regionChart.filters());
-
     }
-
-    //console.log("active_dict before updateRegionChart: ", active_dict);
+    
     if (clearMapFlag ==1) {
+        console.log("active_dict in clearMap 1: ", active_dict);
         active_dict.forEach(function (d, i) {
             if (active_dict[i].value == 1) {//region is highlighted
                 d3.select("#"+active_dict[i].key.substring(0, 4)).style("stroke", null)
@@ -445,57 +445,54 @@ function initCrossfilter() {
                 //active_dict[i].value = 0;
             }
         })
-        //update dc charts
-        regionChart.filterAll(); dc.redrawAll(); //clear filter
-        // active_dict.forEach(function (d, i) {
-        //     regionChart.filter(active_dict[i].key);
-        // })
+        //update dc charts        
+        active_dict.forEach(function (d, i) {
+            active_dict[i].value = 0;
+        })        
 
         //reset to default values
         clearMapFlag = 0;
-        // active_dict.forEach(function (d, i) {
-        //     active_dict[i].value = 0;        
-        // })
-    } else {
-        console.log("updating")
+        regionToPassToDC = null;
+        console.log("regionToPassToDC_array in clearMap: ", regionToPassToDC_array);
+        regionToPassToDC_array = []; //clear all memory of selected regions
+  
+    } else {        
         updateRegionChart();
     }
 
     function updateRegionChart() {
-        console.log("updateRegionChart");
+        console.log("in updateRegionChart");
 
          if (regionToPassToDC) {
-            matchid = regionToPassToDC;
-            console.log("matchid: ", matchid);
+            matchid = regionToPassToDC;            
             //turn on selected region and set active_dict values to 1
             for (var j = 0; j < active_dict.length; j++) {   
                 if (active_dict[j].key == matchid && active_dict[j].value == 0) {
                     d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
                       .style("stroke", "brown").style("stroke-width", "2px");
                     active_dict[j].value = 1;
-                    tmp.push(regionToPassToDC);
-                    tmp.forEach(function (p, k) {
-                        regionChart.filter(tmp[k]);
+                    //make an array of selected regions
+                    regionToPassToDC_array.push(regionToPassToDC);
+                    //pass array of selected regions to regionChart.filter
+                    regionToPassToDC_array.forEach(function (p, k) {
+                        regionChart.filter(regionToPassToDC_array[k]);
                     })
                 } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
                     //turn off selected region and reset active_dict values to 0
                     d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
                       .style("stroke-width", null).style("fill-opacity", 0);                  
                     active_dict[j].value = 0; 
-                    tmp = [];
+                    regionToPassToDC_array = [];
                     active_dict.forEach(function (p, k) {
-                        if (active_dict[k].value == 1) {//region is highlighted
-                            console.log("active_dict in here: ", active_dict[k].key)
+                        if (active_dict[k].value == 1) {//region is highlighted                            
                             regionChart.filter(active_dict[k].key);
-                            tmp.push(active_dict[k].key);
+                            regionToPassToDC_array.push(active_dict[k].key);
                         }
                     })                  
                 }
             }
 
         }
-
-
     }
     console.log("active_dict after updateRegionChart: ", active_dict);
       
