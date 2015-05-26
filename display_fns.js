@@ -310,7 +310,7 @@ function initCrossfilter() {
         .gap(0)
         .on("filtered", function() {
             updateMapRegion(indexChart.filters);
-        });
+        });    
 
     function updateMapRegion(chartFilter) {
         console.log("updateMapRegion fn: ", chartFilter());
@@ -318,9 +318,19 @@ function initCrossfilter() {
         countRegionGroup = 0;
         regionGroup.all().forEach(function (d, i) {
             if (regionGroup.all()[i].value != 0) {
+                //set corresponding regions in active_dict to 1
+                active_dict.forEach(function (p, j) {
+                    if (active_dict[j].key == regionGroup.all()[j].key) {                        
+                        active_dict[i].value = 1;
+                    }
+                })
+                regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
                 countRegionGroup++
             }
         });
+        console.log("countRegionGroup: ", countRegionGroup)
+        console.log("active_dict: ", active_dict)
+        console.log("regionToPassToDC_array: ", regionToPassToDC_array)
     
         //Hack to take care of case where user clicks on all filter options in
         //a given dimension => erase all highlights
@@ -441,8 +451,7 @@ function initCrossfilter() {
         active_dict.forEach(function (d, i) {
             if (active_dict[i].value == 1) {//region is highlighted
                 d3.select("#"+active_dict[i].key.substring(0, 4)).style("stroke", null)
-                  .style("stroke-width", null).style("fill-opacity", 0);
-                //active_dict[i].value = 0;
+                  .style("stroke-width", null).style("fill-opacity", 0);                
             }
         })
         //update dc charts        
