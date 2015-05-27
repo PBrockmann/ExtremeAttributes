@@ -124,9 +124,13 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {                        
                         console.log("regionToPassToDC in on click: ", regionToPassToDC);
+                                                
+                        if (indexChart.hasFilter() == true || (yearChart.hasFilter() == true) || (datasetChart.hasFilter() == true)) {
+                            clickDC = true;
+                        } else { clickDC = false; }
                         console.log("clickDC in on click: ", clickDC);
-                        //if (regionChart.filters() != 0 || regionToPassToDC != 0) { //can click on map as many times as you want             
-                        if (clickDC == false) {
+                            
+                        if (clickDC == false) { //can click on map as many times as you want
                             
                                 regionToPassToDC = null;
                                 regionToPassToDC = d.properties.name;
@@ -437,11 +441,6 @@ function initCrossfilter() {
     }
 
     function updateRegionChart() {
-        if (indexChart.hasFilter() == true || (yearChart.hasFilter() == true) || (datasetChart.hasFilter() == true)) {
-            clickDC = true;
-        }
-        console.log("clickDC is ", clickDC);
-        
 
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
             if (regionToPassToDC) {
@@ -479,11 +478,6 @@ function initCrossfilter() {
  
 
     function highlightRegion(chartFilter, chartGroup) {
-        if (indexChart.hasFilter() == true || (yearChart.hasFilter() == true) || (datasetChart.hasFilter() == true)) {
-            clickDC = true;
-        }
-        console.log("clickDC is ", clickDC);
-        
 
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
