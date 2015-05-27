@@ -14,6 +14,9 @@ var idGroup;
 //var regionDimension;
 var regionGroup;
 var saveRegionGroup; //regionGroup when no regions or filters are selected
+var yearGroup;
+var indexGroup;
+var datasetGroup;
 
 var events;
 var active_flag = []; //stores if region has been clicked
@@ -271,10 +274,7 @@ function initCrossfilter() {
     var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
         regionDimension = filter.dimension(function(p, i) { return p.Region; }),
         indexDimension = filter.dimension(function(p) { return p.Index; }),
-        datasetDimension = filter.dimension(function(d) { return d.Data; }),
-        yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
-        indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
-        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
+        datasetDimension = filter.dimension(function(d) { return d.Data; });
 
 
         
@@ -283,6 +283,9 @@ function initCrossfilter() {
     idDimension = filter.dimension(function(p, i) { return i; });
     idGroup = idDimension.group(function(id) { return id; });
     regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+    yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; });
+    indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; });
+    datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
 
 
     //yearGroup = yearDimension.group(); //counts number of years regardless of whether d.value is empty
@@ -395,10 +398,11 @@ function initCrossfilter() {
         .width(350).height(500)
         .dimension(regionDimension)
         .group(regionGroup)
-        .elasticX(true)
-        .on("filtered", updateSelectors);
+        .elasticX(true);
+        //.on("filtered", updateSelectors);        
 
     function updateSelectors() { //executed when map is clicked
+        console.log("regionGroup.all(): ", regionGroup.all());
         console.log("regionChart.filters(): ", regionChart.filters());
     }
     
@@ -470,6 +474,7 @@ function initCrossfilter() {
     console.log("regionChart.filter() again: ", regionChart.filter());
 
     function highlightRegion(chartFilter, chartGroup) {
+        console.log("regionGroup.all(): ", regionGroup.all());
         console.log("highlightRegion fn chartFilter: ", chartFilter());
         console.log("highlightRegion fn chartGroup: ", chartGroup.all());
         //if no filters are selected, highlight no map regions
@@ -516,13 +521,28 @@ function initCrossfilter() {
                     }
                 });
             }
-     }//end regionChart.filters().length check
+        } else { //map has at least one highlighted region
+            
+            //first clear all regions               
+            d3.selectAll("path")
+                .style("stroke", null)
+                .style("stroke-width", null).style("fill-opacity", 0);               
+
+            //highlight only those regions that match regionChart.filters()
+            for (var j = 0; j < regionChart.filters().length; j++) {
+                regionGroup.all().forEach(function (d, i) {                    
+                    if (regionGroup.all()[i].value != 0 && regionGroup.all()[i].key == regionChart.filters()[j]) {                        
+                        pathid = regionGroup.all()[i].key;                        
+                        d3.select("#"+pathid.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "brown").style("stroke-width", "2px");
+                    }
+                });
+            }        
+        } //end regionChart.filters().length check
     }
 
   
-
-
-
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
 
