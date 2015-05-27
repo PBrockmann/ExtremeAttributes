@@ -309,54 +309,10 @@ function initCrossfilter() {
         .elasticX(true)
         .gap(0)
         .on("filtered", function() {
-            updateMapRegion(indexChart.filters);
+            highlightRegion(indexChart.filters, indexGroup);
         });    
 
-    function updateMapRegion(chartFilter) {
-        console.log("updateMapRegion fn: ", chartFilter());
-        //if no filters are selected, highlight no map regions
-        countRegionGroup = 0;
-        regionGroup.all().forEach(function (d, i) {
-            if (regionGroup.all()[i].value != 0) {
-                //set corresponding regions in active_dict to 1
-                active_dict.forEach(function (p, j) {
-                    if (active_dict[j].key == regionGroup.all()[j].key) {                        
-                        active_dict[i].value = 1;
-                    }
-                })
-                regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
-                countRegionGroup++
-            }
-        });
-        console.log("countRegionGroup: ", countRegionGroup)
-        console.log("active_dict: ", active_dict)
-        console.log("regionToPassToDC_array: ", regionToPassToDC_array)
     
-        //Hack to take care of case where user clicks on all filter options in
-        //a given dimension => erase all highlights
-        if (countRegionGroup == regionGroup.all().length) {
-            d3.selectAll("path")
-                      .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);
-
-        } else {
-            //find regions in regionGroup whose values are not 0, get pathid
-            //and hightlight/unhighlight depending on whether chartFilter is empty
-            regionGroup.all().forEach(function (d, i) {
-                if (regionGroup.all()[i].value != 0) {
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "brown").style("stroke-width", "2px");
-                } else { //unselect any regions that may have been previously selected
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);
-                }
-            });
-        }
-    }
 
     xAxis_indexChart = indexChart.xAxis().ticks(4);
 
@@ -382,7 +338,7 @@ function initCrossfilter() {
         .xUnits(dc.units.integers)
         .x(d3.scale.linear().domain([minYear, maxYear]))
         .on("filtered", function() {
-            updateMapRegion(indexChart.filters);
+            highlightRegion(yearChart.filters, yearGroup);
         })
         .xAxis().ticks(3).tickFormat(d3.format("d"));
 
@@ -405,7 +361,7 @@ function initCrossfilter() {
         .elasticX(true)
         .gap(0)
         .on("filtered", function() {
-            updateMapRegion(datasetChart.filters);
+            highlightRegion(datasetChart.filters, datasetGroup);
         });
 
     xAxis_datasetChart = datasetChart.xAxis().ticks(4);
@@ -442,7 +398,7 @@ function initCrossfilter() {
         .elasticX(true)
         .on("filtered", updateSelectors);
 
-    function updateSelectors() {
+    function updateSelectors() { //executed when map is clicked
         console.log("regionChart.filters(): ", regionChart.filters());
     }
     
@@ -465,49 +421,103 @@ function initCrossfilter() {
         console.log("regionToPassToDC_array in clearMap: ", regionToPassToDC_array);
         regionToPassToDC_array = []; //clear all memory of selected regions
   
-    } else {        
+    } else {
+        console.log("updating regionChart")    
         updateRegionChart();
     }
 
     function updateRegionChart() {
         console.log("in updateRegionChart");
+        console.log("regionChart.filter(): ", regionChart.filter());
 
-         if (regionToPassToDC) {
-            matchid = regionToPassToDC;            
-            //turn on selected region and set active_dict values to 1
-            for (var j = 0; j < active_dict.length; j++) {   
-                if (active_dict[j].key == matchid && active_dict[j].value == 0) {
-                    d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "brown").style("stroke-width", "2px");
-                    active_dict[j].value = 1;
-                    //make an array of selected regions
-                    regionToPassToDC_array.push(regionToPassToDC);
-                    //pass array of selected regions to regionChart.filter
-                    regionToPassToDC_array.forEach(function (p, k) {
-                        regionChart.filter(regionToPassToDC_array[k]);
-                    })
-                } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
-                    //turn off selected region and reset active_dict values to 0
-                    d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);                  
-                    active_dict[j].value = 0; 
-                    regionToPassToDC_array = [];
-                    active_dict.forEach(function (p, k) {
-                        if (active_dict[k].value == 1) {//region is highlighted                            
-                            regionChart.filter(active_dict[k].key);
-                            regionToPassToDC_array.push(active_dict[k].key);
-                        }
-                    })                  
+        if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
+            if (regionToPassToDC) {
+                matchid = regionToPassToDC;            
+                //turn on selected region and set active_dict values to 1
+                for (var j = 0; j < active_dict.length; j++) {   
+                    if (active_dict[j].key == matchid && active_dict[j].value == 0) {
+                        d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "brown").style("stroke-width", "2px");
+                        active_dict[j].value = 1;
+                        //make an array of selected regions
+                        regionToPassToDC_array.push(regionToPassToDC);
+                        //pass array of selected regions to regionChart.filter
+                        regionToPassToDC_array.forEach(function (p, k) {
+                            regionChart.filter(regionToPassToDC_array[k]);
+                        })
+                    } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
+                        //turn off selected region and reset active_dict values to 0
+                        d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
+                          .style("stroke-width", null).style("fill-opacity", 0);                  
+                        active_dict[j].value = 0; 
+                        regionToPassToDC_array = [];
+                        active_dict.forEach(function (p, k) {
+                            if (active_dict[k].value == 1) {//region is highlighted                            
+                                regionChart.filter(active_dict[k].key);
+                                regionToPassToDC_array.push(active_dict[k].key);
+                            }
+                        })                  
+                    }
                 }
-            }
 
-        }
+            }
+        } //end regionChart.filters().length check
     }
     console.log("active_dict after updateRegionChart: ", active_dict);
       
 
     console.log("regionToPassToDC again: ", regionToPassToDC);
     console.log("regionChart.filter() again: ", regionChart.filter());
+
+    function highlightRegion(chartFilter, chartGroup) {
+        console.log("highlightRegion fn chartFilter: ", chartFilter());
+        console.log("highlightRegion fn chartGroup: ", chartGroup.all());
+        //if no filters are selected, highlight no map regions
+        if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
+            countRegionGroup = 0;
+            console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
+            regionGroup.all().forEach(function (d, i) {
+                if (regionGroup.all()[i].value != 0) {
+                    //set corresponding regions in active_dict to 1
+                    active_dict.forEach(function (p, j) {
+                        if (active_dict[j].key == regionGroup.all()[j].key) {                        
+                            active_dict[i].value = 1;
+                        }
+                    })
+                    regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
+                    countRegionGroup++
+                }
+            });
+            console.log("countRegionGroup: ", countRegionGroup)
+            console.log("active_dict: ", active_dict)
+            console.log("regionToPassToDC_array: ", regionToPassToDC_array)
+        
+            //Hack to take care of case where user clicks on all filter options in
+            //a given dimension => erase all highlights
+            if (countRegionGroup == regionGroup.all().length) {
+                d3.selectAll("path")
+                          .style("stroke", null)
+                          .style("stroke-width", null).style("fill-opacity", 0);
+
+            } else {
+                //find regions in regionGroup whose values are not 0, get pathid
+                //and hightlight/unhighlight depending on whether chartFilter is empty
+                regionGroup.all().forEach(function (d, i) {
+                    if (regionGroup.all()[i].value != 0) {
+                        pathid = regionGroup.all()[i].key;
+                        d3.select("#"+pathid.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "brown").style("stroke-width", "2px");
+                    } else { //unselect any regions that may have been previously selected
+                        pathid = regionGroup.all()[i].key;
+                        d3.select("#"+pathid.substring(0, 4))
+                          .style("stroke", null)
+                          .style("stroke-width", null).style("fill-opacity", 0);
+                    }
+                });
+            }
+     }//end regionChart.filters().length check
+    }
 
   
 
