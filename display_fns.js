@@ -17,11 +17,12 @@ var saveRegionGroup; //regionGroup when no regions or filters are selected
 var yearGroup;
 var indexGroup;
 var datasetGroup;
+var clickDC = false;
 
 var events;
 var active_flag = []; //stores if region has been clicked
 
-var saveRegion;
+//var saveRegion;
 
 //for regionChart
 var regionToPassToDC; //one region, obtained from mouse click
@@ -74,7 +75,7 @@ function init() {
                         totAnom = r.value;
                     }
                 });
-                saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
+                //saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
                                                    
                 //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
                 //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
@@ -122,11 +123,18 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {                        
-                        regionToPassToDC = null;
-                        regionToPassToDC = d.properties.name;
-                        console.log("regionToPassToDC: ", d.properties.name);                    
-                        
-                        initCrossfilter(); //send regionToPassToDC to dc region filter                        
+                        console.log("regionToPassToDC in on click: ", regionToPassToDC);
+                        console.log("clickDC in on click: ", clickDC);
+                        //if (regionChart.filters() != 0 || regionToPassToDC != 0) { //can click on map as many times as you want             
+                        if (clickDC == false) {
+                            
+                                regionToPassToDC = null;
+                                regionToPassToDC = d.properties.name;
+                                console.log("regionToPassToDC: ", d.properties.name);                    
+                                
+                                initCrossfilter(); //send regionToPassToDC to dc region filter
+                            
+                        }
                     });
 
                 
@@ -402,12 +410,11 @@ function initCrossfilter() {
         //.on("filtered", updateSelectors);        
 
     function updateSelectors() { //executed when map is clicked
-        console.log("regionGroup.all(): ", regionGroup.all());
+        //console.log("regionGroup.all(): ", regionGroup.all());
         console.log("regionChart.filters(): ", regionChart.filters());
     }
     
-    if (clearMapFlag ==1) {
-        console.log("active_dict in clearMap 1: ", active_dict);
+    if (clearMapFlag ==1) {        
         active_dict.forEach(function (d, i) {
             if (active_dict[i].value == 1) {//region is highlighted
                 d3.select("#"+active_dict[i].key.substring(0, 4)).style("stroke", null)
@@ -426,13 +433,15 @@ function initCrossfilter() {
         regionToPassToDC_array = []; //clear all memory of selected regions
   
     } else {
-        console.log("updating regionChart")    
         updateRegionChart();
     }
 
     function updateRegionChart() {
-        console.log("in updateRegionChart");
-        console.log("regionChart.filter(): ", regionChart.filter());
+        if (indexChart.hasFilter() == true || (yearChart.hasFilter() == true) || (datasetChart.hasFilter() == true)) {
+            clickDC = true;
+        }
+        console.log("clickDC is ", clickDC);
+        
 
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
             if (regionToPassToDC) {
@@ -467,16 +476,15 @@ function initCrossfilter() {
             }
         } //end regionChart.filters().length check
     }
-    console.log("active_dict after updateRegionChart: ", active_dict);
-      
-
-    console.log("regionToPassToDC again: ", regionToPassToDC);
-    console.log("regionChart.filter() again: ", regionChart.filter());
+ 
 
     function highlightRegion(chartFilter, chartGroup) {
-        console.log("regionGroup.all(): ", regionGroup.all());
-        console.log("highlightRegion fn chartFilter: ", chartFilter());
-        console.log("highlightRegion fn chartGroup: ", chartGroup.all());
+        if (indexChart.hasFilter() == true || (yearChart.hasFilter() == true) || (datasetChart.hasFilter() == true)) {
+            clickDC = true;
+        }
+        console.log("clickDC is ", clickDC);
+        
+
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
             countRegionGroup = 0;
@@ -492,10 +500,7 @@ function initCrossfilter() {
                     regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
                     countRegionGroup++
                 }
-            });
-            console.log("countRegionGroup: ", countRegionGroup)
-            console.log("active_dict: ", active_dict)
-            console.log("regionToPassToDC_array: ", regionToPassToDC_array)
+            });    
         
             //Hack to take care of case where user clicks on all filter options in
             //a given dimension => erase all highlights
