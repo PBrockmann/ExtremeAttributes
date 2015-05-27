@@ -110,13 +110,12 @@ function init() {
                 //console.log("active_flag: ", active_flag);
 
                 //Extract the admin zone boundaries
-                count = 0; savedPoints = []; idx=0; id_name = [];
+                count = 0; savedPoints = []; idx=0;
                 var feature = g.selectAll("path")
                     .data(topojson.feature(admin, admin.objects.FRA_admin12).features)
                     .enter()
                     .append("path").attr("id", function(d) { //attach unique id to each region path
-                        idname = admin.objects.FRA_admin12.geometries[idx].properties.name.substring(0, 4);
-                        id_name.push(idname); //placeholder for admin names                                    
+                        idname = admin.objects.FRA_admin12.geometries[idx].properties.name.substring(0, 4);      
                         idx++;
                         return idname; 
                     })
@@ -140,6 +139,10 @@ function init() {
                             
                         }
                     });
+
+                //by default, all map regions are highlighted
+                g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                  .style("stroke", "brown").style("stroke-width", "2px");
 
                 
 
@@ -447,21 +450,22 @@ function initCrossfilter() {
                 matchid = regionToPassToDC;            
                 //turn on selected region and set active_dict values to 1
                 for (var j = 0; j < active_dict.length; j++) {   
-                    if (active_dict[j].key == matchid && active_dict[j].value == 0) {
-                        d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "brown").style("stroke-width", "2px");
-                        active_dict[j].value = 1;
+                    if (active_dict[j].key == matchid) {
+                        // d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
+                        //   .style("stroke", "brown").style("stroke-width", "2px");
+                       
                         //make an array of selected regions
                         regionToPassToDC_array.push(regionToPassToDC);
                         //pass array of selected regions to regionChart.filter
                         regionToPassToDC_array.forEach(function (p, k) {
                             regionChart.filter(regionToPassToDC_array[k]);
                         })
-                    } else if (active_dict[j].key == matchid && active_dict[j].value == 1) {
-                        //turn off selected region and reset active_dict values to 0
-                        d3.select("#"+matchid.substring(0, 4)).style("stroke", null)
-                          .style("stroke-width", null).style("fill-opacity", 0);                  
-                        active_dict[j].value = 0; 
+                    } //else if (active_dict[j].key != matchid && active_dict[j].value == 1) {
+                    else if (active_dict[j].key != matchid) {                        
+                        //turn other regions gray
+                        d3.select("#"+active_dict[j].key.substring(0, 4)).style("fill", "gray").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "2px");                  
+                        //active_dict[j].value = 0; 
                         regionToPassToDC_array = [];
                         active_dict.forEach(function (p, k) {
                             if (active_dict[k].value == 1) {//region is highlighted                            
