@@ -479,12 +479,20 @@ function initCrossfilter() {
                   //.style("stroke", "brown").style("stroke-width", "2px");
 
                 //turn deactivated regions gray
-                for (var j = 0; j < active_dict.length; j++) {   
-                    if (active_dict[j].value != 1) {                        
+                count_active=0;
+                for (var j = 0; j < active_dict.length; j++) { 
+                    if (active_dict[j].value != 1) {
+                        count_active++;
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
                           .style("stroke", "gray").style("stroke-width", "1px");                                               
                     }                    
+                }
+                if (count_active == active_dict.length) {
+                    //last selected region has been clicked again
+                    //restore map to default
+                    d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                      .style("stroke", "gray").style("stroke-width", "1px");
                 }
             }
         } //end regionChart.filters().length check
