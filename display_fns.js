@@ -20,9 +20,6 @@ var datasetGroup;
 var clickDC = false;
 
 var events;
-var active_flag = []; //stores if region has been clicked
-
-//var saveRegion;
 
 //for regionChart
 var regionToPassToDC; //one region, obtained from mouse click
@@ -102,12 +99,7 @@ function init() {
             d3.json("geojson/cities.geojson", function(error, data) {
 
                 var adminunits = topojson.feature(admin, admin.objects.FRA_admin12);
-                var bounds = d3.geo.bounds(adminunits);
-                
-                for (var j=0; j < adminunits.features.length; j++){
-                    active_flag[j] = 0;                             
-                };    
-                //console.log("active_flag: ", active_flag);
+                var bounds = d3.geo.bounds(adminunits);                
 
                 //Extract the admin zone boundaries
                 count = 0; savedPoints = []; idx=0;
@@ -157,6 +149,35 @@ function init() {
 
                                 initCrossfilter(); //send regionToPassToDC to dc region filter
                             
+                        } else { //allow only regions highlighed by dc chart to be clicked                            
+                            
+
+                            //collect regions activated by chart selection
+                             regionToPassToDC_array = [];                           
+                            for (var j = 0; j < regionGroup.all().length; j++) {
+                                if (regionGroup.all()[j].value != 0) { //region is active
+                                    region =  regionGroup.all()[j].key;
+                                    idx = legend.indexOf(region);
+                                    regionToPassToDC_array.push(legend[idx]);
+                                }
+                            }
+                            console.log("regionToPassToDC_array in click: ", regionToPassToDC_array)
+
+                            //Determine if clicked region is one of the regions actived by chart selection
+                            regionToPassToDC = null; 
+                            regionToPassToDC = d.properties.name;
+
+                            if (regionToPassToDC_array.indexOf(regionToPassToDC) != -1) {
+                                //toggle value of selected region
+                                if (active_dict[legend.indexOf(regionToPassToDC)] == 1) {
+                                    active_dict[legend.indexOf(regionToPassToDC)] = 0;
+                                } else {
+                                    active_dict[legend.indexOf(regionToPassToDC)] = 0;
+                                }
+
+                                initCrossfilter();
+                            }
+
                         }
                     });
 
