@@ -463,6 +463,7 @@ function initCrossfilter() {
         updateRegionChart();
     }
 
+    //Called whem map is clicked
     function updateRegionChart() {
 
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
@@ -499,6 +500,7 @@ function initCrossfilter() {
     }
  
 
+    //Called when any dc chart is clicked
     function highlightRegion(chartFilter, chartGroup) {
 
         //if no filters are selected, highlight no map regions
@@ -518,30 +520,19 @@ function initCrossfilter() {
                 }
             });    
         
-            //Hack to take care of case where user clicks on all filter options in
-            //a given dimension => erase all highlights
-            if (countRegionGroup == regionGroup.all().length) {
-                d3.selectAll("path")
-                          .style("stroke", null)
-                          .style("stroke-width", null).style("fill-opacity", 0);
-
-            } else {
-                //find regions in regionGroup whose values are not 0, get pathid
-                //and hightlight/unhighlight depending on whether chartFilter is empty
-                regionGroup.all().forEach(function (d, i) {
-                    if (regionGroup.all()[i].value != 0) {
-                        pathid = regionGroup.all()[i].key;
-                        d3.select("#"+pathid.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7);
-                          //.style("stroke", "brown").style("stroke-width", "2px");
-                    } else { //unselect any regions that may have been previously selected
-                        pathid = regionGroup.all()[i].key;
-                        d3.select("#"+pathid.substring(0, 4))
-                          .style("stroke", null)
-                          .style("stroke-width", null).style("fill-opacity", 0);
+            regionGroup.all().forEach(function (d, i) {
+                if (regionGroup.all()[i].value != 0) {
+                    pathid = regionGroup.all()[i].key;
+                    d3.select("#"+pathid.substring(0, 4))
+                      .style("fill", "brown").style("fill-opacity", 0.7);
+                    //.style("stroke", "brown").style("stroke-width", "2px");
+                } else { //unselect any regions that may have been previously selected
+                    pathid = regionGroup.all()[i].key;
+                    d3.select("#"+pathid.substring(0, 4))
+                      .style("stroke", null)
+                      .style("stroke-width", null).style("fill-opacity", 0);
                     }
                 });
-            }
         } else { //map has at least one highlighted region
             
             //first clear all regions               
