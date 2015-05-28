@@ -507,32 +507,30 @@ function initCrossfilter() {
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
             countRegionGroup = 0;
             console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
+            //find idx for active_dict
+
+
             regionGroup.all().forEach(function (d, i) {
                 if (regionGroup.all()[i].value != 0) {
+                    pick = legend.indexOf(regionGroup.all()[i].key);
+                    console.log("pick: ", pick);
                     //set corresponding regions in active_dict to 1
-                    active_dict.forEach(function (p, j) {
-                        if (active_dict[j].key == regionGroup.all()[j].key) {                        
-                            active_dict[i].value = 1;
-                        }
-                    })
+                    active_dict[pick].value = 1;
+
                     regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
                     countRegionGroup++
-                }
-            });    
-        
-            regionGroup.all().forEach(function (d, i) {
-                if (regionGroup.all()[i].value != 0) {
+
                     pathid = regionGroup.all()[i].key;
                     d3.select("#"+pathid.substring(0, 4))
                       .style("fill", "brown").style("fill-opacity", 0.7);
-                    //.style("stroke", "brown").style("stroke-width", "2px");
                 } else { //unselect any regions that may have been previously selected
                     pathid = regionGroup.all()[i].key;
                     d3.select("#"+pathid.substring(0, 4))
                       .style("stroke", null)
                       .style("stroke-width", null).style("fill-opacity", 0);
-                    }
-                });
+                }
+            });    
+                    
         } else { //map has at least one highlighted region
             
             //first clear all regions               
