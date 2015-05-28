@@ -28,7 +28,7 @@ var active_flag = []; //stores if region has been clicked
 var regionToPassToDC; //one region, obtained from mouse click
 var regionToPassToDC_array = []; //array to store each regionToPassToDC
 var active_dict = [];
-
+var legend = [];
 
 var clearMapFlag = 0;
 
@@ -95,7 +95,7 @@ function init() {
                     key: d.properties.name,
                     value: 0
                 });
-                
+                legend[idx] = d.properties.name;
             });            
 
             //READ IN LAT AND LON OF SOME CITIES AND PLOT ON TOP OF MAP        
@@ -135,6 +135,26 @@ function init() {
                                 regionToPassToDC = d.properties.name;
                                 console.log("regionToPassToDC: ", d.properties.name);                    
                                 
+                                idx = legend.indexOf(regionToPassToDC);                                
+
+                                //toggle active_dict value on and off
+                                if (active_dict[idx].value ==1 ) {
+                                    active_dict[idx].value = 0; //turn off activated region                              
+                                                                     
+                                    //remove from regionToPassToDC_array
+                                    regionToPassToDC_array = []; count=0;
+                                    for (var j = 0; j < active_dict.length; j++) {
+                                        if (active_dict[j].value==1) {
+                                            regionToPassToDC_array[count] = active_dict[j].key;
+                                            count++;
+                                        }
+                                    }
+                                }
+                                else { //activate region
+                                    regionToPassToDC_array.push(regionToPassToDC);
+                                    active_dict[idx].value = 1;                                                                     
+                                }
+
                                 initCrossfilter(); //send regionToPassToDC to dc region filter
                             
                         }
@@ -142,7 +162,7 @@ function init() {
 
                 //by default, all map regions are highlighted
                 g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                  .style("stroke", "brown").style("stroke-width", "2px");
+                  .style("stroke", "gray").style("stroke-width", "1px");
 
                 
 
@@ -446,36 +466,26 @@ function initCrossfilter() {
     function updateRegionChart() {
 
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
-            if (regionToPassToDC) {
-                matchid = regionToPassToDC;            
-                //turn on selected region and set active_dict values to 1
-                for (var j = 0; j < active_dict.length; j++) {   
-                    if (active_dict[j].key == matchid) {
-                        // d3.select("#"+matchid.substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
-                        //   .style("stroke", "brown").style("stroke-width", "2px");
-                       
-                        //make an array of selected regions
-                        regionToPassToDC_array.push(regionToPassToDC);
-                        //pass array of selected regions to regionChart.filter
-                        regionToPassToDC_array.forEach(function (p, k) {
-                            regionChart.filter(regionToPassToDC_array[k]);
-                        })
-                    } //else if (active_dict[j].key != matchid && active_dict[j].value == 1) {
-                    else if (active_dict[j].key != matchid) {                        
-                        //turn other regions gray
-                        d3.select("#"+active_dict[j].key.substring(0, 4)).style("fill", "gray").style("fill-opacity", 0.7)
-                          .style("stroke", "gray").style("stroke-width", "2px");                  
-                        //active_dict[j].value = 0; 
-                        regionToPassToDC_array = [];
-                        active_dict.forEach(function (p, k) {
-                            if (active_dict[k].value == 1) {//region is highlighted                            
-                                regionChart.filter(active_dict[k].key);
-                                regionToPassToDC_array.push(active_dict[k].key);
-                            }
-                        })                  
-                    }
-                }
+            if (regionToPassToDC) {                
+                console.log("regionToPassToDC_array: ", regionToPassToDC_array)
 
+                regionToPassToDC_array.forEach(function (p, k) {
+                    regionChart.filter(regionToPassToDC_array[k]);
+                })
+
+                //highlight selected region
+                d3.select("#"+active_dict[idx].key.substring(0, 4))
+                  .style("fill", "brown").style("fill-opacity", 0.7);
+                  //.style("stroke", "brown").style("stroke-width", "2px");
+
+                //turn deactivated regions gray
+                for (var j = 0; j < active_dict.length; j++) {   
+                    if (active_dict[j].value != 1) {                        
+                        d3.select("#"+active_dict[j].key.substring(0, 4))
+                          .style("fill", "gray").style("fill-opacity", 0.5)
+                          .style("stroke", "gray").style("stroke-width", "1px");                                               
+                    }                    
+                }
             }
         } //end regionChart.filters().length check
     }
@@ -514,8 +524,8 @@ function initCrossfilter() {
                     if (regionGroup.all()[i].value != 0) {
                         pathid = regionGroup.all()[i].key;
                         d3.select("#"+pathid.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "brown").style("stroke-width", "2px");
+                          .style("fill", "brown").style("fill-opacity", 0.7);
+                          //.style("stroke", "brown").style("stroke-width", "2px");
                     } else { //unselect any regions that may have been previously selected
                         pathid = regionGroup.all()[i].key;
                         d3.select("#"+pathid.substring(0, 4))
@@ -537,8 +547,8 @@ function initCrossfilter() {
                     if (regionGroup.all()[i].value != 0 && regionGroup.all()[i].key == regionChart.filters()[j]) {                        
                         pathid = regionGroup.all()[i].key;                        
                         d3.select("#"+pathid.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "brown").style("stroke-width", "2px");
+                          .style("fill", "brown").style("fill-opacity", 0.7);
+                          //.style("stroke", "brown").style("stroke-width", "2px");
                     }
                 });
             }        
