@@ -150,17 +150,32 @@ function init() {
                                 initCrossfilter(); //send regionToPassToDC to dc region filter
                             
                         } else { //allow only regions highlighed by dc chart to be clicked                            
-                            
+                            regionToPassToDC = null;
+                            regionToPassToDC = d.properties.name;
+                            console.log("d.properties.name: ", d.properties.name)
+                            console.log("regionToPassToDC: ", regionToPassToDC)
 
                             //collect regions activated by chart selection
-                             regionToPassToDC_array = [];                           
+                            regionToPassToDC_array = [];
+                            regionToPassToDC_array[0] = regionToPassToDC;          
                             for (var j = 0; j < regionGroup.all().length; j++) {
                                 if (regionGroup.all()[j].value != 0) { //region is active
                                     region =  regionGroup.all()[j].key;
                                     idx = legend.indexOf(region);
-                                    regionToPassToDC_array.push(legend[idx]);
+                                    // regionToPassToDC_array.push(legend[idx]);
+                                    //toggle clicked region
+                                    console.log("region: ", region);
+                                    if (region != regionToPassToDC) {
+                                        console.log("***************************")
+                                        active_dict[j].value = 0;
+                                        console.log("active_dict.value: ", active_dict[j].value)
+                                    }                                 
+                                } else {
+                                    active_dict[j].value = -100;
                                 }
                             }
+                            console.log("regionToPassToDC after chart click: ", regionToPassToDC);
+                            console.log("active_dict after chart click: ", active_dict);
                             console.log("regionToPassToDC_array in click: ", regionToPassToDC_array)
 
                             //Determine if clicked region is one of the regions actived by chart selection
@@ -371,6 +386,7 @@ function initCrossfilter() {
             highlightRegion(indexChart.filters, indexGroup);
         });    
 
+        if (indexChart.hasFilter()) console.log('indexChart is on')
     
 
     xAxis_indexChart = indexChart.xAxis().ticks(4);
@@ -503,7 +519,7 @@ function initCrossfilter() {
                 //turn deactivated regions gray
                 count_active=0;
                 for (var j = 0; j < active_dict.length; j++) { 
-                    if (active_dict[j].value != 1) {
+                    if (active_dict[j].value == 0) {
                         count_active++;
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
