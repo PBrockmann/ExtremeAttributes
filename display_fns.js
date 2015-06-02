@@ -68,13 +68,10 @@ function init() {
 
                 //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
                 saveRegionGroup.all().forEach(function(r, i) {
-                    //console.log("r.key; d.properties.name: ", r.key +"; "+ d.properties.name);
                     if (r.key == d.properties.name) {
-                        //console.log("r.key; r.value: ", r.key + ";" + r.value);
                         totAnom = r.value;
                     }
                 });
-                //saveRegion = d.properties.name; //save to extract clicked region from points array in .on("click")
                                                    
                 //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
                 //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
@@ -86,8 +83,6 @@ function init() {
         //READ IN ADMIN AND PLACE NAME OVERLAYS FOR BASE LEAFLET MAP OF FRANCE
         d3.json("topojson/FRA_admin12_places.topojson", function(error, admin) {
             if (error) return console.error(error);
-            //console.log("admin: ", admin);
-
             
             admin.objects.FRA_admin12.geometries.forEach(function (d, idx) {                
                 active_dict.push({
@@ -117,10 +112,7 @@ function init() {
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {                        
                         console.log("regionToPassToDC in on click: ", regionToPassToDC);
-                        
-                                                                       
-                        console.log("clickDC in on click: ", clickDC);
-                        console.log("active_dict after on click: ", active_dict);
+
                             
                         if (clickDC == false) { //can click on map as many times as you want
                             
@@ -128,7 +120,7 @@ function init() {
                                 regionToPassToDC = d.properties.name;
                                 console.log("regionToPassToDC: ", d.properties.name);                    
                                 
-                                idx = legend.indexOf(regionToPassToDC);                                
+                                idx = legend.indexOf(regionToPassToDC);
 
                                 //toggle active_dict value on and off
                                 if (active_dict[idx].value ==1 ) {
@@ -151,9 +143,7 @@ function init() {
                                 initCrossfilter(); //send regionToPassToDC to dc region filter
                             
                         } else { //clickDC is true
-                            //tmp_regionGroup = regionGroup.all();
-                            
-                            
+
                             for (var j = 0; j < active_dict.length; j++) {
                                 if (active_dict[j].value >= 0 && d.properties.name == active_dict[j].key) {                                                        
                                     matchFlag = 1;
@@ -161,58 +151,49 @@ function init() {
                             }
 
                             if (matchFlag == 1) { //allow only regions highlighed by dc chart to be clicked
-                                grayThreshold = 0;
-                                console.log("###########matchFlag before reset: ", matchFlag);
-                                matchFlag=0; //reset
-                                console.log("###########matchFlag after reset: ", matchFlag);
+                                grayThreshold = 100;
+                                matchFlag = 0; //reset
 
 
                                 regionToPassToDC = null;
                                 regionToPassToDC = d.properties.name;
-                                console.log("d.properties.name: ", d.properties.name)
-                                console.log("regionToPassToDC: ", regionToPassToDC)
+                                idx = legend.indexOf(regionToPassToDC);
 
-                                //collect regions activated by chart selection
+                                console.log("regionToPassToDC_array.length: ", regionToPassToDC_array.length)
                                 regionToPassToDC_array = [];
-                                regionToPassToDC_array[0] = regionToPassToDC;          
+                                regionToPassToDC_array.push(regionToPassToDC); 
+
+                                //toggle active_dict value on and off
                                 for (var j = 0; j < active_dict.length; j++) {
-                                    if (active_dict[j].value >= 0) { //region is active
-                                        region =  active_dict[j].key;
-                                        
-                                        // regionToPassToDC_array.push(legend[idx]);
-                                        //toggle clicked region
-                                        console.log("region: ", region);
-                                        if (region != regionToPassToDC) {
-                                            console.log("***************************")
-                                            active_dict[j].value = 0;
-                                            console.log("active_dict.value: ", active_dict[j].value)
-                                        } else {
-                                            active_dict[j].value = 1;
-                                            idx = legend.indexOf(region);
-                                        }
-                                    }                                 
-                                    // } else {
-                                    //     active_dict[j].value = -100;
-                                    // }
+                                    if (regionToPassToDC == active_dict[j].key) {
+                                        active_dict[j].value = 1;
+                                    }
+                                    else if (regionToPassToDC != active_dict[j].key && active_dict[j].value != -100) {
+                                        //if all other regions = 1, nothing has yet been selected
+                                        active_dict[j].value = grayThreshold;
+                                        //if at least one other region = 100, that regions has been previously selected
+                                    }
                                 }
-                                console.log("regionToPassToDC after chart click: ", regionToPassToDC);
-                                console.log("active_dict after chart click: ", active_dict);
-                                console.log("regionToPassToDC_array in click: ", regionToPassToDC_array)
+                          
 
-                                // //Determine if clicked region is one of the regions actived by chart selection
-                                // regionToPassToDC = null; 
-                                // regionToPassToDC = d.properties.name;
-
-                                // if (regionToPassToDC_array.indexOf(regionToPassToDC) != -1) {
-                                //     //toggle value of selected region
-                                //     if (active_dict[legend.indexOf(regionToPassToDC)].value == 1) {
-                                //         active_dict[legend.indexOf(regionToPassToDC)].value = 0;
-                                //     } else {
-                                //         active_dict[legend.indexOf(regionToPassToDC)].value = 1;
-                                //     }
-
-                                //     initCrossfilter();
+                                // //collect regions activated by chart selection
+                                // regionToPassToDC_array = [];
+                                // regionToPassToDC_array[0] = regionToPassToDC;          
+                                // for (var j = 0; j < active_dict.length; j++) {
+                                //     if (active_dict[j].value >= 0) { //region is active
+                                //         region =  active_dict[j].key;
+                                        
+                                        
+                                //         if (region == regionToPassToDC) {
+                                //             idx = legend.indexOf(region);
+                                //             active_dict[j].value = 1;
+                                //         }
+                                //         else active_dict[j].value = 100;                      
+                                //     }                                 
+                                  
                                 // }
+    
+                          
 
                                 initCrossfilter();
                             } //end matchFlag check
@@ -526,7 +507,7 @@ function initCrossfilter() {
         updateRegionChart();
     }
 
-    //Called whem map is clicked
+    //Called when map is clicked
     function updateRegionChart() {
         console.log("IN updateRegionChart fn!!")
         console.log("regionChart.filters(): ", regionChart.filters())
@@ -567,16 +548,14 @@ function initCrossfilter() {
 
     //Called when any dc chart is clicked
     function highlightRegion(chartFilter, chartGroup) {
-        console.log("IN highlightRegion fn!!")
+        
 
         clickDC = true; //a dc chart has been clicked        
 
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
+            console.log("IN highlightRegion fn PART I!!****************")
             countRegionGroup = 0;
-            console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
-            //find idx for active_dict
-
 
             regionGroup.all().forEach(function (d, i) {
                 if (regionGroup.all()[i].value > 0) {
@@ -593,6 +572,7 @@ function initCrossfilter() {
                       .style("fill", "brown").style("fill-opacity", 0.7);
                     console.log("!!!exiting highlightRegion fn!!!")
                 } else { //unselect any regions that may have been previously selected
+                    active_dict[i].value = -100;
                     pathid = regionGroup.all()[i].key;
                     d3.select("#"+pathid.substring(0, 4))
                       .style("stroke", null)
@@ -601,6 +581,7 @@ function initCrossfilter() {
             });    
                     
         } else { //map has at least one highlighted region
+            console.log("IN highlightRegion fn PART II...................")
             
             //first clear all regions               
             d3.selectAll("path")
