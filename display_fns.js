@@ -160,18 +160,23 @@ function init() {
                                 idx = legend.indexOf(regionToPassToDC);
 
                                 console.log("regionToPassToDC_array.length: ", regionToPassToDC_array.length)
-                                regionToPassToDC_array = [];
+                                //clear only if map has NOT been clicked
+                                if (regionChart.filters().length==0) regionToPassToDC_array = [];
                                 regionToPassToDC_array.push(regionToPassToDC); 
 
                                 //toggle active_dict value on and off
                                 for (var j = 0; j < active_dict.length; j++) {
-                                    if (regionToPassToDC == active_dict[j].key) {
-                                        active_dict[j].value = 1;
-                                    }
-                                    else if (regionToPassToDC != active_dict[j].key && active_dict[j].value != -100) {
-                                        //if all other regions = 1, nothing has yet been selected
-                                        active_dict[j].value = grayThreshold;
-                                        //if at least one other region = 100, that regions has been previously selected
+                                    for (var k = 0; k < regionToPassToDC_array.length; k++) {
+                                        if (active_dict[j].key == regionToPassToDC) {
+                                            active_dict[j].value = 555;
+                                        } else {
+                                            //if (active_dict[j].key != regionToPassToDC && active_dict[j].value != -100) {
+                                            if (active_dict[j].value != -100 && active_dict[j].value != 555) {    
+                                                
+                                                active_dict[j].value = grayThreshold;
+                                                
+                                            }
+                                        }
                                     }
                                 }
                           
