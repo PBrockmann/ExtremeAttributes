@@ -166,10 +166,17 @@ function init() {
 
                                 //toggle active_dict value on and off
                                 for (var j = 0; j < active_dict.length; j++) {
-                                    for (var k = 0; k < regionToPassToDC_array.length; k++) {
-                                        if (active_dict[j].key == regionToPassToDC) {
-                                            active_dict[j].value = 555;
-                                        } else {
+                                    //for (var k = 0; k < regionToPassToDC_array.length; k++) {
+                                        if (active_dict[j].key == regionToPassToDC) { 
+                                            console.log("equal: ", active_dict[j].key)                                        
+                                            if (active_dict[j].value == 555) {//toggle region OFF
+                                                active_dict[j].value = grayThreshold;
+                                            } else {                                                
+                                                active_dict[j].value = 555;
+                                                console.log("why not???: ", active_dict[j].key, active_dict[j].value)
+                                            } //toggle region ON
+                                        } else if (active_dict[j].key != regionToPassToDC) {
+                                            console.log("unequal: ", active_dict[j].key)
                                             //if (active_dict[j].key != regionToPassToDC && active_dict[j].value != -100) {
                                             if (active_dict[j].value != -100 && active_dict[j].value != 555) {    
                                                 
@@ -177,8 +184,9 @@ function init() {
                                                 
                                             }
                                         }
-                                    }
+                                    //}
                                 }
+                                console.log("active_dict in here: ", active_dict);
                           
 
                                 // //collect regions activated by chart selection
