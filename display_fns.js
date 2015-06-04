@@ -400,8 +400,9 @@ function initCrossfilter() {
         //.elasticX(true)
         .renderHorizontalGridLines(true)
         //.round(Math.round)
-        //.xUnits(function(){return 2;})    
-        .xUnits(dc.units.integers)
+        .xUnits(function(){return 20;})
+        //.gap(2)  
+        //.xUnits(dc.units.integers)
         .x(d3.scale.linear().domain([minYear, maxYear]))
         .on("filtered", function() {
             highlightRegion(yearChart.filters, yearGroup);
