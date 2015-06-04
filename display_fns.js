@@ -31,6 +31,8 @@ var matchFlag = -100;
 var clearMapFlag = 0;
 var grayThreshold = -100;
 var activeDictDefault = -100;
+var toggleONRegionChartClicked = 555;
+var toggleOFFRegionChartClicked = 100;
 
 function init() {
     console.log("in init()!");     
@@ -168,13 +170,13 @@ function init() {
                                 //toggle active_dict value on and off
                                 for (var j = 0; j < active_dict.length; j++) {                                    
                                         if (active_dict[j].key == regionToPassToDC) {                                             
-                                            if (active_dict[j].value == 555) {//toggle region OFF
+                                            if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
                                                 active_dict[j].value = grayThreshold;
                                             } else {                                                
-                                                active_dict[j].value = 555;                                                
+                                                active_dict[j].value = toggleONRegionChartClicked;                                                
                                             } //toggle region ON
                                         } else if (active_dict[j].key != regionToPassToDC) {                                            
-                                            if (active_dict[j].value != -100 && active_dict[j].value != 555) {                                                
+                                            if (active_dict[j].value != -100 && active_dict[j].value != toggleONRegionChartClicked) {                                                
                                                 active_dict[j].value = grayThreshold;                                                
                                             }
                                         }
@@ -464,7 +466,7 @@ function initCrossfilter() {
         .dimension(regionDimension)
         .group(regionGroup)
         .elasticX(true);
-        //.on("filtered", updateSelectors);
+        //.on("filtered", updateSelectors);    
 
      
 
@@ -514,20 +516,42 @@ function initCrossfilter() {
                   //.style("stroke", "brown").style("stroke-width", "2px");
 
                 //turn deactivated regions gray
+                if (clickDC == true) {
+                    countThreshold = toggleOFFRegionChartClicked;
+                    //countSelection number of entries in active_dict != -100
+                    countSelection = 0;
+                    for (var j = 0; j < active_dict.length; j++) {
+                        if (active_dict[j].value != -100) countSelection++;
+                    }
+
+                }
+                else {
+                    countThreshold = grayThreshold;
+                    countSelection = active_dict.length;
+                }
+
+                console.log("countSelection: ", countSelection)
                 count_active=0;
                 for (var j = 0; j < active_dict.length; j++) { 
-                    if (active_dict[j].value == grayThreshold) {
+                    if (active_dict[j].value == countThreshold) {
                         count_active++;
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
                           .style("stroke", "gray").style("stroke-width", "1px");                                               
                     }                    
                 }
-                if (count_active == active_dict.length) {
+                if (count_active == countSelection) {
                     //last selected region has been clicked again
                     //restore map to default
-                    d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");
+                    if (clickDC == true) {
+                        for (var j = 0; j < regionToPassToDC_array.length; j++) {
+                            d3.select("#"+regionToPassToDC_array[j].substring(0, 4)).style("fill", "brown").style("fill-opacity", 0.7)
+                              .style("stroke", "gray").style("stroke-width", "1px");
+                        }
+                    } else {
+                        d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "1px");
+                    }
                 }
             }
         } //end regionChart.filters().length check
