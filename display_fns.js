@@ -32,7 +32,7 @@ var clearMapFlag = 0;
 var grayThreshold = -100;
 
 function init() {
-    console.log("in init()!");
+    console.log("in init()!");     
     
     var maxZoom = 9;
     var map = L.map('map').setView([47.0, 1.5], 6);
@@ -111,7 +111,7 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {                        
-                        console.log("regionToPassToDC in on click: ", regionToPassToDC);
+                        console.log("regionToPassToDC in on click: ", regionToPassToDC);                    
 
                             
                         if (clickDC == false) { //can click on map as many times as you want
@@ -165,46 +165,20 @@ function init() {
                                 regionToPassToDC_array.push(regionToPassToDC); 
 
                                 //toggle active_dict value on and off
-                                for (var j = 0; j < active_dict.length; j++) {
-                                    //for (var k = 0; k < regionToPassToDC_array.length; k++) {
-                                        if (active_dict[j].key == regionToPassToDC) { 
-                                            console.log("equal: ", active_dict[j].key)                                        
+                                for (var j = 0; j < active_dict.length; j++) {                                    
+                                        if (active_dict[j].key == regionToPassToDC) {                                             
                                             if (active_dict[j].value == 555) {//toggle region OFF
                                                 active_dict[j].value = grayThreshold;
                                             } else {                                                
-                                                active_dict[j].value = 555;
-                                                console.log("why not???: ", active_dict[j].key, active_dict[j].value)
+                                                active_dict[j].value = 555;                                                
                                             } //toggle region ON
-                                        } else if (active_dict[j].key != regionToPassToDC) {
-                                            console.log("unequal: ", active_dict[j].key)
-                                            //if (active_dict[j].key != regionToPassToDC && active_dict[j].value != -100) {
-                                            if (active_dict[j].value != -100 && active_dict[j].value != 555) {    
-                                                
-                                                active_dict[j].value = grayThreshold;
-                                                
+                                        } else if (active_dict[j].key != regionToPassToDC) {                                            
+                                            if (active_dict[j].value != -100 && active_dict[j].value != 555) {                                                
+                                                active_dict[j].value = grayThreshold;                                                
                                             }
                                         }
-                                    //}
                                 }
-                                console.log("active_dict in here: ", active_dict);
-                          
-
-                                // //collect regions activated by chart selection
-                                // regionToPassToDC_array = [];
-                                // regionToPassToDC_array[0] = regionToPassToDC;          
-                                // for (var j = 0; j < active_dict.length; j++) {
-                                //     if (active_dict[j].value >= 0) { //region is active
-                                //         region =  active_dict[j].key;
-                                        
-                                        
-                                //         if (region == regionToPassToDC) {
-                                //             idx = legend.indexOf(region);
-                                //             active_dict[j].value = 1;
-                                //         }
-                                //         else active_dict[j].value = 100;                      
-                                //     }                                 
-                                  
-                                // }
+                                console.log("active_dict in here: ", active_dict);                          
     
                           
 
@@ -560,10 +534,9 @@ function initCrossfilter() {
  
 
     //Called when any dc chart is clicked
-    function highlightRegion(chartFilter, chartGroup) {
-        
-
-        clickDC = true; //a dc chart has been clicked        
+    function highlightRegion(chartFilter, chartGroup) {        
+            
+        //clickDC = true; //a dc chart has been clicked        
 
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
@@ -573,7 +546,8 @@ function initCrossfilter() {
             regionGroup.all().forEach(function (d, i) {
                 if (regionGroup.all()[i].value > 0) {
                     pick = legend.indexOf(regionGroup.all()[i].key);
-                    console.log("pick: ", pick);
+                    //console.log("pick: ", pick);
+
                     //set corresponding regions in active_dict to 1
                     active_dict[pick].value = 1;
 
@@ -582,8 +556,7 @@ function initCrossfilter() {
 
                     pathid = regionGroup.all()[i].key;
                     d3.select("#"+pathid.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7);
-                    console.log("!!!exiting highlightRegion fn!!!")
+                      .style("fill", "brown").style("fill-opacity", 0.7);                    
                 } else { //unselect any regions that may have been previously selected
                     active_dict[i].value = -100;
                     pathid = regionGroup.all()[i].key;
@@ -593,8 +566,7 @@ function initCrossfilter() {
                 }
             });    
                     
-        } else { //map has at least one highlighted region
-            console.log("IN highlightRegion fn PART II...................")
+        } else { //map has at least one highlighted region            
             
             //first clear all regions               
             d3.selectAll("path")
@@ -613,15 +585,16 @@ function initCrossfilter() {
                 });
             }        
         } //end regionChart.filters().length check
+
     }
 
-  
+
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
 
     
 
-    dc.renderAll();
+    dc.renderAll();    
 
     //Add axis labels
     //http://stackoverflow.com/questions/21114336/how-to-add-axis-labels-for-row-chart-using-dc-js-or-d3-js
@@ -679,6 +652,17 @@ function updateMarkers() {
 // Update map markers, list and number of selected
 function update0() {
     //updateMarkers();
+
+    //set clickDC based on whether dc chart has been clicked or reset
+    if (document.getElementsByClassName("reset")[0].style.display == "none" 
+            && document.getElementsByClassName("reset")[2].style.display == "none"
+            && document.getElementsByClassName("reset")[4].style.display == "none") 
+        {
+            clickDC = false;
+           
+        }
+        else clickDC = true;
+
     updateList();
     //console.log("updateList regionGroup.all(): ", regionGroup.all());
 
