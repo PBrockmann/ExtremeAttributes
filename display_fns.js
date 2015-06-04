@@ -683,11 +683,12 @@ function update0() {
             && document.getElementsByClassName("reset")[2].style.display == "none"
             && document.getElementsByClassName("reset")[4].style.display == "none") 
         {
-            clickDC = false;
+            clickDC = false; //no charts are clicked
             //reset active_dict to default
             for (var j = 0; j < active_dict.length; j++) { 
                 active_dict[j].value = activeDictDefault;
             }
+            regionToPassToDC_array = [];
            
         }
         else clickDC = true;
