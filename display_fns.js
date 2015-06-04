@@ -30,6 +30,7 @@ var legend = [];
 var matchFlag = -100;
 var clearMapFlag = 0;
 var grayThreshold = -100;
+var activeDictDefault = -100;
 
 function init() {
     console.log("in init()!");     
@@ -87,7 +88,7 @@ function init() {
             admin.objects.FRA_admin12.geometries.forEach(function (d, idx) {                
                 active_dict.push({
                     key: d.properties.name,
-                    value: -100 //0
+                    value: activeDictDefault //0
                 });
                 legend[idx] = d.properties.name;
             });            
@@ -659,6 +660,10 @@ function update0() {
             && document.getElementsByClassName("reset")[4].style.display == "none") 
         {
             clickDC = false;
+            //reset active_dict to default
+            for (var j = 0; j < active_dict.length; j++) { 
+                active_dict[j].value = activeDictDefault;
+            }
            
         }
         else clickDC = true;
