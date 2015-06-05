@@ -172,8 +172,11 @@
             <!--ROW 1-->
             <div class="row" style="width: 1400px;">
                 <div id="title" style="margin-left: 940px;"><h2>Selectors</h2></div>
-                <div class="control-group clear">                  
-                  <a href="javascript:regionChart.filterAll();dc.redrawAll();" class="btn btn-primary btn-xs" role="button" onclick="clearMap()">Reset Map</a>
+                <div class="control-group clear" id="mapreset">                  
+                  <a href="javascript: if(clickDC==false) {regionChart.filterAll();dc.redrawAll();}" class="btn btn-primary btn-xs" role="button" onclick="clearMap()">Reset Map</a>
+
+                  <button disabled id="testbutton">test</button>
+
                 </div>
 
 
@@ -271,6 +274,27 @@
         // window.onload = function() {
         //     document.getElementById("eventsList").style.cursor = "pointer";
         // }
+
+    
+        // d3.select("#mapreset").on("click", function() {
+        //     //clearMapFlag = 1;
+        //     regionChart.filterAll();dc.redrawAll();
+
+        //     d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+        //           .style("stroke", "gray").style("stroke-width", "1px");
+
+        // ;})
+    
+        //console.log("regionChart.filters() in index: ", regionChart.filters())
+
+        function checkEnable() {
+            
+            if (clickDC==true) // some logic to determine if it is ok to go
+                {document.getElementById("testbutton").disabled = false;}
+            else // in case it was enabled and the user changed their mind
+                {document.getElementById("testbutton").disabled = true;}
+            }
+
     </script>
 
 
