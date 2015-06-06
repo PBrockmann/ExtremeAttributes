@@ -172,6 +172,14 @@
             <!--ROW 1-->
             <div class="row" style="width: 1400px;">
                 <div id="title" style="margin-left: 940px;"><h2>Selectors</h2></div>
+                <div id="tags" style="margin-top: -65px; margin-left: 1150px;">
+                <h4>Threshold</h4>
+                <label>
+                    <input type="checkbox" id="tag1" />1 Sigma</label>
+                <label>
+                    <input type="checkbox" id="tag2" />2 Sigma</label>
+                </div>
+
                 <div class="control-group clear" id="mapreset">                  
                   <a href="javascript: if(clickDC==false) {regionChart.filterAll();dc.redrawAll();}" class="btn btn-primary btn-xs" role="button" onclick="clearMap()">Reset Map</a>
 
@@ -216,6 +224,7 @@
                                 <th> Season</th>
                                 <th>Index</th>
                                 <th>Data</th>
+                                <th>Sigma</th>
                                 <th>Value</th>
                                 </tr>
                         </thead>

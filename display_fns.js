@@ -51,7 +51,8 @@ function init() {
     var path = d3.geo.path().projection(projectPoint);
 
     //READ CSV ANOMALY DATA AS PARENT LOOP
-    d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {
+    //d3.csv("data/anomalous_index_table_pivot_noblanks.csv", function(events) {
+    d3.csv("data/temp.csv", function(events) {    
         events.forEach(function(d, i) {
             console.log("in d3.tsv");
         });
@@ -321,10 +322,48 @@ function clearMap() {
 }
 
 function initCrossfilter() {
+
+    function createFilter(filters) {
+        console.log("in createFilter")
+            return function (d) {
+                for (var i = 0, len = filters.length; i < len; i++) {
+                    console.log("in for loop: ", $.inArray(filters[i], d))
+                    if ($.inArray(filters[i], d) == -1) return false;
+                }
+                return true;
+            }
+        
+    }
+
+    function toggleArrayItem(a, v) {
+        console.log("in toggleArrayItem")
+            var i = a.indexOf(v);
+            if (i === -1) a.push(v);
+            else a.splice(i, 1);
+
+    }
     
     console.log('in initCrossfilter');
     filter = crossfilter(points);
+
+
+    $('#tag1').click(function () {
+        toggleArrayItem(filter_list, '1'); //Sigma col value == 1
+
+        tags.filterAll();
+        tags.filterFunction(createFilter(filter_list));
+
+        dc.redrawAll();
+    });
    
+   $('#tag2').click(function () {
+        toggleArrayItem(filter_list, '2'); //Sigma col value == 2
+
+        tags.filterAll();
+        tags.filterFunction(createFilter(filter_list));
+
+        dc.redrawAll();
+    });
 
     //charts
     indexChart = dc.rowChart("#chart-indexType");
@@ -336,7 +375,9 @@ function initCrossfilter() {
     var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
         regionDimension = filter.dimension(function(p, i) { return p.Region; }),
         indexDimension = filter.dimension(function(p) { return p.Index; }),
-        datasetDimension = filter.dimension(function(d) { return d.Data; });
+        datasetDimension = filter.dimension(function(d) { return d.Data; }),
+        tags = filter.dimension(function (d) { return d.Sigma; }),
+        filter_list = [];
 
 
         
@@ -451,6 +492,7 @@ function initCrossfilter() {
             function(d) { return d.Season; },
             function(d) { return d.Index; },
             function(d) { return d.Data; },
+            function(d) { return d.Sigma; },
             function(d) { return d.Value; }            
           //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
           //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
