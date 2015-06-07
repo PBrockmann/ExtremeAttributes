@@ -320,6 +320,16 @@ function clearMap() {
     initCrossfilter(); //update dc charts with cleared region filter    
 }
 
+// function checkboxEval() {
+//         console.log("in checkboxEval")
+//         console.log("length:", document.getElementsByClassName("checkbox-sigma").length)
+//         numSigmaBoxes = document.getElementsByClassName("checkbox-sigma").length;
+//         //document.getElementsByClassName("checkbox-sigma")[0].checked
+//         for (i = 0; i < numSigmaBoxes; i++) {
+//             if 
+//         }
+// }
+
 function initCrossfilter() {
 
     function createFilter(filters) {
@@ -354,19 +364,23 @@ function initCrossfilter() {
     //CHECKBOXES
     //Sigma threshold
     $("#tag1").click(function () {
+        noSigmaChecked = false;
         toggleArrayItem(filter_list, "1"); //Sigma col value == 1
+        if (filter_list.indexOf("1") == -1 && filter_list.indexOf("2") == -1) noSigmaChecked = true;
 
         tags.filterAll();
-        tags.filterFunction(createFilter(filter_list));
+        if (noSigmaChecked == false ) tags.filterFunction(createFilter(filter_list));
 
         dc.redrawAll();
     });
    
    $("#tag2").click(function () {
+        noSigmaChecked = false;
         toggleArrayItem(filter_list, "2"); //Sigma col value == 2
+        if (filter_list.indexOf("1") == -1 && filter_list.indexOf("2") == -1) noSigmaChecked = true;
 
         tags.filterAll();
-        tags.filterFunction(createFilter(filter_list));
+        if (noSigmaChecked == false) tags.filterFunction(createFilter(filter_list));
 
         dc.redrawAll();
     });
@@ -374,15 +388,21 @@ function initCrossfilter() {
    //Scenario checkboxes
    $("#RCP45").click(function () {
         toggleArrayItem(filter_list, "4.5"); //Sigma col value == 1
+        noScenarioChecked = false;
+        if (filter_list.indexOf("4.5") == -1 && filter_list.indexOf("8.5") == -1) noScenarioChecked = true;
+
         scenario.filterAll();
-        scenario.filterFunction(createFilter(filter_list));
+        if (noScenarioChecked == false) scenario.filterFunction(createFilter(filter_list));
 
         dc.redrawAll();
     });
    $("#RCP85").click(function () {
         toggleArrayItem(filter_list, "8.5"); //Sigma col value == 1
+        noScenarioChecked = false;
+        if (filter_list.indexOf("4.5") == -1 && filter_list.indexOf("8.5") == -1) noScenarioChecked = true;
+
         scenario.filterAll();
-        scenario.filterFunction(createFilter(filter_list));
+        if (noScenarioChecked == false) scenario.filterFunction(createFilter(filter_list));
 
         dc.redrawAll();
     });
