@@ -324,23 +324,29 @@ function clearMap() {
 function initCrossfilter() {
 
     function createFilter(filters) {
-        console.log("in createFilter")
             return function (d) {
-                for (var i = 0, len = filters.length; i < len; i++) {
-                    console.log("in for loop: ", $.inArray(filters[i], d))
-                    if ($.inArray(filters[i], d) == -1) return false;
+                //Original code, uses && condition
+                // for (var i = 0, len = filters.length; i < len; i++) {
+                //     if ($.inArray(filters[i], d) == -1) return false;
+                // }
+               
+                //modified to use || condition
+                if (filters.length == 0) return true; //otherwise breaks when deselecting all checkboxes
+                else {
+                    for (var i = 0, len = filters.length; i < len; i++) {                        
+                        if (filters[i] == d) return true;                    
+                        //if ($.inArray(filters[i], d) == -1) return false;
+                    }
                 }
-                return true;
+                //return true;
             }
-        
     }
 
     function toggleArrayItem(a, v) {
-        console.log("in toggleArrayItem")
-            var i = a.indexOf(v);
-            if (i === -1) a.push(v);
-            else a.splice(i, 1);
-
+        //Stores value of check boxes clicked in array "a"
+        var i = a.indexOf(v);
+        if (i === -1) a.push(v);
+        else a.splice(i, 1);
     }
     
     console.log('in initCrossfilter');
