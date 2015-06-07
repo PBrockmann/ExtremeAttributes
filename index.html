@@ -125,12 +125,16 @@
         }     
 
         .d3-tip {
-          line-height: 1;
-          font-weight: bold;
-          padding: 12px;
-          background: rgba(0, 0, 0, 0.8);
-          color: #fff;
-          border-radius: 2px;
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border-radius: 2px;
+        }
+
+        input[type="checkbox"] {
+            margin: 4px 4px 0;            
         }
 
         table thead { display:block; }
@@ -170,14 +174,21 @@
         <div class="container">
 
             <!--ROW 1-->
-            <div class="row" style="width: 1400px;">
-                <div id="title" style="margin-left: 940px;"><h2>Selectors</h2></div>
-                <div id="tags" style="margin-top: -65px; margin-left: 1150px;">
+            <div class="row" style="width: 1600px;">
+                <div id="title" style="margin-left: 660px;"><h2>Selectors</h2></div>
+                <div id="tags" style="margin-top: -55px; margin-left: 922px;">
                 <h4>Threshold</h4>
                 <label>
                     <input type="checkbox" id="tag1" />1 Sigma</label>
                 <label>
                     <input type="checkbox" id="tag2" />2 Sigma</label>
+                </div>
+                <div id="scenario" style="margin-top: -75px; margin-left: 1167px;">
+                <h4>Scenario</h4>
+                <label>
+                    <input type="checkbox" id="RCP45" />RCP 4.5</label>
+                <label>
+                    <input type="checkbox" id="RCP85" />RCP 8.5</label>
                 </div>
 
                 <div class="control-group clear" id="mapreset">                  
@@ -225,6 +236,7 @@
                                 <th>Index</th>
                                 <th>Data</th>
                                 <th>Sigma</th>
+                                <th>Scenario</th>
                                 <th>Value</th>
                                 </tr>
                         </thead>
