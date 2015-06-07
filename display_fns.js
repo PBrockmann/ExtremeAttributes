@@ -339,14 +339,12 @@ function initCrossfilter() {
             //     if ($.inArray(filters[i], d) == -1) return false;
             // }
                
-            //modified to use || condition
-            if (filters.length == 0) return true; //otherwise breaks when deselecting all checkboxes
-            else {
-                for (var i = 0, len = filters.length; i < len; i++) {                        
-                    if (filters[i] == d) return true;                    
-                    //if ($.inArray(filters[i], d) == -1) return false;
-                }
+            //modified to use || condition    
+            for (var i = 0, len = filters.length; i < len; i++) {                        
+                if (filters[i] == d) return true;                    
+                //if ($.inArray(filters[i], d) == -1) return false;
             }
+            
             //return true;
         }
     }
