@@ -567,15 +567,19 @@ function initCrossfilter() {
         if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
             if (regionToPassToDC) {                
 
+               
+
+                legend_idx = legend.indexOf(regionToPassToDC);
+                console.log("active_dict[legend_idx].key: ", active_dict[legend_idx].key)
+                console.log("active_dict[legend_idx].value: ", active_dict[legend_idx].value)
+                if (active_dict[legend_idx].value == grayThreshold) {
+                    findi = regionToPassToDC_array.indexOf(active_dict[legend_idx].key);
+                    regionToPassToDC_array.splice(findi, 1);
+                }
+                console.log("regionToPassToDC_array after splice: ", regionToPassToDC_array)
                 regionToPassToDC_array.forEach(function (p, k) {
                     regionChart.filter(regionToPassToDC_array[k]);
                 })
-
-                //highlight selected region
-                d3.select("#"+active_dict[idx].key.substring(0, 4))
-                  .style("fill", "brown").style("fill-opacity", 0.7)
-                  .style("stroke", "gray").style("stroke-width", "1px");
-                  //.style("stroke", "brown").style("stroke-width", "2px");
 
                 //turn deactivated regions gray
                 if (clickDC == true) {
@@ -599,8 +603,13 @@ function initCrossfilter() {
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
                           .style("stroke", "gray").style("stroke-width", "1px");                                               
-                    }                    
+                    } else if (active_dict[j].value == toggleONRegionChartClicked) {
+                        d3.select("#"+active_dict[j].key.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "1px");
+                    }             
                 }
+
                 if (count_active == countSelection) {
                     //last selected region has been clicked again
                     //restore map to default
@@ -618,6 +627,8 @@ function initCrossfilter() {
                         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
                     }
+                } else {
+                    
                 }
             }
         } //end regionChart.filters().length check
