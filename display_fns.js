@@ -33,6 +33,7 @@ var grayThreshold = -100;
 var activeDictDefault = -100;
 var toggleONRegionChartClicked = 555;
 var toggleOFFRegionChartClicked = 100;
+var subregions; //regions highlighted when a dc map is clicked
 
 function init() {
     console.log("in init()!");     
@@ -566,12 +567,8 @@ function initCrossfilter() {
 
         if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
             if (regionToPassToDC) {                
-
                
-
                 legend_idx = legend.indexOf(regionToPassToDC);
-                console.log("active_dict[legend_idx].key: ", active_dict[legend_idx].key)
-                console.log("active_dict[legend_idx].value: ", active_dict[legend_idx].value)
                 if (active_dict[legend_idx].value == grayThreshold) {
                     findi = regionToPassToDC_array.indexOf(active_dict[legend_idx].key);
                     regionToPassToDC_array.splice(findi, 1);
@@ -614,14 +611,16 @@ function initCrossfilter() {
                     //last selected region has been clicked again
                     //restore map to default
                     if (clickDC == true) {
+                        console.log("regionToPassToDC_array in count_active: ", regionToPassToDC_array)
+                        console.log("subregions: ", subregions)
                         regionChart.filterAll(); //clear
-                        for (var j = 0; j < regionToPassToDC_array.length; j++) {
-                            d3.select("#"+regionToPassToDC_array[j].substring(0, 4)).style("fill", "brown")
+                        for (var j = 0; j < subregions.length; j++) {
+                            d3.select("#"+subregions[j].substring(0, 4)).style("fill", "brown")
                               .style("fill-opacity", 0.7)
                               .style("stroke", "gray").style("stroke-width", "1px");
-                              active_dict[legend.indexOf(regionToPassToDC_array[j])].value = toggleONRegionChartClicked;
+                              active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
                               //pass only active regions to chart
-                              regionChart.filter(regionToPassToDC_array[j]);
+                              regionChart.filter(subregions[j]);
                         }                        
                     } else {
                         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
@@ -635,7 +634,8 @@ function initCrossfilter() {
     }
  
     //Called when any dc chart is clicked
-    function highlightRegion(chartFilter, chartGroup) {            
+    function highlightRegion(chartFilter, chartGroup) {
+        subregions = regionToPassToDC_array;
 
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
