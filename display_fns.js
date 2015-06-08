@@ -332,80 +332,69 @@ function clearMap() {
 
 function initCrossfilter() {
 
+    //FNS FOR CHECKBOXES
     function createFilter(filters) {
         return function (d) {
-            //Original code, uses && condition
-            // for (var i = 0, len = filters.length; i < len; i++) {
-            //     if ($.inArray(filters[i], d) == -1) return false;
-            // }
-               
-            //modified to use || condition    
+            //when both checkboxes are cicked, return true if data point        
+            //contains either checkbox value    
             for (var i = 0, len = filters.length; i < len; i++) {                        
                 if (filters[i] == d) return true;                    
                 //if ($.inArray(filters[i], d) == -1) return false;
             }
-            
-            //return true;
         }
     }
 
-    function toggleArrayItem(a, v) {
-        //Stores value of check boxes clicked in array "a"
-        var i = a.indexOf(v);
-        if (i === -1) a.push(v);
-        else a.splice(i, 1);
+    function toggleArrayItem(flist, val) {
+        //Stores value of check boxes clicked in array "flist"
+        var i = flist.indexOf(val);
+        if (i === -1) flist.push(val);
+        else flist.splice(i, 1);
+    }
+
+    function checkboxEval(flist, opt1, opt2, fdim) {
+        noBoxChecked = false;
+
+        if (flist.indexOf(opt1) == -1 && flist.indexOf(opt2) == -1) noBoxChecked = true;
+
+        fdim.filterAll();
+        if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
     }
     
     console.log('in initCrossfilter');
     filter = crossfilter(points);
 
-    //CHECKBOXES
-    //Sigma threshold
+    //EVALUATE CHECKBOXES
+    //Sigma value
     $("#tag1").click(function () {
-        noSigmaChecked = false;
         toggleArrayItem(filter_list, "1"); //Sigma col value == 1
-        if (filter_list.indexOf("1") == -1 && filter_list.indexOf("2") == -1) noSigmaChecked = true;
-
-        tags.filterAll();
-        if (noSigmaChecked == false ) tags.filterFunction(createFilter(filter_list));
-
+        checkboxEval(filter_list, "1", "2", tags); //both box values
+        
         dc.redrawAll();
     });
-   
-   $("#tag2").click(function () {
-        noSigmaChecked = false;
+
+    $("#tag2").click(function () {
         toggleArrayItem(filter_list, "2"); //Sigma col value == 2
-        if (filter_list.indexOf("1") == -1 && filter_list.indexOf("2") == -1) noSigmaChecked = true;
-
-        tags.filterAll();
-        if (noSigmaChecked == false) tags.filterFunction(createFilter(filter_list));
-
+        checkboxEval(filter_list, "1", "2", tags); //both box values
+        
         dc.redrawAll();
     });
 
-   //Scenario checkboxes
-   $("#RCP45").click(function () {
-        toggleArrayItem(filter_list, "4.5"); //Sigma col value == 1
-        noScenarioChecked = false;
-        if (filter_list.indexOf("4.5") == -1 && filter_list.indexOf("8.5") == -1) noScenarioChecked = true;
-
-        scenario.filterAll();
-        if (noScenarioChecked == false) scenario.filterFunction(createFilter(filter_list));
-
-        dc.redrawAll();
-    });
-   $("#RCP85").click(function () {
-        toggleArrayItem(filter_list, "8.5"); //Sigma col value == 1
-        noScenarioChecked = false;
-        if (filter_list.indexOf("4.5") == -1 && filter_list.indexOf("8.5") == -1) noScenarioChecked = true;
-
-        scenario.filterAll();
-        if (noScenarioChecked == false) scenario.filterFunction(createFilter(filter_list));
-
+    //Scenario
+    $("#RCP45").click(function () {
+        toggleArrayItem(filter_list, "4.5"); //Scenario col value == 4.5
+        checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+        
         dc.redrawAll();
     });
 
-    //charts
+    $("#RCP85").click(function () {
+        toggleArrayItem(filter_list, "8.5"); //Scenario col value == 8.5
+        checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+        
+        dc.redrawAll();
+    });
+
+    //DEFINE CHARTS
     indexChart = dc.rowChart("#chart-indexType");
     datasetChart = dc.rowChart("#chart-dataset");
     yearChart = dc.barChart("#chart-eventYear");
@@ -459,9 +448,6 @@ function initCrossfilter() {
             highlightRegion(indexChart.filters, indexGroup);
         });    
 
-       
-    
-
     xAxis_indexChart = indexChart.xAxis().ticks(4);
 
     yearChart
@@ -492,7 +478,6 @@ function initCrossfilter() {
         .xAxis().ticks(3).tickFormat(d3.format("d"));
 
     var yAxis_yearChart = yearChart.yAxis().ticks(6);
-
 
     datasetChart
         .width(200) //svg width
@@ -550,7 +535,6 @@ function initCrossfilter() {
         //.on("filtered", updateSelectors);    
 
      
-
     function updateSelectors() { //executed when map is clicked
         //console.log("regionGroup.all(): ", regionGroup.all());
         console.log("regionChart.filters(): ", regionChart.filters());
@@ -654,7 +638,6 @@ function initCrossfilter() {
         } //end regionChart.filters().length check
     }
  
-
     //Called when any dc chart is clicked
     function highlightRegion(chartFilter, chartGroup) {            
 
@@ -709,7 +692,6 @@ function initCrossfilter() {
         } //end regionChart.filters().length check
 
     }
-
 
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
