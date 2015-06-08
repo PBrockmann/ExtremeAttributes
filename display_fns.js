@@ -156,7 +156,8 @@ function init() {
                                 
                                 //clear array only if map has NOT been clicked
                                 if (regionChart.filters().length==0) regionToPassToDC_array = [];
-                                regionToPassToDC_array.push(regionToPassToDC); 
+                                console.log("regionToPassToDC_array in on.click: ", regionToPassToDC_array)
+                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC); 
 
                                 //toggle active_dict value on and off
                                 for (var j = 0; j < active_dict.length; j++) {                                    
@@ -604,16 +605,15 @@ function initCrossfilter() {
                     //last selected region has been clicked again
                     //restore map to default
                     if (clickDC == true) {
+                        regionChart.filterAll(); //clear
                         for (var j = 0; j < regionToPassToDC_array.length; j++) {
                             d3.select("#"+regionToPassToDC_array[j].substring(0, 4)).style("fill", "brown")
                               .style("fill-opacity", 0.7)
                               .style("stroke", "gray").style("stroke-width", "1px");
-                              active_dict[legend.indexOf(regionToPassToDC_array[j])].value = toggleONRegionChartClicked;                              
-                        }
-                        //pass only active regions to chart
-                        regionChart.filterAll(); //clear
-                        console.log("regionToPassToDC_array: ", regionToPassToDC_array)
-                        regionChart.filter(regionToPassToDC_array);
+                              active_dict[legend.indexOf(regionToPassToDC_array[j])].value = toggleONRegionChartClicked;
+                              //pass only active regions to chart
+                              regionChart.filter(regionToPassToDC_array[j]);
+                        }                        
                     } else {
                         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
