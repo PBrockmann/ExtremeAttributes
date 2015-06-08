@@ -174,9 +174,6 @@ function init() {
                                             }
                                         }
                                 }
-                                console.log("active_dict in here: ", active_dict);                          
-    
-                          
 
                                 initCrossfilter();
                             } //end matchFlag check
@@ -568,15 +565,35 @@ function initCrossfilter() {
         if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
             if (regionToPassToDC) {                
                
-                legend_idx = legend.indexOf(regionToPassToDC);
-                if (active_dict[legend_idx].value == grayThreshold) {
-                    findi = regionToPassToDC_array.indexOf(active_dict[legend_idx].key);
-                    regionToPassToDC_array.splice(findi, 1);
+                if (clickDC == true) {
+                    //define subregions since value changes by itself!
+                    count_subregion = 0; subregions = [];
+                    for (var k = 0; k < active_dict.length; k++) {
+                        if (active_dict[k].value != -100) {
+                            subregions[count_subregion] = active_dict[k].key;
+                            subregions_idx[count_subregion] = k;
+                            count_subregion++;
+                        }
+                    }
+                    console.log("subregions shouldn't change!!! ", subregions)
+
+                    legend_idx = legend.indexOf(regionToPassToDC);
+                    
+                    if (regionToPassToDC_array.length == 0) {
+                        regionToPassToDC_array = subregions;
+                    } else if (active_dict[legend_idx].value == grayThreshold) {
+                        findi = regionToPassToDC_array.indexOf(active_dict[legend_idx].key);
+                        regionToPassToDC_array.splice(findi, 1);
+                    }
+                    console.log("regionToPassToDC_array after splice: ", regionToPassToDC_array)
+                    regionToPassToDC_array.forEach(function (p, k) {
+                        regionChart.filter(regionToPassToDC_array[k]);
+                    })
+                } else {
+                    regionToPassToDC_array.forEach(function (p, k) {
+                        regionChart.filter(regionToPassToDC_array[k]);
+                    })
                 }
-                console.log("regionToPassToDC_array after splice: ", regionToPassToDC_array)
-                regionToPassToDC_array.forEach(function (p, k) {
-                    regionChart.filter(regionToPassToDC_array[k]);
-                })
 
                 //turn deactivated regions gray
                 if (clickDC == true) {
@@ -600,7 +617,7 @@ function initCrossfilter() {
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
                           .style("stroke", "gray").style("stroke-width", "1px");                                               
-                    } else if (active_dict[j].value == toggleONRegionChartClicked) {
+                    } else if (active_dict[j].value == toggleONRegionChartClicked || active_dict[j].value == 1) {
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
@@ -621,7 +638,9 @@ function initCrossfilter() {
                               active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
                               //pass only active regions to chart
                               regionChart.filter(subregions[j]);
-                        }                        
+                              clearMap();
+                        }
+                        regionToPassToDC_array = subregions;                     
                     } else {
                         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
@@ -635,7 +654,9 @@ function initCrossfilter() {
  
     //Called when any dc chart is clicked
     function highlightRegion(chartFilter, chartGroup) {
+        console.log("in highlightRegion fn!!")
         subregions = regionToPassToDC_array;
+        console.log("set subregions: ", subregions)
 
         //if no filters are selected, highlight no map regions
         if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
