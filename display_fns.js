@@ -154,7 +154,7 @@ function init() {
                                 regionToPassToDC = d.properties.name;
                                 idx = legend.indexOf(regionToPassToDC);
                                 
-                                //clear only if map has NOT been clicked
+                                //clear array only if map has NOT been clicked
                                 if (regionChart.filters().length==0) regionToPassToDC_array = [];
                                 regionToPassToDC_array.push(regionToPassToDC); 
 
@@ -338,10 +338,10 @@ function initCrossfilter() {
 
     function checkboxEval(flist, opt1, opt2, fdim) {
         noBoxChecked = false;
-
         if (flist.indexOf(opt1) == -1 && flist.indexOf(opt2) == -1) noBoxChecked = true;
 
         fdim.filterAll();
+        console.log("flist: ", flist)
         if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
     }
     
@@ -512,8 +512,8 @@ function initCrossfilter() {
         .width(350).height(500)
         .dimension(regionDimension)
         .group(regionGroup)
-        .elasticX(true);
-        //.on("filtered", updateSelectors);    
+        .elasticX(true)
+        .on("filtered", updateSelectors);    
 
      
     function updateSelectors() { //executed when map is clicked
@@ -563,7 +563,7 @@ function initCrossfilter() {
         console.log("IN updateRegionChart fn!!")
         console.log("regionChart.filters(): ", regionChart.filters())
 
-        if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
+        if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
             if (regionToPassToDC) {                
 
                 regionToPassToDC_array.forEach(function (p, k) {
@@ -608,7 +608,12 @@ function initCrossfilter() {
                             d3.select("#"+regionToPassToDC_array[j].substring(0, 4)).style("fill", "brown")
                               .style("fill-opacity", 0.7)
                               .style("stroke", "gray").style("stroke-width", "1px");
+                              active_dict[legend.indexOf(regionToPassToDC_array[j])].value = toggleONRegionChartClicked;                              
                         }
+                        //pass only active regions to chart
+                        regionChart.filterAll(); //clear
+                        console.log("regionToPassToDC_array: ", regionToPassToDC_array)
+                        regionChart.filter(regionToPassToDC_array);
                     } else {
                         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
