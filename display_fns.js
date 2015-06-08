@@ -127,13 +127,8 @@ function init() {
                                     active_dict[idx].value = -100; //0; //turn off activated region                              
                                                                      
                                     //remove from regionToPassToDC_array
-                                    regionToPassToDC_array = []; count=0;
-                                    for (var j = 0; j < active_dict.length; j++) {
-                                        if (active_dict[j].value == 1) {
-                                            regionToPassToDC_array[count] = active_dict[j].key;
-                                            count++;
-                                        }
-                                    }
+                                    iremove = regionToPassToDC_array.indexOf(regionToPassToDC);
+                                    regionToPassToDC_array.splice(iremove,1)                                  
                                 }
                                 else { //activate region
                                     regionToPassToDC_array.push(regionToPassToDC);
@@ -320,16 +315,6 @@ function clearMap() {
     initCrossfilter(); //update dc charts with cleared region filter    
 }
 
-// function checkboxEval() {
-//         console.log("in checkboxEval")
-//         console.log("length:", document.getElementsByClassName("checkbox-sigma").length)
-//         numSigmaBoxes = document.getElementsByClassName("checkbox-sigma").length;
-//         //document.getElementsByClassName("checkbox-sigma")[0].checked
-//         for (i = 0; i < numSigmaBoxes; i++) {
-//             if 
-//         }
-// }
-
 function initCrossfilter() {
 
     //FNS FOR CHECKBOXES
@@ -408,10 +393,7 @@ function initCrossfilter() {
         tags = filter.dimension(function (d) { return d.Sigma; }),
         scenario = filter.dimension(function (d) { return d.Scenario; }),
         filter_list = [];
-
-
-        
-    
+  
     //global
     idDimension = filter.dimension(function(p, i) { return i; });
     idGroup = idDimension.group(function(id) { return id; });
@@ -425,7 +407,6 @@ function initCrossfilter() {
     
     //print_filter("yearGroup");
     
-
     minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
     maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
 
@@ -541,8 +522,7 @@ function initCrossfilter() {
     }
     
     if (clearMapFlag ==1) {        
-      
-        
+           
         regionToPassToDC_array = [];
         if (clickDC == true) { //reset only those regions that belong in chart click subset            
             for (var i = 0; i < active_dict.length; i++) {
