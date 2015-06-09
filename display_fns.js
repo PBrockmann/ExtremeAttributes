@@ -307,7 +307,7 @@ function init() {
                                             if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
                                                 active_dict[j].value = grayThreshold;
                                                 console.log("toggled OFF")
-                                            } else if (active_dict[j].value == 1) {                                                
+                                            } else if (active_dict[j].value == 1 || active_dict[j].value == toggleOFFRegionChartClicked) {                                                
                                                 active_dict[j].value = toggleONRegionChartClicked;
                                                 console.log("toggled ON")                                                
                                             } //toggle region ON
@@ -545,22 +545,46 @@ function init() {
             console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
             console.log("regionGroup.all(): ", regionGroup.all())
 
+            subregion_idx = []; countGray = 0;
             for (var j = 0; j < regionGroup.all().length; j++) {
                 if (regionGroup.all()[j].value != 0) { //region is in the dc chart set                    
                     idx = legend.indexOf(regionGroup.all()[j].key);
-                    active_dict[idx].value = toggleONRegionChartClicked;
+                    subregion_idx.push(idx);
+                    //active_dict[idx].value = 1; //toggleONRegionChartClicked;
+                    if (active_dict[idx].value == activeDictDefault) active_dict[idx].value = 1;
 
-                    d3.select("#"+active_dict[idx].key.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");
+
+                    if (active_dict[idx].value == 1 || active_dict[idx].value == toggleONRegionChartClicked) {
+                        d3.select("#"+active_dict[idx].key.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "1px");                    
+                    } else if (active_dict[idx].value == 100) { //set grayThreshold = 100 in .on(click)
+                        countGray++;                        
+                        d3.select("#"+active_dict[j].key.substring(0, 4))
+                          .style("fill", "gray").style("fill-opacity", 0.5)
+                          .style("stroke", "gray").style("stroke-width", "1px");
+                        
+                    }
                 } else { //null out other regions
                     d3.select("#"+active_dict[j].key.substring(0, 4))
                       .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);
+                      .style("stroke-width", null).style("fill-opacity", 0);                    
                 }
             }
-
-
+            num_subregions = subregion_idx.length;
+            console.log("countGray: ", countGray)
+            console.log("num_subregions: ", num_subregions)
+            
+            //special case where all subregions have been selected and deselected. For the last region
+            //to be deselected, highlight them all again and restore active_dict.value to 1
+            if (countGray == num_subregions) { //restore all subregions to original state
+                for (var i = 0; i < subregion_idx.length; i++) {
+                    d3.select("#"+active_dict[subregion_idx[i]].key.substring(0, 4))
+                      .style("fill", "brown").style("fill-opacity", 0.7)
+                      .style("stroke", "gray").style("stroke-width", "1px");
+                    active_dict[subregion_idx[i]].value = 1;  
+                }
+            }
 
         }
 
