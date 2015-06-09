@@ -125,7 +125,7 @@ function init() {
 
                                 //toggle active_dict value on and off
                                 if (active_dict[idx].value ==1 ) {
-                                    active_dict[idx].value = -100; //0; //turn off activated region                              
+                                    active_dict[idx].value = activeDictDefault; //0; //turn off activated region                              
                                                                      
                                     //remove from regionToPassToDC_array
                                     iremove = regionToPassToDC_array.indexOf(regionToPassToDC);
@@ -169,7 +169,7 @@ function init() {
                                                 active_dict[j].value = toggleONRegionChartClicked;                                                
                                             } //toggle region ON
                                         } else if (active_dict[j].key != regionToPassToDC) {                                            
-                                            if (active_dict[j].value != -100 && active_dict[j].value != toggleONRegionChartClicked) {                                                
+                                            if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
                                                 active_dict[j].value = grayThreshold;                                                
                                             }
                                         }
@@ -565,27 +565,18 @@ function initCrossfilter() {
         if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
             if (regionToPassToDC) {                
                
-                if (clickDC == true) {
-                    //define subregions since value changes by itself!
-                    count_subregion = 0; subregions = [];
-                    for (var k = 0; k < active_dict.length; k++) {
-                        if (active_dict[k].value != -100) {
-                            subregions[count_subregion] = active_dict[k].key;
-                            subregions_idx[count_subregion] = k;
-                            count_subregion++;
+                if (clickDC == true) {                   
+                    //Pass only active regions to regionChart.filter
+                    regionToPassToDC_array = [];
+                    for (var i = 0; i < active_dict.length; i++) {
+                        if (active_dict[i].value == toggleONRegionChartClicked || active_dict[i].value == 1) {                        
+                            console.log("regionToPassToDC_array to be spliced: ", regionToPassToDC_array)
+                            if (regionToPassToDC_array.indexOf(active_dict[i].key) == -1) {
+                                regionToPassToDC_array.push(active_dict[i].key);
+                            }
                         }
                     }
-                    console.log("subregions shouldn't change!!! ", subregions)
-
-                    legend_idx = legend.indexOf(regionToPassToDC);
                     
-                    if (regionToPassToDC_array.length == 0) {
-                        regionToPassToDC_array = subregions;
-                    } else if (active_dict[legend_idx].value == grayThreshold) {
-                        findi = regionToPassToDC_array.indexOf(active_dict[legend_idx].key);
-                        regionToPassToDC_array.splice(findi, 1);
-                    }
-                    console.log("regionToPassToDC_array after splice: ", regionToPassToDC_array)
                     regionToPassToDC_array.forEach(function (p, k) {
                         regionChart.filter(regionToPassToDC_array[k]);
                     })
@@ -601,7 +592,7 @@ function initCrossfilter() {
                     //countSelection number of entries in active_dict != -100
                     countSelection = 0;
                     for (var j = 0; j < active_dict.length; j++) {
-                        if (active_dict[j].value != -100) countSelection++;
+                        if (active_dict[j].value != activeDictDefault) countSelection++;
                     }
 
                 }
@@ -617,7 +608,7 @@ function initCrossfilter() {
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "gray").style("fill-opacity", 0.5)
                           .style("stroke", "gray").style("stroke-width", "1px");                                               
-                    } else if (active_dict[j].value == toggleONRegionChartClicked || active_dict[j].value == 1) {
+                    } else if (active_dict[j].value == toggleONRegionChartClicked) {
                         d3.select("#"+active_dict[j].key.substring(0, 4))
                           .style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");
@@ -679,7 +670,7 @@ function initCrossfilter() {
                       .style("fill", "brown").style("fill-opacity", 0.7)
                       .style("stroke", "gray").style("stroke-width", "1px");                    
                 } else { //unselect any regions that may have been previously selected
-                    active_dict[i].value = -100;
+                    active_dict[i].value = activeDictDefault;
                     pathid = regionGroup.all()[i].key;
                     d3.select("#"+pathid.substring(0, 4))
                       .style("stroke", null)
