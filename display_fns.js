@@ -58,8 +58,155 @@ function init() {
         });
 
         points = events;
-        initCrossfilter();
-        //saveRegionGroup = regionGroup;
+        console.log('in initCrossfilter');
+        filter = crossfilter(points);
+
+        //DEFINE CHARTS
+        indexChart = dc.rowChart("#chart-indexType");
+        datasetChart = dc.rowChart("#chart-dataset");
+        yearChart = dc.barChart("#chart-eventYear");
+        regionChart = dc.rowChart("#chart-region");
+
+        var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
+        regionDimension = filter.dimension(function(p, i) { return p.Region; }),
+        indexDimension = filter.dimension(function(p) { return p.Index; }),
+        datasetDimension = filter.dimension(function(d) { return d.Data; }),
+        //regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+        tags = filter.dimension(function (d) { return d.Sigma; }),
+        scenario = filter.dimension(function (d) { return d.Scenario; }),
+        filter_list = [];
+
+        //global
+        idDimension = filter.dimension(function(p, i) { return i; });
+        idGroup = idDimension.group(function(id) { return id; });
+        regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+        yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; });
+        indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; });
+        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
+
+        console.log("regionGroup.all() after defn: ", regionGroup.all())
+
+        minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
+        maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
+
+        indexChart
+            .width(200) //svg width
+            .height(200) //svg height
+            .margins({
+                top: 10,
+                right: 10,
+                bottom: 30,
+                left: 10
+            }) // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
+            .dimension(indexDimension)
+            .group(indexGroup)
+            .on("preRedraw", update0)
+            .colors(d3.scale.category20())
+            .elasticX(true)
+            .gap(0)
+            .on("filtered", function() {            
+                console.log("indexChart.filter() in indexChart itself: ", indexChart.filter())
+                console.log("regionGroup.all() in indexChart itself: ", regionGroup.all())
+                highlightRegion(indexChart.filters, indexGroup);
+            });    
+
+        xAxis_indexChart = indexChart.xAxis().ticks(4);
+
+        yearChart
+            .width(200)
+            .height(200)
+            .margins({
+                top: 10,
+                right: 30,
+                bottom: 30,
+                left: 40
+            })
+            .centerBar(true) //ensure that the bar for the bar graph is centred on the ticks on the x axis
+            .elasticY(true)
+            .dimension(yearDimension)
+            .group(yearGroup)
+            .on("preRedraw", update0)
+            .colors(d3.scale.category20c())
+            //.elasticX(true)
+            .renderHorizontalGridLines(true)
+            //.round(Math.round)
+            .xUnits(function(){return 20;})
+            //.gap(2)  
+            //.xUnits(dc.units.integers)
+            .x(d3.scale.linear().domain([minYear, maxYear]))
+            .on("filtered", function() {
+                highlightRegion(yearChart.filters, yearGroup);
+            })
+            .xAxis().ticks(3).tickFormat(d3.format("d"));
+
+        var yAxis_yearChart = yearChart.yAxis().ticks(6);
+
+        datasetChart
+            .width(200) //svg width
+            .height(80) //svg height
+            .margins({
+                top: 10,
+                right: 10,
+                bottom: 30,
+                left: 5
+            })
+            .dimension(datasetDimension)
+            .group(datasetGroup)
+            .on("preRedraw", update0)
+            .colors(d3.scale.category20())
+            .elasticX(true)
+            .gap(0)
+            .on("filtered", function() {
+                highlightRegion(datasetChart.filters, datasetGroup);
+            });
+
+        xAxis_datasetChart = datasetChart.xAxis().ticks(4);
+
+        //dc dataTable
+        dataTable = dc.dataTable("#dc-table-graph");
+        // Create datatable dimension
+        var timeDimension = filter.dimension(function (d) {
+            return d.Year;
+        });
+        
+        dataTable.width(1060).height(1000)
+            .dimension(timeDimension)
+            .group(function(d) { return ""})
+            .size(points.length) //display all data
+            .columns([
+                function(d) { return d.Year; },
+                function(d) { return d.Region; },
+                function(d) { return d.Type; },
+                function(d) { return d.Season; },
+                function(d) { return d.Index; },
+                function(d) { return d.Data; },
+                function(d) { return d.Sigma; },
+                function(d) { return d.Scenario; },
+                function(d) { return d.Value; }            
+              //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
+              //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
+            ])
+            .sortBy(function(d){ return d.Year; })
+            .order(d3.ascending);
+
+        regionChart
+            .width(350).height(500)
+            .dimension(regionDimension)
+            .group(regionGroup)
+            .elasticX(true)
+            .on("filtered", updateSelectors);
+
+        function updateSelectors() { //executed when map is clicked
+            //console.log("regionGroup.all(): ", regionGroup.all());
+            console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());    
+            //console.log("regionGroup.all() in updateSelectors: ", regionGroup.all())    
+        }
+
+        d3.selectAll("#total").text(filter.size()); // total number of events
+        d3.select("#active").text(filter.groupAll().value()); //total number selected    
+
+
+        //initCrossfilter();        
         eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
 
@@ -68,17 +215,7 @@ function init() {
         var tip = d3.tip()
             .attr("class", "d3-tip")
             //.offset([-10, 0])
-            .html(function(d) { //get #anomalies for each region               
-
-                // //use saveRegionGroup because it contains all regions, whereas regionGroup may be filtered by user selections
-                // saveRegionGroup.all().forEach(function(r, i) {
-                //     if (r.key == d.properties.name) {
-                //         totAnom = r.value;
-                //     }
-                // });
-                                                   
-                //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name + "<br># Anomalies: " + totAnom;
-                //return "<strong><span style='color:light-gray'>Region:</span></strong> " + d.properties.name;
+            .html(function(d) { //get #anomalies for each region                       
                 return d.properties.name;
             })
         svg.call(tip);
@@ -136,7 +273,8 @@ function init() {
                                     active_dict[idx].value = 1;                                                                     
                                 }
 
-                                initCrossfilter(); //send regionToPassToDC to dc region filter
+                                //initCrossfilter(); //send regionToPassToDC to dc region filter
+                                updateRegionChart()
                             
                         } else { //clickDC is true
                             console.log("regionGroup.all() in on(click): ", regionGroup.all())
@@ -176,7 +314,8 @@ function init() {
                                         }
                                 }
 
-                                initCrossfilter();
+                                //initCrossfilter();
+                                highlightRegion();
                             } //end matchFlag check
 
                         } //end clickDC else condition
@@ -296,8 +435,218 @@ function init() {
             }); //end d3 geojson
         }); //end d3 topojson
 
+        //Called when map is clicked
+        function updateRegionChart() {
+            console.log("IN updateRegionChart fn!!")
+            console.log("regionChart.filters(): ", regionChart.filters())
 
-    }); //end d3 csv read file
+            if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
+                if (regionToPassToDC) {                
+                   
+                    if (clickDC == true) {                   
+                        //Pass only active regions to regionChart.filter
+                        regionToPassToDC_array = [];
+                        for (var i = 0; i < active_dict.length; i++) {
+                            if (active_dict[i].value == toggleONRegionChartClicked || active_dict[i].value == 1) {                        
+                                console.log("regionToPassToDC_array to be spliced: ", regionToPassToDC_array)
+                                if (regionToPassToDC_array.indexOf(active_dict[i].key) == -1) {
+                                    regionToPassToDC_array.push(active_dict[i].key);
+                                }
+                            }
+                        }
+                        
+                        regionToPassToDC_array.forEach(function (p, k) {
+                            regionChart.filter(regionToPassToDC_array[k]);
+                        })
+
+                        countThreshold = toggleOFFRegionChartClicked;                   
+                        countSelection = 0;
+                        for (var j = 0; j < active_dict.length; j++) {
+                            if (active_dict[j].value != activeDictDefault) countSelection++;
+                        }
+
+                        count_active=0;
+                        for (var j = 0; j < active_dict.length; j++) { 
+                            if (active_dict[j].value == countThreshold) {
+                                count_active++;
+                                d3.select("#"+active_dict[j].key.substring(0, 4))
+                                  .style("fill", "gray").style("fill-opacity", 0.5)
+                                  .style("stroke", "gray").style("stroke-width", "1px");                                               
+                            } else if (active_dict[j].value == toggleONRegionChartClicked) {
+                                d3.select("#"+active_dict[j].key.substring(0, 4))
+                                  .style("fill", "brown").style("fill-opacity", 0.7)
+                                  .style("stroke", "gray").style("stroke-width", "1px");
+                            }             
+                        }
+
+                    } else {
+                        regionToPassToDC_array.forEach(function (p, k) {
+                            regionChart.filter(regionToPassToDC_array[k]);
+                        })
+
+                        countThreshold = grayThreshold;
+                        countSelection = active_dict.length;
+
+                        count_active=0;
+                        for (var j = 0; j < active_dict.length; j++) { 
+                            if (active_dict[j].value == countThreshold || active_dict[j].value == activeDictDefault) {
+                                count_active++;
+                                d3.select("#"+active_dict[j].key.substring(0, 4))
+                                  .style("fill", "gray").style("fill-opacity", 0.5)
+                                  .style("stroke", "gray").style("stroke-width", "1px");                                               
+                            } else if (active_dict[j].value == toggleONRegionChartClicked) {
+                                d3.select("#"+active_dict[j].key.substring(0, 4))
+                                  .style("fill", "brown").style("fill-opacity", 0.7)
+                                  .style("stroke", "gray").style("stroke-width", "1px");
+                            }             
+                        }
+                    }
+             
+
+                    if (count_active == countSelection) {
+                        //last selected region has been clicked again
+                        //restore map to default
+                        if (clickDC == true) {
+                            console.log("regionToPassToDC_array in count_active: ", regionToPassToDC_array)
+                            console.log("subregions: ", subregions)
+                            regionChart.filterAll(); //clear
+                            for (var j = 0; j < subregions.length; j++) {
+                                d3.select("#"+subregions[j].substring(0, 4)).style("fill", "brown")
+                                  .style("fill-opacity", 0.7)
+                                  .style("stroke", "gray").style("stroke-width", "1px");
+                                  active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
+                                  //pass only active regions to chart
+                                  regionChart.filter(subregions[j]);
+                                  clearMap();
+                            }
+                            regionToPassToDC_array = subregions;                     
+                        } else {
+                            d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                              .style("stroke", "gray").style("stroke-width", "1px");
+                        }
+                    } else {
+                        
+                    }
+                }
+            } //end regionChart.filters().length check
+        }
+     
+        //Called when any dc chart is clicked
+        function highlightRegion(chartFilter, chartGroup) {
+            console.log("in highlightRegion fn!!")
+            subregions = regionToPassToDC_array;
+            console.log("set subregions: ", subregions)
+
+
+            //if no filters are selected, highlight no map regions
+            if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
+                console.log("IN highlightRegion fn PART I!!****************")
+                countRegionGroup = 0;
+
+                regionGroup.all().forEach(function (d, i) {
+                    if (regionGroup.all()[i].value > 0) {
+                        pick = legend.indexOf(regionGroup.all()[i].key);
+                        //console.log("pick: ", pick);
+
+                        //set corresponding regions in active_dict to 1
+                        active_dict[pick].value = 1;
+
+                        regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
+                        countRegionGroup++
+
+                        pathid = regionGroup.all()[i].key;
+                        d3.select("#"+pathid.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "1px");                    
+                    } else { //unselect any regions that may have been previously selected
+                        active_dict[i].value = activeDictDefault;
+                        pathid = regionGroup.all()[i].key;
+                        d3.select("#"+pathid.substring(0, 4))
+                          .style("stroke", null)
+                          .style("stroke-width", null).style("fill-opacity", 0);
+                    }
+                });    
+                        
+            } else { //map has at least one highlighted region
+                console.log("IN highlightRegion fn PART II!!")
+                //console.log("regionGroup.all(): ", regionGroup.all())        
+                
+                //first clear all regions               
+                d3.selectAll("path")
+                    .style("stroke", null)
+                    .style("stroke-width", null).style("fill-opacity", 0);               
+
+                //highlight only those regions that match regionChart.filters()
+                for (var j = 0; j < regionChart.filters().length; j++) {
+
+                    regionGroup.all().forEach(function (d, i) {                    
+                        if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key == regionChart.filters()[j]) {
+                            pathid = regionGroup.all()[i].key;
+                            console.log("active region: ", pathid)
+                            console.log("clickDC: ", clickDC)
+                            d3.select("#"+pathid.substring(0, 4))
+                              .style("fill", "brown").style("fill-opacity", 0.7)
+                              .style("stroke", "gray").style("stroke-width", "1px");
+                              //.style("stroke", "brown").style("stroke-width", "2px");
+                        }
+                        
+                        // if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key != regionChart.filters()[j]) {
+                        //     console.log("to gray out: ", regionGroup.all()[i].key)
+                        //     d3.select("#"+regionGroup.all()[i].key.substring(0, 4))
+                        //           .style("fill", "gray").style("fill-opacity", 0.5)
+                        //           .style("stroke", "gray").style("stroke-width", "1px");  
+                        // }
+                     
+                    }); //end regionGroup.all forEach loop
+                } //end regionChart.filters for loop
+                console.log("active_dict at the end of part II: ", active_dict)
+            } //end regionChart.filters().length check
+
+        }
+
+        dc.renderAll();    
+
+        //Add axis labels
+        //http://stackoverflow.com/questions/21114336/how-to-add-axis-labels-for-row-chart-using-dc-js-or-d3-js
+        function AddXAxis(chartToUpdate, displayText) {
+            chartToUpdate.svg()
+                .append("text")
+                .attr("class", "x-axis-label")
+                .attr("text-anchor", "middle")
+                .attr("x", chartToUpdate.width() / 2)
+                .attr("y", chartToUpdate.height())
+                .text(displayText);
+        }
+        AddXAxis(indexChart, "# anomalies");
+        AddXAxis(datasetChart, "# anomalies");
+
+        //add x-axis label
+        yearChart.svg()
+            .append("text")
+            .attr("class", "x-axis-label")
+            .attr("text-anchor", "middle")
+            .attr("x", -90)
+            .attr("y", -1)
+            .attr("dy", ".75em")
+            .attr("transform", "rotate(-90)")
+            .text("# anomalies");
+
+        function print_filter(filter) {
+            var f = eval(filter);
+            if (typeof(f.length) != "undefined") {} else {}
+            if (typeof(f.top) != "undefined") {
+                f = f.top(Infinity);
+            } else {}
+            if (typeof(f.dimension) != "undefined") {
+                f = f.dimension(function(d) {
+                    return "";
+                }).top(Infinity);
+            } else {}
+            console.log(filter + "(" + f.length + ") = " + JSON.stringify(f).replace("[", "[\n\t").replace(/}\,/g, "},\n\t").replace("]", "\n]"));
+        }
+
+
+    }); //end d3 csv read file ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     //Use Leaflet to implement a D3 geographic projection.
     //Put outside the read file loops
@@ -308,14 +657,14 @@ function init() {
         return [point.x, point.y];
     }
     
-}
+// } //end init()
 
-function clearMap() {  
-    clearMapFlag = 1;
-    initCrossfilter(); //update dc charts with cleared region filter    
-}
+// function clearMap() {  
+//     clearMapFlag = 1;
+//     initCrossfilter(); //update dc charts with cleared region filter    
+// }
 
-function initCrossfilter() {
+//function initCrossfilter() {
 
     //FNS FOR CHECKBOXES
     function createFilter(filters) {
@@ -345,8 +694,8 @@ function initCrossfilter() {
         if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
     }
     
-    console.log('in initCrossfilter');
-    filter = crossfilter(points);
+    // console.log('in initCrossfilter');
+    // filter = crossfilter(points);
 
     //EVALUATE CHECKBOXES
     //Sigma value
@@ -377,409 +726,52 @@ function initCrossfilter() {
         checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
         
         dc.redrawAll();
-    });
-
-    //DEFINE CHARTS
-    indexChart = dc.rowChart("#chart-indexType");
-    datasetChart = dc.rowChart("#chart-dataset");
-    yearChart = dc.barChart("#chart-eventYear");
-    regionChart = dc.rowChart("#chart-region");
-
-    // set crossfilter
-    var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),
-        regionDimension = filter.dimension(function(p, i) { return p.Region; }),
-        indexDimension = filter.dimension(function(p) { return p.Index; }),
-        datasetDimension = filter.dimension(function(d) { return d.Data; }),
-        //regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
-        tags = filter.dimension(function (d) { return d.Sigma; }),
-        scenario = filter.dimension(function (d) { return d.Scenario; }),
-        filter_list = [];
-  
-    //global
-    idDimension = filter.dimension(function(p, i) { return i; });
-    idGroup = idDimension.group(function(id) { return id; });
-    regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
-    yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; });
-    indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; });
-    datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
-
-    console.log("regionGroup.all() after defn: ", regionGroup.all())
-
-
-    //yearGroup = yearDimension.group(); //counts number of years regardless of whether d.value is empty
-    
-    //print_filter("yearGroup");
-    
-    minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
-    maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
-
-    indexChart
-        .width(200) //svg width
-        .height(200) //svg height
-        .margins({
-            top: 10,
-            right: 10,
-            bottom: 30,
-            left: 10
-        }) // Default margins: {top: 10, right: 50, bottom: 30, left: 30}
-        .dimension(indexDimension)
-        .group(indexGroup)
-        .on("preRedraw", update0)
-        .colors(d3.scale.category20())
-        .elasticX(true)
-        .gap(0)
-        .on("filtered", function() {            
-            console.log("indexChart.filter() in indexChart itself: ", indexChart.filter())
-            console.log("regionGroup.all() in indexChart itself: ", regionGroup.all())
-            highlightRegion(indexChart.filters, indexGroup);
-        });    
-
-    xAxis_indexChart = indexChart.xAxis().ticks(4);
-
-    yearChart
-        .width(200)
-        .height(200)
-        .margins({
-            top: 10,
-            right: 30,
-            bottom: 30,
-            left: 40
-        })
-        .centerBar(true) //ensure that the bar for the bar graph is centred on the ticks on the x axis
-        .elasticY(true)
-        .dimension(yearDimension)
-        .group(yearGroup)
-        .on("preRedraw", update0)
-        .colors(d3.scale.category20c())
-        //.elasticX(true)
-        .renderHorizontalGridLines(true)
-        //.round(Math.round)
-        .xUnits(function(){return 20;})
-        //.gap(2)  
-        //.xUnits(dc.units.integers)
-        .x(d3.scale.linear().domain([minYear, maxYear]))
-        .on("filtered", function() {
-            highlightRegion(yearChart.filters, yearGroup);
-        })
-        .xAxis().ticks(3).tickFormat(d3.format("d"));
-
-    var yAxis_yearChart = yearChart.yAxis().ticks(6);
-
-    datasetChart
-        .width(200) //svg width
-        .height(80) //svg height
-        .margins({
-            top: 10,
-            right: 10,
-            bottom: 30,
-            left: 5
-        })
-        .dimension(datasetDimension)
-        .group(datasetGroup)
-        .on("preRedraw", update0)
-        .colors(d3.scale.category20())
-        .elasticX(true)
-        .gap(0)
-        .on("filtered", function() {
-            highlightRegion(datasetChart.filters, datasetGroup);
-        });
-
-    xAxis_datasetChart = datasetChart.xAxis().ticks(4);
-
-    //dc dataTable
-    dataTable = dc.dataTable("#dc-table-graph");
-    // Create datatable dimension
-    var timeDimension = filter.dimension(function (d) {
-        return d.Year;
-    });
-    
-    dataTable.width(1060).height(1000)
-        .dimension(timeDimension)
-        .group(function(d) { return ""})
-        .size(points.length) //display all data
-        .columns([
-            function(d) { return d.Year; },
-            function(d) { return d.Region; },
-            function(d) { return d.Type; },
-            function(d) { return d.Season; },
-            function(d) { return d.Index; },
-            function(d) { return d.Data; },
-            function(d) { return d.Sigma; },
-            function(d) { return d.Scenario; },
-            function(d) { return d.Value; }            
-          //function(d) { return '<a href=\"http://maps.google.com/maps?z=12&t=m&q=loc:' + d.lat + '+' + d.long +"\" target=\"_blank\">Google Map</a>"},
-          //function(d) { return '<a href=\"http://www.openstreetmap.org/?mlat=' + d.lat + '&mlon=' + d.long +'&zoom=12'+ "\" target=\"_blank\"> OSM Map</a>"}
-        ])
-        .sortBy(function(d){ return d.Year; })
-        .order(d3.ascending);
-
-    regionChart
-        .width(350).height(500)
-        .dimension(regionDimension)
-        .group(regionGroup)
-        .elasticX(true)
-        .on("filtered", updateSelectors);    
+    }); 
 
      
-    function updateSelectors() { //executed when map is clicked
-        //console.log("regionGroup.all(): ", regionGroup.all());
-        console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());    
-        //console.log("regionGroup.all() in updateSelectors: ", regionGroup.all())    
-    }
     
-    if (clearMapFlag ==1) {        
+    
+    // if (clearMapFlag ==1) {        
            
-        regionToPassToDC_array = [];
-        if (clickDC == true) { //reset only those regions that belong in chart click subset            
-            for (var i = 0; i < active_dict.length; i++) {
-                if (active_dict[i].value != activeDictDefault) {
-                    active_dict[i].value = 1;
-                    d3.select("#"+active_dict[i].key.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");
-                    regionToPassToDC_array.push(active_dict[i].key);
-                }            
-            }
+    //     regionToPassToDC_array = [];
+    //     if (clickDC == true) { //reset only those regions that belong in chart click subset            
+    //         for (var i = 0; i < active_dict.length; i++) {
+    //             if (active_dict[i].value != activeDictDefault) {
+    //                 active_dict[i].value = 1;
+    //                 d3.select("#"+active_dict[i].key.substring(0, 4))
+    //                   .style("fill", "brown").style("fill-opacity", 0.7)
+    //                   .style("stroke", "gray").style("stroke-width", "1px");
+    //                 regionToPassToDC_array.push(active_dict[i].key);
+    //             }            
+    //         }
 
-            //update regionChart filter NOT WORKING!!!
-            console.log("regionToPassToDC_array in clearMap: ", regionToPassToDC_array)
-            regionToPassToDC_array.forEach(function (p, k) {
-                regionChart.filter(regionToPassToDC_array[k]);
-                console.log("passing to regionChart.filter")
-            })
+    //         //update regionChart filter NOT WORKING!!!
+    //         console.log("regionToPassToDC_array in clearMap: ", regionToPassToDC_array)
+    //         regionToPassToDC_array.forEach(function (p, k) {
+    //             regionChart.filter(regionToPassToDC_array[k]);
+    //             console.log("passing to regionChart.filter")
+    //         })
 
-        } else { //reset all regions      
-            d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                  .style("stroke", "gray").style("stroke-width", "1px");          
-        }
+    //     } else { //reset all regions      
+    //         d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+    //               .style("stroke", "gray").style("stroke-width", "1px");          
+    //     }
 
-        console.log("active_dict in clearMap: ", active_dict);
+    //     console.log("active_dict in clearMap: ", active_dict);
        
-        //reset to default values
-        clearMapFlag = 0;
-        regionToPassToDC = null;        
+    //     //reset to default values
+    //     clearMapFlag = 0;
+    //     regionToPassToDC = null;        
         
   
-    } else {
-        updateRegionChart();
-    }
+    // } else {
+    //     updateRegionChart();
+    // }
 
-    //Called when map is clicked
-    function updateRegionChart() {
-        console.log("IN updateRegionChart fn!!")
-        console.log("regionChart.filters(): ", regionChart.filters())
+   
 
-        if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
-            if (regionToPassToDC) {                
-               
-                if (clickDC == true) {                   
-                    //Pass only active regions to regionChart.filter
-                    regionToPassToDC_array = [];
-                    for (var i = 0; i < active_dict.length; i++) {
-                        if (active_dict[i].value == toggleONRegionChartClicked || active_dict[i].value == 1) {                        
-                            console.log("regionToPassToDC_array to be spliced: ", regionToPassToDC_array)
-                            if (regionToPassToDC_array.indexOf(active_dict[i].key) == -1) {
-                                regionToPassToDC_array.push(active_dict[i].key);
-                            }
-                        }
-                    }
-                    
-                    regionToPassToDC_array.forEach(function (p, k) {
-                        regionChart.filter(regionToPassToDC_array[k]);
-                    })
-
-                    countThreshold = toggleOFFRegionChartClicked;                   
-                    countSelection = 0;
-                    for (var j = 0; j < active_dict.length; j++) {
-                        if (active_dict[j].value != activeDictDefault) countSelection++;
-                    }
-
-                    count_active=0;
-                    for (var j = 0; j < active_dict.length; j++) { 
-                        if (active_dict[j].value == countThreshold) {
-                            count_active++;
-                            d3.select("#"+active_dict[j].key.substring(0, 4))
-                              .style("fill", "gray").style("fill-opacity", 0.5)
-                              .style("stroke", "gray").style("stroke-width", "1px");                                               
-                        } else if (active_dict[j].value == toggleONRegionChartClicked) {
-                            d3.select("#"+active_dict[j].key.substring(0, 4))
-                              .style("fill", "brown").style("fill-opacity", 0.7)
-                              .style("stroke", "gray").style("stroke-width", "1px");
-                        }             
-                    }
-
-                } else {
-                    regionToPassToDC_array.forEach(function (p, k) {
-                        regionChart.filter(regionToPassToDC_array[k]);
-                    })
-
-                    countThreshold = grayThreshold;
-                    countSelection = active_dict.length;
-
-                    count_active=0;
-                    for (var j = 0; j < active_dict.length; j++) { 
-                        if (active_dict[j].value == countThreshold || active_dict[j].value == activeDictDefault) {
-                            count_active++;
-                            d3.select("#"+active_dict[j].key.substring(0, 4))
-                              .style("fill", "gray").style("fill-opacity", 0.5)
-                              .style("stroke", "gray").style("stroke-width", "1px");                                               
-                        } else if (active_dict[j].value == toggleONRegionChartClicked) {
-                            d3.select("#"+active_dict[j].key.substring(0, 4))
-                              .style("fill", "brown").style("fill-opacity", 0.7)
-                              .style("stroke", "gray").style("stroke-width", "1px");
-                        }             
-                    }
-                }
-         
-
-                if (count_active == countSelection) {
-                    //last selected region has been clicked again
-                    //restore map to default
-                    if (clickDC == true) {
-                        console.log("regionToPassToDC_array in count_active: ", regionToPassToDC_array)
-                        console.log("subregions: ", subregions)
-                        regionChart.filterAll(); //clear
-                        for (var j = 0; j < subregions.length; j++) {
-                            d3.select("#"+subregions[j].substring(0, 4)).style("fill", "brown")
-                              .style("fill-opacity", 0.7)
-                              .style("stroke", "gray").style("stroke-width", "1px");
-                              active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
-                              //pass only active regions to chart
-                              regionChart.filter(subregions[j]);
-                              clearMap();
-                        }
-                        regionToPassToDC_array = subregions;                     
-                    } else {
-                        d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "gray").style("stroke-width", "1px");
-                    }
-                } else {
-                    
-                }
-            }
-        } //end regionChart.filters().length check
-    }
- 
-    //Called when any dc chart is clicked
-    function highlightRegion(chartFilter, chartGroup) {
-        console.log("in highlightRegion fn!!")
-        subregions = regionToPassToDC_array;
-        console.log("set subregions: ", subregions)
-
-
-        //if no filters are selected, highlight no map regions
-        if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
-            console.log("IN highlightRegion fn PART I!!****************")
-            countRegionGroup = 0;
-
-            regionGroup.all().forEach(function (d, i) {
-                if (regionGroup.all()[i].value > 0) {
-                    pick = legend.indexOf(regionGroup.all()[i].key);
-                    //console.log("pick: ", pick);
-
-                    //set corresponding regions in active_dict to 1
-                    active_dict[pick].value = 1;
-
-                    regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
-                    countRegionGroup++
-
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");                    
-                } else { //unselect any regions that may have been previously selected
-                    active_dict[i].value = activeDictDefault;
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);
-                }
-            });    
-                    
-        } else { //map has at least one highlighted region
-            console.log("IN highlightRegion fn PART II!!")
-            //console.log("regionGroup.all(): ", regionGroup.all())        
-            
-            //first clear all regions               
-            d3.selectAll("path")
-                .style("stroke", null)
-                .style("stroke-width", null).style("fill-opacity", 0);               
-
-            //highlight only those regions that match regionChart.filters()
-            for (var j = 0; j < regionChart.filters().length; j++) {
-
-                regionGroup.all().forEach(function (d, i) {                    
-                    if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key == regionChart.filters()[j]) {
-                        pathid = regionGroup.all()[i].key;
-                        console.log("active region: ", pathid)
-                        console.log("clickDC: ", clickDC)
-                        d3.select("#"+pathid.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "gray").style("stroke-width", "1px");
-                          //.style("stroke", "brown").style("stroke-width", "2px");
-                    }
-                    
-                    // if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key != regionChart.filters()[j]) {
-                    //     console.log("to gray out: ", regionGroup.all()[i].key)
-                    //     d3.select("#"+regionGroup.all()[i].key.substring(0, 4))
-                    //           .style("fill", "gray").style("fill-opacity", 0.5)
-                    //           .style("stroke", "gray").style("stroke-width", "1px");  
-                    // }
-                 
-                }); //end regionGroup.all forEach loop
-            } //end regionChart.filters for loop
-            console.log("active_dict at the end of part II: ", active_dict)
-        } //end regionChart.filters().length check
-
-    }
-
-    d3.selectAll("#total").text(filter.size()); // total number of events
-    d3.select("#active").text(filter.groupAll().value()); //total number selected
-
-    
-
-    dc.renderAll();    
-
-    //Add axis labels
-    //http://stackoverflow.com/questions/21114336/how-to-add-axis-labels-for-row-chart-using-dc-js-or-d3-js
-    function AddXAxis(chartToUpdate, displayText) {
-        chartToUpdate.svg()
-            .append("text")
-            .attr("class", "x-axis-label")
-            .attr("text-anchor", "middle")
-            .attr("x", chartToUpdate.width() / 2)
-            .attr("y", chartToUpdate.height())
-            .text(displayText);
-    }
-    AddXAxis(indexChart, "# anomalies");
-    AddXAxis(datasetChart, "# anomalies");
-
-    //add x-axis label
-    yearChart.svg()
-        .append("text")
-        .attr("class", "x-axis-label")
-        .attr("text-anchor", "middle")
-        .attr("x", -90)
-        .attr("y", -1)
-        .attr("dy", ".75em")
-        .attr("transform", "rotate(-90)")
-        .text("# anomalies");
-
-    function print_filter(filter) {
-        var f = eval(filter);
-        if (typeof(f.length) != "undefined") {} else {}
-        if (typeof(f.top) != "undefined") {
-            f = f.top(Infinity);
-        } else {}
-        if (typeof(f.dimension) != "undefined") {
-            f = f.dimension(function(d) {
-                return "";
-            }).top(Infinity);
-        } else {}
-        console.log(filter + "(" + f.length + ") = " + JSON.stringify(f).replace("[", "[\n\t").replace(/}\,/g, "},\n\t").replace("]", "\n]"));
-    }
-
-}
+//} //end initCrossfilter()
+} //end init()
 
 
 // set visibility of markers based on crossfilter
