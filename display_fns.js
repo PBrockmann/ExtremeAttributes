@@ -252,6 +252,7 @@ function init() {
                     .on("mouseover", tip.show)
                     .on("mouseout", tip.hide)
                     .on("click", function(d) {
+                        console.log("clicked! ", d.properties.name)
                             
                         if (clickDC == false) { //can click on map as many times as you want
                             
@@ -440,95 +441,100 @@ function init() {
             console.log("IN updateRegionChart fn!!")
             console.log("regionChart.filters(): ", regionChart.filters())
 
-            if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
-                if (regionToPassToDC) {                
+            // if (regionChart.filters().length == 0) { //if 0, clicked region not yet passed to region chart
+            //     if (regionToPassToDC) {                
                    
-                    if (clickDC == true) {                   
-                        //Pass only active regions to regionChart.filter
-                        regionToPassToDC_array = [];
-                        for (var i = 0; i < active_dict.length; i++) {
-                            if (active_dict[i].value == toggleONRegionChartClicked || active_dict[i].value == 1) {                        
-                                console.log("regionToPassToDC_array to be spliced: ", regionToPassToDC_array)
-                                if (regionToPassToDC_array.indexOf(active_dict[i].key) == -1) {
-                                    regionToPassToDC_array.push(active_dict[i].key);
-                                }
-                            }
-                        }
+            //         // if (clickDC == true) {                   
+            //         //     //Pass only active regions to regionChart.filter
+            //         //     regionToPassToDC_array = [];
+            //         //     for (var i = 0; i < active_dict.length; i++) {
+            //         //         if (active_dict[i].value == toggleONRegionChartClicked || active_dict[i].value == 1) {                        
+            //         //             console.log("regionToPassToDC_array to be spliced: ", regionToPassToDC_array)
+            //         //             if (regionToPassToDC_array.indexOf(active_dict[i].key) == -1) {
+            //         //                 regionToPassToDC_array.push(active_dict[i].key);
+            //         //             }
+            //         //         }
+            //         //     }
                         
-                        regionToPassToDC_array.forEach(function (p, k) {
-                            regionChart.filter(regionToPassToDC_array[k]);
-                        })
+            //         //     regionToPassToDC_array.forEach(function (p, k) {
+            //         //         regionChart.filter(regionToPassToDC_array[k]);
+            //         //     })
 
-                        countThreshold = toggleOFFRegionChartClicked;                   
-                        countSelection = 0;
-                        for (var j = 0; j < active_dict.length; j++) {
-                            if (active_dict[j].value != activeDictDefault) countSelection++;
-                        }
+            //         //     countThreshold = toggleOFFRegionChartClicked;                   
+            //         //     countSelection = 0;
+            //         //     for (var j = 0; j < active_dict.length; j++) {
+            //         //         if (active_dict[j].value != activeDictDefault) countSelection++;
+            //         //     }
 
-                        count_active=0;
-                        for (var j = 0; j < active_dict.length; j++) { 
-                            if (active_dict[j].value == countThreshold) {
-                                count_active++;
-                                d3.select("#"+active_dict[j].key.substring(0, 4))
-                                  .style("fill", "gray").style("fill-opacity", 0.5)
-                                  .style("stroke", "gray").style("stroke-width", "1px");                                               
-                            } else if (active_dict[j].value == toggleONRegionChartClicked) {
-                                d3.select("#"+active_dict[j].key.substring(0, 4))
-                                  .style("fill", "brown").style("fill-opacity", 0.7)
-                                  .style("stroke", "gray").style("stroke-width", "1px");
-                            }             
-                        }
+            //         //     count_active=0;
+            //         //     for (var j = 0; j < active_dict.length; j++) { 
+            //         //         if (active_dict[j].value == countThreshold) {
+            //         //             count_active++;
+            //         //             d3.select("#"+active_dict[j].key.substring(0, 4))
+            //         //               .style("fill", "gray").style("fill-opacity", 0.5)
+            //         //               .style("stroke", "gray").style("stroke-width", "1px");                                               
+            //         //         } else if (active_dict[j].value == toggleONRegionChartClicked) {
+            //         //             d3.select("#"+active_dict[j].key.substring(0, 4))
+            //         //               .style("fill", "brown").style("fill-opacity", 0.7)
+            //         //               .style("stroke", "gray").style("stroke-width", "1px");
+            //         //         }             
+            //         //     }
 
-                    } else {
-                        regionToPassToDC_array.forEach(function (p, k) {
-                            regionChart.filter(regionToPassToDC_array[k]);
-                        })
-
-                        countThreshold = grayThreshold;
-                        countSelection = active_dict.length;
-
-                        count_active=0;
-                        for (var j = 0; j < active_dict.length; j++) { 
-                            if (active_dict[j].value == countThreshold || active_dict[j].value == activeDictDefault) {
-                                count_active++;
-                                d3.select("#"+active_dict[j].key.substring(0, 4))
-                                  .style("fill", "gray").style("fill-opacity", 0.5)
-                                  .style("stroke", "gray").style("stroke-width", "1px");                                               
-                            } else if (active_dict[j].value == toggleONRegionChartClicked) {
-                                d3.select("#"+active_dict[j].key.substring(0, 4))
-                                  .style("fill", "brown").style("fill-opacity", 0.7)
-                                  .style("stroke", "gray").style("stroke-width", "1px");
-                            }             
-                        }
-                    }
-             
-
-                    if (count_active == countSelection) {
-                        //last selected region has been clicked again
-                        //restore map to default
-                        if (clickDC == true) {
-                            console.log("regionToPassToDC_array in count_active: ", regionToPassToDC_array)
-                            console.log("subregions: ", subregions)
-                            regionChart.filterAll(); //clear
-                            for (var j = 0; j < subregions.length; j++) {
-                                d3.select("#"+subregions[j].substring(0, 4)).style("fill", "brown")
-                                  .style("fill-opacity", 0.7)
-                                  .style("stroke", "gray").style("stroke-width", "1px");
-                                  active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
-                                  //pass only active regions to chart
-                                  regionChart.filter(subregions[j]);
-                                  clearMap();
-                            }
-                            regionToPassToDC_array = subregions;                     
-                        } else {
-                            d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                              .style("stroke", "gray").style("stroke-width", "1px");
-                        }
-                    } else {
+            //         // } 
+            //         if (count_active == countSelection) {
+            //             //last selected region has been clicked again
+            //             //restore map to default
+            //             if (clickDC == true) {
+            //                 console.log("regionToPassToDC_array in count_active: ", regionToPassToDC_array)
+            //                 console.log("subregions: ", subregions)
+            //                 regionChart.filterAll(); //clear
+            //                 for (var j = 0; j < subregions.length; j++) {
+            //                     d3.select("#"+subregions[j].substring(0, 4)).style("fill", "brown")
+            //                       .style("fill-opacity", 0.7)
+            //                       .style("stroke", "gray").style("stroke-width", "1px");
+            //                       active_dict[legend.indexOf(subregions[j])].value = toggleONRegionChartClicked;
+            //                       //pass only active regions to chart
+            //                       regionChart.filter(subregions[j]);
+            //                       clearMap();
+            //                 }
+            //                 regionToPassToDC_array = subregions;                     
+            //             } 
+            //         } else {
                         
+            //         }
+            //     }
+            // } else {
+                console.log("going to pass array to regionChart!")
+                regionToPassToDC_array.forEach(function (p, k) {
+                    regionChart.filter(regionToPassToDC_array[k]);
+                })                
+
+                for (var j = 0; j < active_dict.length; j++) { 
+                    if (active_dict[j].value == activeDictDefault) {
+                        d3.select("#"+active_dict[j].key.substring(0, 4))
+                          .style("fill", "gray").style("fill-opacity", 0.5)
+                          .style("stroke", "gray").style("stroke-width", "1px");                                               
+                    } else if (active_dict[j].value == 1) {
+                        d3.select("#"+active_dict[j].key.substring(0, 4))
+                          .style("fill", "brown").style("fill-opacity", 0.7)
+                          .style("stroke", "gray").style("stroke-width", "1px");
+                    }             
+                }
+
+                //reset active_dict if all regions have been clicked
+                if (regionToPassToDC_array.length == active_dict.length) {//all regions have been clicked
+                    for (var j = 0; j < active_dict.length; j++) {
+                        active_dict[j].value = activeDictDefault;
                     }
                 }
-            } //end regionChart.filters().length check
+
+            //} //end regionChart.filters().length check
+
+
+
+            d3.selectAll("#total").text(filter.size()); // total number of events
+            d3.select("#active").text(filter.groupAll().value()); //total number selected 
+            
         }
      
         //Called when any dc chart is clicked
