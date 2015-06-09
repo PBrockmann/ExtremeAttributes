@@ -275,6 +275,8 @@ function init() {
                                 }
 
                                 //initCrossfilter(); //send regionToPassToDC to dc region filter
+                                regionDimension = filter.dimension(function(p, i) { return p.Region; });
+                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });                               
                                 updateRegionChart()
                             
                         } else { //clickDC is true
@@ -320,6 +322,10 @@ function init() {
 
 
                                 //initCrossfilter();
+                                regionDimension = filter.dimension(function(p, i) { return p.Region; });
+                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+                               
+
                                 highlightRegion();
                             } //end matchFlag check
 
@@ -551,10 +557,12 @@ function init() {
                     idx = legend.indexOf(regionGroup.all()[j].key);
                     subregion_idx.push(idx);
                     //active_dict[idx].value = 1; //toggleONRegionChartClicked;
+                    console.log("active_dict[idx].value: ", active_dict[idx].key, active_dict[idx].value)
                     if (active_dict[idx].value == activeDictDefault) active_dict[idx].value = 1;
 
 
                     if (active_dict[idx].value == 1 || active_dict[idx].value == toggleONRegionChartClicked) {
+                        console.log("in here: ", active_dict[idx].value)
                         d3.select("#"+active_dict[idx].key.substring(0, 4))
                           .style("fill", "brown").style("fill-opacity", 0.7)
                           .style("stroke", "gray").style("stroke-width", "1px");                    
@@ -566,6 +574,7 @@ function init() {
                         
                     }
                 } else { //null out other regions
+                    active_dict[legend.indexOf(regionGroup.all()[j].key)].value = activeDictDefault;
                     d3.select("#"+active_dict[j].key.substring(0, 4))
                       .style("stroke", null)
                       .style("stroke-width", null).style("fill-opacity", 0);                    
