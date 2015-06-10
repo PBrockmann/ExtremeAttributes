@@ -61,6 +61,65 @@ function init() {
         console.log('in initCrossfilter');
         filter = crossfilter(points);
 
+        //FNS FOR CHECKBOXES
+        function createFilter(filters) {
+            return function (d) {
+                //when both checkboxes are cicked, return true if data point        
+                //contains either checkbox value    
+                for (var i = 0, len = filters.length; i < len; i++) {                        
+                    if (filters[i] == d) return true;                    
+                    //if ($.inArray(filters[i], d) == -1) return false;
+                }
+            }
+        }
+
+        function toggleArrayItem(flist, val) {
+            //Stores value of check boxes clicked in array "flist"
+            var i = flist.indexOf(val);
+            if (i === -1) flist.push(val);
+            else flist.splice(i, 1);
+        }
+
+        function checkboxEval(flist, opt1, opt2, fdim) {
+            noBoxChecked = false;
+            if (flist.indexOf(opt1) == -1 && flist.indexOf(opt2) == -1) noBoxChecked = true;
+
+            fdim.filterAll();
+            console.log("flist: ", flist)
+            if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
+        }
+
+        //EVALUATE CHECKBOXES
+        //Sigma value
+        $("#tag1").click(function () {
+            toggleArrayItem(filter_list, "1"); //Sigma col value == 1
+            checkboxEval(filter_list, "1", "2", tags); //both box values
+            
+            dc.redrawAll();
+        });
+
+        $("#tag2").click(function () {
+            toggleArrayItem(filter_list, "2"); //Sigma col value == 2
+            checkboxEval(filter_list, "1", "2", tags); //both box values
+            
+            dc.redrawAll();
+        });
+
+        //Scenario
+        $("#RCP45").click(function () {
+            toggleArrayItem(filter_list, "4.5"); //Scenario col value == 4.5
+            checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+            
+            dc.redrawAll();
+        });
+
+        $("#RCP85").click(function () {
+            toggleArrayItem(filter_list, "8.5"); //Scenario col value == 8.5
+            checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+            
+            dc.redrawAll();
+        });
+
         //DEFINE CHARTS
         indexChart = dc.rowChart("#chart-indexType");
         datasetChart = dc.rowChart("#chart-dataset");
@@ -199,11 +258,21 @@ function init() {
         function updateSelectors() { //executed when map is clicked
             //console.log("regionGroup.all(): ", regionGroup.all());
             console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());    
-            //console.log("regionGroup.all() in updateSelectors: ", regionGroup.all())    
+            console.log("filter.groupAll().value() in updateSelectors: ", filter.groupAll().value())
+            d3.select("#active").text(filter.groupAll().value()); //total number selected
         }
 
         d3.selectAll("#total").text(filter.size()); // total number of events
-        d3.select("#active").text(filter.groupAll().value()); //total number selected    
+        d3.select("#active").text(filter.groupAll().value()); //total number selected
+        
+
+        // function updateDisplayedResults() {
+        //     console.log("in updateDisplayedResults:")
+        //      //display number of active rows in Table
+        //     //d3.select("#active").text(filter.groupAll().value());
+        //     d3.select("#active").text(function(d) { return filter.groupAll().value(); });
+        //     console.log("filter.groupAll().value(): ", filter.groupAll().value())            
+        // }
 
 
         //initCrossfilter();        
@@ -276,8 +345,10 @@ function init() {
 
                                 //initCrossfilter(); //send regionToPassToDC to dc region filter
                                 regionDimension = filter.dimension(function(p, i) { return p.Region; });
-                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });                               
-                                updateMap()
+                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+                                d3.select("#active").text(filter.groupAll().value());
+                                console.log("filter.groupAll().value() in .on(click): ", filter.groupAll().value())
+                                updateMap();
                             
                         } else { //clickDC is true
                             console.log("regionGroup.all() in on(click): ", regionGroup.all())
@@ -432,6 +503,9 @@ function init() {
         //Called when map is clicked and clickDC == false
         function updateMap() {
             console.log("IN updateMap fn!!")
+            d3.select("#active").text(filter.groupAll().value());
+
+
             console.log("regionChart.filters(): ", regionChart.filters())
                            
                 regionToPassToDC_array.forEach(function (p, k) {
@@ -457,8 +531,11 @@ function init() {
                     }
                 }
 
-            d3.selectAll("#total").text(filter.size()); // total number of events
-            d3.select("#active").text(filter.groupAll().value()); //total number selected 
+            // d3.selectAll("#total").text(filter.size()); // total number of events
+            // d3.select("#active").text(filter.groupAll().value()); //total number selected
+
+            //updateDisplayedResults();
+            //update1();
             
         }
      
@@ -593,64 +670,7 @@ function init() {
         return [point.x, point.y];
     }    
 
-    //FNS FOR CHECKBOXES
-    function createFilter(filters) {
-        return function (d) {
-            //when both checkboxes are cicked, return true if data point        
-            //contains either checkbox value    
-            for (var i = 0, len = filters.length; i < len; i++) {                        
-                if (filters[i] == d) return true;                    
-                //if ($.inArray(filters[i], d) == -1) return false;
-            }
-        }
-    }
 
-    function toggleArrayItem(flist, val) {
-        //Stores value of check boxes clicked in array "flist"
-        var i = flist.indexOf(val);
-        if (i === -1) flist.push(val);
-        else flist.splice(i, 1);
-    }
-
-    function checkboxEval(flist, opt1, opt2, fdim) {
-        noBoxChecked = false;
-        if (flist.indexOf(opt1) == -1 && flist.indexOf(opt2) == -1) noBoxChecked = true;
-
-        fdim.filterAll();
-        console.log("flist: ", flist)
-        if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
-    }
-
-    //EVALUATE CHECKBOXES
-    //Sigma value
-    $("#tag1").click(function () {
-        toggleArrayItem(filter_list, "1"); //Sigma col value == 1
-        checkboxEval(filter_list, "1", "2", tags); //both box values
-        
-        dc.redrawAll();
-    });
-
-    $("#tag2").click(function () {
-        toggleArrayItem(filter_list, "2"); //Sigma col value == 2
-        checkboxEval(filter_list, "1", "2", tags); //both box values
-        
-        dc.redrawAll();
-    });
-
-    //Scenario
-    $("#RCP45").click(function () {
-        toggleArrayItem(filter_list, "4.5"); //Scenario col value == 4.5
-        checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
-        
-        dc.redrawAll();
-    });
-
-    $("#RCP85").click(function () {
-        toggleArrayItem(filter_list, "8.5"); //Scenario col value == 8.5
-        checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
-        
-        dc.redrawAll();
-    }); 
 
      
     
