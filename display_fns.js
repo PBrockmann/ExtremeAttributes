@@ -534,50 +534,20 @@ function init() {
             console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
             console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
 
-            subregion_idx = []; countGray = 0;
+            subregion_idx = [];
             for (var j = 0; j < regionGroup.all().length; j++) {
                 if (regionGroup.all()[j].value != 0) { //region is in the dc chart set                    
                     idx = legend.indexOf(regionGroup.all()[j].key);
                     subregion_idx.push(idx);
-                    //active_dict[idx].value = 1; //toggleONRegionChartClicked;
-                    console.log("active_dict[idx].value: ", active_dict[idx].key, active_dict[idx].value)
-                    if (active_dict[idx].value == activeDictDefault) active_dict[idx].value = 1;
-
-
-                    if (active_dict[idx].value == 1 || active_dict[idx].value == toggleONRegionChartClicked) {
-                        console.log("in here: ", active_dict[idx].value)
-                        d3.select("#"+active_dict[idx].key.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "gray").style("stroke-width", "1px");                    
-                    } else if (active_dict[idx].value == 100) { //set grayThreshold = 100 in .on(click)
-                        countGray++;                        
-                        d3.select("#"+active_dict[j].key.substring(0, 4))
-                          .style("fill", "gray").style("fill-opacity", 0.5)
-                          .style("stroke", "gray").style("stroke-width", "1px");
-                        
-                    }
+                    active_dict[idx].value = 1; //toggleONRegionChartClicked;
+                    turnOn(active_dict[idx].key.substring(0, 4));                                    
                 } else { //null out other regions
                     active_dict[legend.indexOf(regionGroup.all()[j].key)].value = activeDictDefault;
-                    d3.select("#"+active_dict[j].key.substring(0, 4))
-                      .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);                    
+                    turnNull(active_dict[j].key.substring(0, 4));                                    
                 }
             }
+            //used in clickDCRegion to see if all regions in subset have been de-selected
             num_subregions = subregion_idx.length;
-            console.log("countGray: ", countGray)
-            console.log("num_subregions: ", num_subregions)
-            
-            //special case where all subregions have been selected and deselected. For the last region
-            //to be deselected, highlight them all again and restore active_dict.value to 1
-            if (countGray == num_subregions) { //restore all subregions to original state
-                for (var i = 0; i < subregion_idx.length; i++) {
-                    d3.select("#"+active_dict[subregion_idx[i]].key.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");
-                    active_dict[subregion_idx[i]].value = 1;  
-                }
-            }
-
         }
 
          //Called when map regions highlighted by a dc chart are clicked
@@ -585,11 +555,13 @@ function init() {
             console.log("in clickDCRegion! grayThreshold, regionToPassToDC: ", grayThreshold, regionToPassToDC);
 
             //toggle active_dict value on and off
+            countGray = 0;
             for (var j = 0; j < active_dict.length; j++) {                                    
                 if (active_dict[j].key == regionToPassToDC) {                                             
                     if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
                         active_dict[j].value = grayThreshold;
-                        turnGray(active_dict[j].key.substring(0, 4));                       
+                        turnGray(active_dict[j].key.substring(0, 4));
+                        countGray++;                   
                     } else if (active_dict[j].value == 1 || active_dict[j].value == toggleOFFRegionChartClicked) {                                                
                         active_dict[j].value = toggleONRegionChartClicked;
                         turnOn(active_dict[j].key.substring(0, 4));                                                              
@@ -597,8 +569,20 @@ function init() {
                 } else if (active_dict[j].key != regionToPassToDC) {                                                        
                     if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
                         active_dict[j].value = grayThreshold;
-                        turnGray(active_dict[j].key.substring(0, 4));                                            
+                        turnGray(active_dict[j].key.substring(0, 4));
+                        countGray++; 
                     }
+                }
+            }
+
+            console.log("countGray: ", countGray)
+
+            //special case where all subregions have been selected and deselected. For the last region
+            //to be deselected, highlight them all again and restore active_dict.value to 1
+            if (countGray == num_subregions) { //restore all subregions to original state
+                for (var i = 0; i < subregion_idx.length; i++) {
+                    turnOn(active_dict[subregion_idx[i]].key.substring(0, 4));                    
+                    active_dict[subregion_idx[i]].value = 1;  
                 }
             }
 
@@ -614,6 +598,12 @@ function init() {
             d3.select("#"+pathid)
               .style("fill", "brown").style("fill-opacity", 0.7)
               .style("stroke", "gray").style("stroke-width", "1px");
+        }
+
+        function turnNull(pathid) {
+            d3.select("#"+pathid)
+              .style("stroke", null)
+              .style("stroke-width", null).style("fill-opacity", 0);
         }
 
         dc.renderAll();    
