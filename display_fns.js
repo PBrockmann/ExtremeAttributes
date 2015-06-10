@@ -347,9 +347,8 @@ function init() {
                             }
 
                             //initCrossfilter(); //send regionToPassToDC to dc region filter
-                            regionDimension = filter.dimension(function(p, i) { return p.Region; });
-                            regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
                             d3.select("#active").text(filter.groupAll().value());
+                            
                             console.log("filter.groupAll().value() in .on(click): ", filter.groupAll().value())
                             updateMap();
                             
@@ -377,9 +376,7 @@ function init() {
                                 console.log("regionToPassToDC_array in on.click: ", regionToPassToDC_array)
                                 if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC);                         
 
-                                //initCrossfilter();
-                                regionDimension = filter.dimension(function(p, i) { return p.Region; });
-                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+                                //initCrossfilter();       
                                
 
                                 //highlightRegion(); //USED TO CALL THIS BUT NOW CALL SEPARATE FN
@@ -391,9 +388,7 @@ function init() {
 
                 //by default, all map regions are highlighted
                 g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                  .style("stroke", "gray").style("stroke-width", "1px");
-
-                
+                  .style("stroke", "gray").style("stroke-width", "1px");        
 
                 //Update popup window based on selections in dc chart filters
                 //NB: use select("path") NOT selectAll("path") as above
@@ -528,7 +523,7 @@ function init() {
             if (regionToPassToDC_array.length == active_dict.length || 
                     regionToPassToDC_array.length == 0) {//all regions have been clicked
                 regionToPassToDC_array = [];
-                regionChart.filterAll();
+                regionChart.filterAll();                
                 for (var j = 0; j < active_dict.length; j++) { active_dict[j].value = activeDictDefault; }
                 //turn all regions ON
                 g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
