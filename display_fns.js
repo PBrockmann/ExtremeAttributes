@@ -301,32 +301,15 @@ function init() {
                                 //clear array only if map has NOT been clicked
                                 if (regionChart.filters().length==0) regionToPassToDC_array = [];
                                 console.log("regionToPassToDC_array in on.click: ", regionToPassToDC_array)
-                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC); 
-
-                                //toggle active_dict value on and off
-                                for (var j = 0; j < active_dict.length; j++) {                                    
-                                        if (active_dict[j].key == regionToPassToDC) {                                             
-                                            if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
-                                                active_dict[j].value = grayThreshold;
-                                                console.log("toggled OFF")
-                                            } else if (active_dict[j].value == 1 || active_dict[j].value == toggleOFFRegionChartClicked) {                                                
-                                                active_dict[j].value = toggleONRegionChartClicked;
-                                                console.log("toggled ON")                                                
-                                            } //toggle region ON
-                                        } else if (active_dict[j].key != regionToPassToDC) {                                            
-                                            if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
-                                                active_dict[j].value = grayThreshold;                                                
-                                            }
-                                        }
-                                }
-
+                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC);                         
 
                                 //initCrossfilter();
                                 regionDimension = filter.dimension(function(p, i) { return p.Region; });
                                 regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
                                
 
-                                highlightRegion();
+                                //highlightRegion(); //USED TO CALL THIS BUT NOW CALL SEPARATE FN
+                                clickDCRegion();
                             } //end matchFlag check
 
                         } //end clickDC else condition
@@ -549,7 +532,7 @@ function init() {
         function highlightRegion(chartFilter, chartGroup) {
             console.log("in highlightRegion fn!!")
             console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
-            console.log("regionGroup.all(): ", regionGroup.all())
+            console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
 
             subregion_idx = []; countGray = 0;
             for (var j = 0; j < regionGroup.all().length; j++) {
@@ -595,6 +578,42 @@ function init() {
                 }
             }
 
+        }
+
+         //Called when map regions highlighted by a dc chart are clicked
+        function clickDCRegion() {
+            console.log("in clickDCRegion! grayThreshold, regionToPassToDC: ", grayThreshold, regionToPassToDC);
+
+            //toggle active_dict value on and off
+            for (var j = 0; j < active_dict.length; j++) {                                    
+                if (active_dict[j].key == regionToPassToDC) {                                             
+                    if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
+                        active_dict[j].value = grayThreshold;
+                        turnGray(active_dict[j].key.substring(0, 4));                       
+                    } else if (active_dict[j].value == 1 || active_dict[j].value == toggleOFFRegionChartClicked) {                                                
+                        active_dict[j].value = toggleONRegionChartClicked;
+                        turnOn(active_dict[j].key.substring(0, 4));                                                              
+                    }
+                } else if (active_dict[j].key != regionToPassToDC) {                                                        
+                    if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
+                        active_dict[j].value = grayThreshold;
+                        turnGray(active_dict[j].key.substring(0, 4));                                            
+                    }
+                }
+            }
+
+        }
+
+        function turnGray(pathid) {
+            d3.select("#"+pathid)
+              .style("fill", "gray").style("fill-opacity", 0.5)
+              .style("stroke", "gray").style("stroke-width", "1px"); 
+        }
+
+        function turnOn(pathid) {
+            d3.select("#"+pathid)
+              .style("fill", "brown").style("fill-opacity", 0.7)
+              .style("stroke", "gray").style("stroke-width", "1px");
         }
 
         dc.renderAll();    
