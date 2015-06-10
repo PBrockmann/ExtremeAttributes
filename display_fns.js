@@ -277,7 +277,7 @@ function init() {
                                 //initCrossfilter(); //send regionToPassToDC to dc region filter
                                 regionDimension = filter.dimension(function(p, i) { return p.Region; });
                                 regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });                               
-                                updateRegionChart()
+                                updateMap()
                             
                         } else { //clickDC is true
                             console.log("regionGroup.all() in on(click): ", regionGroup.all())
@@ -430,8 +430,8 @@ function init() {
         }); //end d3 topojson
 
         //Called when map is clicked and clickDC == false
-        function updateRegionChart() {
-            console.log("IN updateRegionChart fn!!")
+        function updateMap() {
+            console.log("IN updateMap fn!!")
             console.log("regionChart.filters(): ", regionChart.filters())
                            
                 regionToPassToDC_array.forEach(function (p, k) {
@@ -591,16 +591,7 @@ function init() {
         //console.log(x[1], x[0]);
         //console.log("point.x, point.y: ", point.x, point.y);
         return [point.x, point.y];
-    }
-    
-// } //end init()
-
-// function clearMap() {  
-//     clearMapFlag = 1;
-//     initCrossfilter(); //update dc charts with cleared region filter    
-// }
-
-//function initCrossfilter() {
+    }    
 
     //FNS FOR CHECKBOXES
     function createFilter(filters) {
@@ -629,9 +620,6 @@ function init() {
         console.log("flist: ", flist)
         if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
     }
-    
-    // console.log('in initCrossfilter');
-    // filter = crossfilter(points);
 
     //EVALUATE CHECKBOXES
     //Sigma value
@@ -701,7 +689,7 @@ function init() {
         
   
     // } else {
-    //     updateRegionChart();
+    //     updateMap();
     // }
 
    
