@@ -256,10 +256,10 @@ function init() {
             .on("filtered", updateSelectors);
 
         function updateSelectors() { //executed when map is clicked
-            //console.log("regionGroup.all(): ", regionGroup.all());
+            // //console.log("regionGroup.all(): ", regionGroup.all());
             console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());    
-            console.log("filter.groupAll().value() in updateSelectors: ", filter.groupAll().value())
-            d3.select("#active").text(filter.groupAll().value()); //total number selected
+            // console.log("filter.groupAll().value() in updateSelectors: ", filter.groupAll().value())
+            // //d3.select("#active").text(filter.groupAll().value()); //total number selected
         }
 
         d3.selectAll("#total").text(filter.size()); // total number of events
@@ -324,31 +324,33 @@ function init() {
                         console.log("clicked! ", d.properties.name)
                             
                         if (clickDC == false) { //can click on map as many times as you want
+
+                            regionChart.filterAll();
                             
-                                regionToPassToDC = null;
-                                regionToPassToDC = d.properties.name;                                            
+                            regionToPassToDC = null;
+                            regionToPassToDC = d.properties.name;                                            
                                 
-                                idx = legend.indexOf(regionToPassToDC);
+                            idx = legend.indexOf(regionToPassToDC);
 
-                                //toggle active_dict value on and off
-                                if (active_dict[idx].value ==1 ) {
-                                    active_dict[idx].value = activeDictDefault; //0; //turn off activated region                              
+                            //toggle active_dict value on and off
+                            if (active_dict[idx].value ==1 ) {
+                                active_dict[idx].value = activeDictDefault; //0; //turn off activated region                              
                                                                      
-                                    //remove from regionToPassToDC_array
-                                    iremove = regionToPassToDC_array.indexOf(regionToPassToDC);
-                                    regionToPassToDC_array.splice(iremove,1)                                  
-                                }
-                                else { //activate region
-                                    regionToPassToDC_array.push(regionToPassToDC);
-                                    active_dict[idx].value = 1;                                                                     
-                                }
+                                //remove from regionToPassToDC_array
+                                iremove = regionToPassToDC_array.indexOf(regionToPassToDC);
+                                regionToPassToDC_array.splice(iremove,1)                                  
+                            }
+                            else { //activate region
+                                regionToPassToDC_array.push(regionToPassToDC);
+                                active_dict[idx].value = 1;                                                                     
+                            }
 
-                                //initCrossfilter(); //send regionToPassToDC to dc region filter
-                                regionDimension = filter.dimension(function(p, i) { return p.Region; });
-                                regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
-                                d3.select("#active").text(filter.groupAll().value());
-                                console.log("filter.groupAll().value() in .on(click): ", filter.groupAll().value())
-                                updateMap();
+                            //initCrossfilter(); //send regionToPassToDC to dc region filter
+                            regionDimension = filter.dimension(function(p, i) { return p.Region; });
+                            regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
+                            d3.select("#active").text(filter.groupAll().value());
+                            console.log("filter.groupAll().value() in .on(click): ", filter.groupAll().value())
+                            updateMap();
                             
                         } else { //clickDC is true
                             console.log("regionGroup.all() in on(click): ", regionGroup.all())
@@ -503,39 +505,42 @@ function init() {
         //Called when map is clicked and clickDC == false
         function updateMap() {
             console.log("IN updateMap fn!!")
-            d3.select("#active").text(filter.groupAll().value());
+            console.log("regionToPassToDC_array in updateMap fn: ", regionToPassToDC_array)
 
+            //regionChart.filterAll();
+            regionToPassToDC_array.forEach(function (p, k) {                
+                regionChart.filter(regionToPassToDC_array[k]);
+            })
+            console.log("regionChart.filters() in updateMap fn: ", regionChart.filters())
+            console.log("filter.groupAll().value() in updateMap fn: ", filter.groupAll().value());
+            d3.select("#active").text(filter.groupAll().value()); //total number selected   
 
-            console.log("regionChart.filters(): ", regionChart.filters())
-                           
-                regionToPassToDC_array.forEach(function (p, k) {
-                    regionChart.filter(regionToPassToDC_array[k]);
-                })                
+            for (var j = 0; j < active_dict.length; j++) { 
+                if (active_dict[j].value == activeDictDefault) {
+                    turnGray(active_dict[j].key.substring(0, 4));            
+                } else if (active_dict[j].value == 1) {
+                    turnOn(active_dict[j].key.substring(0, 4));                        
+                }             
+            }
 
-                for (var j = 0; j < active_dict.length; j++) { 
-                    if (active_dict[j].value == activeDictDefault) {
-                        turnGray(active_dict[j].key.substring(0, 4));            
-                    } else if (active_dict[j].value == 1) {
-                        turnOn(active_dict[j].key.substring(0, 4));                        
-                    }             
+            //reset active_dict if all regions have been clicked
+            if (regionToPassToDC_array.length == active_dict.length || 
+                    regionToPassToDC_array.length == 0) {//all regions have been clicked
+                for (var j = 0; j < active_dict.length; j++) {
+                    active_dict[j].value = activeDictDefault;
+                    //turn all regions ON
+                    g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                     .style("stroke", "gray").style("stroke-width", "1px");
                 }
-
-                //reset active_dict if all regions have been clicked
-                if (regionToPassToDC_array.length == active_dict.length || 
-                         regionToPassToDC_array.length == 0) {//all regions have been clicked
-                    for (var j = 0; j < active_dict.length; j++) {
-                        active_dict[j].value = activeDictDefault;
-                        //turn all regions ON
-                        g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                         .style("stroke", "gray").style("stroke-width", "1px");
-                    }
-                }
-
-            // d3.selectAll("#total").text(filter.size()); // total number of events
-            // d3.select("#active").text(filter.groupAll().value()); //total number selected
+            }
+              
 
             //updateDisplayedResults();
             //update1();
+
+            
+            
+            //d3.select("#active").text(filter.groupAll().value());
             
         }
      
