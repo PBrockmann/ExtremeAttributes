@@ -341,7 +341,8 @@ function init() {
                                 regionToPassToDC_array.splice(iremove,1)                                  
                             }
                             else { //activate region
-                                regionToPassToDC_array.push(regionToPassToDC);
+                                //only push if array does not already contain region
+                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC);
                                 active_dict[idx].value = 1;                                                                     
                             }
 
@@ -526,12 +527,12 @@ function init() {
             //reset active_dict if all regions have been clicked
             if (regionToPassToDC_array.length == active_dict.length || 
                     regionToPassToDC_array.length == 0) {//all regions have been clicked
-                for (var j = 0; j < active_dict.length; j++) {
-                    active_dict[j].value = activeDictDefault;
-                    //turn all regions ON
-                    g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                     .style("stroke", "gray").style("stroke-width", "1px");
-                }
+                regionToPassToDC_array = [];
+                regionChart.filterAll();
+                for (var j = 0; j < active_dict.length; j++) { active_dict[j].value = activeDictDefault; }
+                //turn all regions ON
+                g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+                 .style("stroke", "gray").style("stroke-width", "1px");
             }
               
 
