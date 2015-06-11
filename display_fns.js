@@ -141,9 +141,7 @@ function init() {
         regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; });
         yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; });
         indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; });
-        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
-
-        console.log("regionGroup.all() after defn: ", regionGroup.all())
+        datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });    
 
         minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
         maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
@@ -164,8 +162,8 @@ function init() {
             .elasticX(true)
             .gap(0)
             .on("filtered", function() {            
-                console.log("indexChart.filter() in indexChart itself: ", indexChart.filter())
-                console.log("regionGroup.all() in indexChart itself: ", regionGroup.all())
+                // console.log("indexChart.filter() in indexChart itself: ", indexChart.filter())
+                // console.log("regionGroup.all() in indexChart itself: ", regionGroup.all())
                 highlightRegion(indexChart.filters, indexGroup);
             });    
 
@@ -247,6 +245,7 @@ function init() {
             ])
             .sortBy(function(d){ return d.Year; })
             .order(d3.ascending);
+        
 
         regionChart
             .width(350).height(500)
@@ -255,11 +254,8 @@ function init() {
             .elasticX(true)
             .on("filtered", updateSelectors);
 
-        function updateSelectors() { //executed when map is clicked
-            // //console.log("regionGroup.all(): ", regionGroup.all());
-            console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());    
-            // console.log("filter.groupAll().value() in updateSelectors: ", filter.groupAll().value())
-            // //d3.select("#active").text(filter.groupAll().value()); //total number selected
+        function updateSelectors() { //executed when map is clicked            
+            //console.log("regionChart.filters() in updateSelectors: ", regionChart.filters());
         }
 
         d3.selectAll("#total").text(filter.size()); // total number of events
@@ -526,14 +522,15 @@ function init() {
             }
               
             //update1();
+            dc.redrawAll(); //this reset on each map click so more than one region cannot be clicked!
             
         }
      
         //Called when any dc chart is clicked
         function highlightRegion(chartFilter, chartGroup) {
             console.log("in highlightRegion fn!!")
-            console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
-            console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
+            // console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
+            // console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
 
             subregion_idx = [];
             for (var j = 0; j < regionGroup.all().length; j++) {
@@ -595,6 +592,7 @@ function init() {
                 }
             }
 
+            dc.redrawAll(); //this reset on each map click so more than one region cannot be clicked!
         }
 
         //called whenever map is clicked to update dc region chart
