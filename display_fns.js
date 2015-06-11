@@ -36,6 +36,7 @@ var toggleOFFRegionChartClicked = 100;
 var subregions; //regions highlighted when a dc map is clicked
 
 var updateMap_flag = 0; //flag to call updateMap()
+var clickDCRegion_flag = 0; //flag to call clickDCRegion()
 
 function init() {
     console.log("in init()!");     
@@ -120,7 +121,7 @@ function init() {
                             
                         if (clickDC == false) { //can click on map as many times as you want
                             
-                                 regionToPassToDC = null;
+                            regionToPassToDC = null;
                             regionToPassToDC = d.properties.name;                                            
                                 
                             idx = legend.indexOf(regionToPassToDC);
@@ -149,7 +150,7 @@ function init() {
                             initCrossfilter(); //send regionToPassToDC to dc region filter
                             
                         } else { //clickDC is true
-                            console.log("regionGroup.all() in on(click): ", regionGroup.all())
+                           console.log("regionGroup.all() in on(click): ", regionGroup.all())
 
                             for (var j = 0; j < active_dict.length; j++) {
                                 if (active_dict[j].value >= 0 && d.properties.name == active_dict[j].key) {                                                        
@@ -165,29 +166,18 @@ function init() {
                                 regionToPassToDC = null;
                                 regionToPassToDC = d.properties.name;
                                 idx = legend.indexOf(regionToPassToDC);
-                                
+
+
                                 //clear array only if map has NOT been clicked
                                 if (regionChart.filters().length==0) regionToPassToDC_array = [];
                                 console.log("regionToPassToDC_array in on.click: ", regionToPassToDC_array)
-                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC); 
-
-                                //toggle active_dict value on and off
-                                for (var j = 0; j < active_dict.length; j++) {                                    
-                                        if (active_dict[j].key == regionToPassToDC) {                                             
-                                            if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
-                                                active_dict[j].value = grayThreshold;
-                                            } else {                                                
-                                                active_dict[j].value = toggleONRegionChartClicked;                                                
-                                            } //toggle region ON
-                                        } else if (active_dict[j].key != regionToPassToDC) {                                            
-                                            if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
-                                                active_dict[j].value = grayThreshold;                                                
-                                            }
-                                        }
-                                }
-
+                                if (regionToPassToDC_array.indexOf(regionToPassToDC) == -1) regionToPassToDC_array.push(regionToPassToDC);                         
+                            
+                                //clickDCRegion();
+                                clickDCRegion_flag = 1;
                                 initCrossfilter();
-                            } //end matchFlag check
+                            }
+                           
 
                         } //end clickDC else condition
                     });
@@ -574,110 +564,106 @@ function initCrossfilter() {
         //updateRegionChart();
         console.log("Under construction")
         if (updateMap_flag == 1) updateMap();
+        if (clickDCRegion_flag == 1) clickDCRegion();
     }
 
-    //Called when map is clicked
-    
-        function updateMap() {
-            console.log("regionToPassToDC_array in updateMap fn: ", regionToPassToDC_array)
+    //Called when map is clicked and clickDC is false    
+    function updateMap() {
+        console.log("regionToPassToDC_array in updateMap fn: ", regionToPassToDC_array)
 
-            updateRegionChart(regionToPassToDC_array);
+        updateRegionChart(regionToPassToDC_array);
 
-            for (var j = 0; j < active_dict.length; j++) { 
-                if (active_dict[j].value == activeDictDefault) {
-                    turnGray(active_dict[j].key.substring(0, 4));            
-                } else if (active_dict[j].value == 1) {
-                    turnOn(active_dict[j].key.substring(0, 4));                        
-                }             
-            }
-
-            //reset active_dict if all regions have been clicked
-            if (regionToPassToDC_array.length == active_dict.length || 
-                    regionToPassToDC_array.length == 0) {//all regions have been clicked
-                regionToPassToDC_array = [];
-                regionChart.filterAll();                
-                for (var j = 0; j < active_dict.length; j++) { active_dict[j].value = activeDictDefault; }
-                //turn all regions ON
-                g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-                 .style("stroke", "gray").style("stroke-width", "1px");
-            }
-            //reset flag
-            updateMap_flag = 0;
+        for (var j = 0; j < active_dict.length; j++) { 
+            if (active_dict[j].value == activeDictDefault) {
+                turnGray(active_dict[j].key.substring(0, 4));            
+            } else if (active_dict[j].value == 1) {
+                turnOn(active_dict[j].key.substring(0, 4));                        
+            }             
         }
 
+        //reset active_dict if all regions have been clicked
+        if (regionToPassToDC_array.length == active_dict.length || 
+                regionToPassToDC_array.length == 0) {//all regions have been clicked
+            regionToPassToDC_array = [];
+            regionChart.filterAll();                
+            for (var j = 0; j < active_dict.length; j++) { active_dict[j].value = activeDictDefault; }
+            //turn all regions ON
+            g.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
+             .style("stroke", "gray").style("stroke-width", "1px");
+        }
+        //reset flag
+        updateMap_flag = 0;
+    }
+
  
+    //Called when clickDC is true
+    function clickDCRegion(chartFilter, chartGroup) {
+        console.log("in clickDCRegion! grayThreshold, regionToPassToDC: ", grayThreshold, regionToPassToDC);
+
+        idx = legend.indexOf(regionToPassToDC);
+        console.log("regionToPassToDC_array: ", regionToPassToDC_array)
+
+        //toggle active_dict value on and off
+        countGray = 0;
+        for (var j = 0; j < active_dict.length; j++) {                
+            if (active_dict[j].key == regionToPassToDC) {                                             
+                if (active_dict[j].value == toggleONRegionChartClicked) {//toggle region OFF
+                    active_dict[j].value = grayThreshold;
+                    turnGray(active_dict[j].key.substring(0, 4));
+                    countGray++;
+                    //remove from array
+                    iremove = regionToPassToDC_array.indexOf(regionToPassToDC);
+                    regionToPassToDC_array.splice(iremove,1);                                
+                } else if (active_dict[j].value == 1 || active_dict[j].value == toggleOFFRegionChartClicked) {                                                
+                    active_dict[j].value = toggleONRegionChartClicked;
+                    turnOn(active_dict[j].key.substring(0, 4));
+                }
+            } else if (active_dict[j].key != regionToPassToDC) {                                                                        
+                if (active_dict[j].value != activeDictDefault && active_dict[j].value != toggleONRegionChartClicked) {                                                
+                    active_dict[j].value = grayThreshold;
+                    turnGray(active_dict[j].key.substring(0, 4));
+                    countGray++;   
+                }
+            }
+        }
+
+        console.log("countGray: ", countGray)
+
+        updateRegionChart(regionToPassToDC_array);
+
+        //special case where all subregions have been selected and deselected. For the last region
+        //to be deselected, highlight them all again and restore active_dict.value to 1
+        if (countGray == num_subregions) { //restore all subregions to original state
+            for (var i = 0; i < subregion_idx.length; i++) {
+                turnOn(active_dict[subregion_idx[i]].key.substring(0, 4));                    
+                active_dict[subregion_idx[i]].value = 1;  
+            }
+        }
+
+        clickDCRegion_flag = 1;
+    }
+
     //Called when any dc chart is clicked
     function highlightRegion(chartFilter, chartGroup) {
         console.log("in highlightRegion fn!!")
-        subregions = regionToPassToDC_array;
-        console.log("set subregions: ", subregions)
+        // console.log("regionChart.filters() in highlightRegion: ", regionChart.filters())
+        // console.log("regionGroup.all() in highlightRegion: ", regionGroup.all())
 
-
-        //if no filters are selected, highlight no map regions
-        if (regionChart.filters().length == 0) { //if 0, map has not been clicked yet
-            console.log("IN highlightRegion fn PART I!!****************")
-            countRegionGroup = 0;
-
-            regionGroup.all().forEach(function (d, i) {
-                if (regionGroup.all()[i].value > 0) {
-                    pick = legend.indexOf(regionGroup.all()[i].key);
-                    //console.log("pick: ", pick);
-
-                    //set corresponding regions in active_dict to 1
-                    active_dict[pick].value = 1;
-
-                    regionToPassToDC_array[countRegionGroup] = regionGroup.all()[i].key;
-                    countRegionGroup++
-
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("fill", "brown").style("fill-opacity", 0.7)
-                      .style("stroke", "gray").style("stroke-width", "1px");                    
-                } else { //unselect any regions that may have been previously selected
-                    active_dict[i].value = activeDictDefault;
-                    pathid = regionGroup.all()[i].key;
-                    d3.select("#"+pathid.substring(0, 4))
-                      .style("stroke", null)
-                      .style("stroke-width", null).style("fill-opacity", 0);
-                }
-            });    
-                    
-        } else { //map has at least one highlighted region
-            console.log("IN highlightRegion fn PART II!!")
-            //console.log("regionGroup.all(): ", regionGroup.all())        
-            
-            //first clear all regions               
-            d3.selectAll("path")
-                .style("stroke", null)
-                .style("stroke-width", null).style("fill-opacity", 0);               
-
-            //highlight only those regions that match regionChart.filters()
-            for (var j = 0; j < regionChart.filters().length; j++) {
-
-                regionGroup.all().forEach(function (d, i) {                    
-                    if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key == regionChart.filters()[j]) {
-                        pathid = regionGroup.all()[i].key;
-                        console.log("active region: ", pathid)
-                        console.log("clickDC: ", clickDC)
-                        d3.select("#"+pathid.substring(0, 4))
-                          .style("fill", "brown").style("fill-opacity", 0.7)
-                          .style("stroke", "gray").style("stroke-width", "1px");
-                          //.style("stroke", "brown").style("stroke-width", "2px");
-                    }
-                    
-                    // if (regionGroup.all()[i].value > 0 && regionGroup.all()[i].key != regionChart.filters()[j]) {
-                    //     console.log("to gray out: ", regionGroup.all()[i].key)
-                    //     d3.select("#"+regionGroup.all()[i].key.substring(0, 4))
-                    //           .style("fill", "gray").style("fill-opacity", 0.5)
-                    //           .style("stroke", "gray").style("stroke-width", "1px");  
-                    // }
-                 
-                }); //end regionGroup.all forEach loop
-            } //end regionChart.filters for loop
-            console.log("active_dict at the end of part II: ", active_dict)
-        } //end regionChart.filters().length check
-
-    }
+        subregion_idx = [];
+        for (var j = 0; j < regionGroup.all().length; j++) {
+            if (regionGroup.all()[j].value != 0) { //region is in the dc chart set                    
+                idx = legend.indexOf(regionGroup.all()[j].key);
+                subregion_idx.push(idx);
+                active_dict[idx].value = 1; //toggleONRegionChartClicked;
+                turnOn(active_dict[idx].key.substring(0, 4));                                    
+            } else { //null out other regions
+                active_dict[legend.indexOf(regionGroup.all()[j].key)].value = activeDictDefault;
+                turnNull(active_dict[j].key.substring(0, 4));                                    
+            }
+        }
+        //used in clickDCRegion to see if all regions in subset have been de-selected
+        num_subregions = subregion_idx.length;
+        }
 
     d3.selectAll("#total").text(filter.size()); // total number of events
     d3.select("#active").text(filter.groupAll().value()); //total number selected
