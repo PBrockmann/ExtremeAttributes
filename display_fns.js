@@ -28,7 +28,6 @@ var active_dict = [];
 var legend = [];
 
 var matchFlag = -100;
-var clearMapFlag = 0;
 var grayThreshold = -100;
 var activeDictDefault = -100;
 var toggleONRegionChartClicked = 555;
@@ -658,12 +657,6 @@ function updateRegionChart(regionArray) {
 }
 
 function clearMap() {
-    console.log("in clearMap")
-    //clearMapFlag = 1;
-    console.log("regionToPassToDC: ", regionToPassToDC)
-    console.log("regionGroup.all(): ", regionGroup.all())
-    //idx_on = legend.indexOf(regionToPassToDC)
-    //turnOn(regionGroup.all()[idx_on].key.substring(0, 4));
     for (var j = 0; j < regionGroup.all().length; j++) {
         if (regionGroup.all()[j].value != 0) {            
             turnOn(regionGroup.all()[j].key.substring(0, 4));
