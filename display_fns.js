@@ -260,8 +260,7 @@ function init() {
         d3.selectAll("#total").text(filter.size()); // total number of events
         d3.select("#active").text(filter.groupAll().value()); //total number selected        
 
-        //initCrossfilter();        
-        eventList(); //renders Table
+        //initCrossfilter(); 
         //   update1(); //updates number of Event Types selected
 
         //http://stackoverflow.com/questions/10805184/d3-show-data-on-mouseover-of-circle
@@ -706,7 +705,6 @@ function update0() {
         }
         else clickDC = true;
 
-    updateList();
 
     //display number of active rows in Table
     //d3.select("#active").text(filter.groupAll().value());
@@ -720,7 +718,6 @@ function update0() {
 function update1() {
     dc.redrawAll();
     //updateMarkers();
-    //updateList();
     d3.select("#active").text(filter.groupAll().value()); //Renders number of proxies selected
     // levelZoom = map.getZoom();
     // switch(true) {
@@ -736,129 +733,4 @@ function update1() {
     //   grat_05.setStyle({opacity: 0.});
     //   break;
     //}
-}
-
-function eventList() {
-    //Extreme Events table -- column titles
-    var eventItem = d3.select("#eventsListTitle")
-        .append("div")
-        .style("background", "#ddd")
-        .style("font-style", "italic")
-        .style("text-align", "left")
-        .attr("class", "row");
-    eventItem.append("div")
-        .attr("class", "col-md-1")
-        .text("Id");
-    eventItem.append("div")
-        .attr("class", "col-md-2")
-        .style("text-align", "left")
-        .text("Year");
-    eventItem.append("div")
-        .attr("class", "col-md-3")
-        .style("text-align", "left")
-        .text("Region");
-    eventItem.append("div")
-        .attr("class", "col-md-4")
-        .style("text-align", "left")
-        .text("Type");
-    eventItem.append("div")
-        .attr("class", "col-md-3")
-        .style("text-align", "left")
-        .text("Season");
-    eventItem.append("div")
-        .attr("class", "col-md-3")
-        .style("text-align", "left")
-        .text("Index");
-    eventItem.append("div")
-        .attr("class", "col-md-2")
-        .style("text-align", "left")
-        .text("Dataset");
-    eventItem.append("div")
-        .attr("class", "col-md-4")
-        .style("text-align", "left")
-        .text("# anomalies");
-
-
-    //Extreme Events table -- row values
-    var pointIds = idGroup.all();
-
-    for (var i = 0; i < pointIds.length; i++) {
-        var eventItem = d3.select("#eventsList")
-            .append("div")
-            .attr("class", "eventItem row")
-            .style("text-align", "left")
-            .attr("id", (i + 1).toString())
-            .on('click', popupfromlist);
-        eventItem.append("div")
-            .attr("class", "col-md-1")
-            .style("text-align", "left")
-            .attr("title", "#" + (i + 1).toString())
-            .text("#" + (i + 1).toString());
-        eventItem.append("div")
-            .attr("class", "col-md-2")
-            .style("text-align", "left")
-            .attr("title", points[i].Year)
-            .text(points[i].Year);
-        eventItem.append("div")
-            .attr("class", "col-md-3")
-            .style("text-align", "left")
-            .attr("title", points[i].Region)
-            .text(points[i].Region);
-        eventItem.append("div")
-            .attr("class", "col-md-4")
-            .style("text-align", "left")
-            .attr("title", points[i].Type)
-            .text(points[i].Type);
-        eventItem.append("div")
-            .attr("class", "col-md-3")
-            .style("text-align", "left")
-            .attr("title", points[i].Season)
-            .text(points[i].Season);
-        eventItem.append("div")
-            .attr("class", "col-md-3")
-            .style("text-align", "left")
-            .attr("title", points[i].Index)
-            .text(points[i].Index);
-        eventItem.append("div")
-            .attr("class", "col-md-2")
-            .style("text-align", "left")
-            .attr("title", points[i].Data)
-            .text(points[i].Data);
-        eventItem.append("div")
-            .attr("class", "col-md-4")
-            .style("text-align", "center")
-            .attr("title", points[i].Value)
-            .text(points[i].Value);
-    }
-}
-
-function updateList() {
-    var pointIds = idGroup.all();
-    for (var i = 0; i < pointIds.length; i++) {
-        if (pointIds[i].value > 0) $("#" + (i + 1)).show();
-        else $("#" + (i + 1)).hide();
-    }
-}
-
-function popupfromlist() {
-    var i = this.id - 1;
-    var lng = points[i].Longitude;
-    var lat = points[i].Latitude;
-    // console.log(i, lng.toFixed(2), lat.toFixed(2));
-    // //map.setView(new L.LatLng(lat,lng), 6);
-    // //map.panTo(new L.LatLng(lat,lng));
-    // //markers[i].openPopup();
-    // // https://github.com/Leaflet/Leaflet.markercluster/issues/46
-    var m = markers[i];
-    markerGroup.zoomToShowLayer(m, function() {
-        map.setView(new L.LatLng(lat, lng), 6); // added to handle single marker
-        m.openPopup();
-    });
-    var container = $("#eventsList");
-    var scrollTo = $("#" + this.id);
-    container.scrollTop(scrollTo.offset().top - container.offset().top + container.scrollTop());
-    //$(".eventItem").css("font-weight", "normal"); //bolds the text in the selected row
-    $(".eventItem").css("background-color", "#ffffff"); //remove highlight
-    //$("#"+this.id).css("font-weight", "bold"); //bolds the text in the selected row
-    $("#" + this.id).css("background-color", "#F7FE2E"); //highlights row
 }
