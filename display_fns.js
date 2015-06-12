@@ -25,31 +25,18 @@ function init() {
         minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
         maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
 
+        //MAP
         var width = 600, height = 560;
-
-        // var projection = d3.geo.mercator();
-        //                    // .center([0,40])                     
-        //                    // .rotate([-12,0])
-
-        //ALMOST WORKS!
-        // var projection = d3.geo.albers()
-        //     .center([0, 55.4])
-        //     .rotate([4.4, 0])
-        //     //.parallels([50, 60])
-        //     //.scale(6000)
-        //     .translate([width / 2, height / 2]);
 
         //http://lookingfora.name/2013/06/14/geofla-d3-js-carte-interactive-des-departements-francais/
         var projection = d3.geo.conicConformal() // Lambert-93
           .center([2.454071, 47.279229]) // On centre la carte sur la France
-          .scale(2000)
+          .scale(3400)
           .translate([width / 2, height / 2]);                     
 
         
-        //d3.json("geojson/FRA_admin12.json", function (statesJson) {
-        d3.json("geojson/myFRA_admin12.json", function (statesJson) {            
-        //d3.json("geojson/departements.json", function (statesJson) {
-        //d3.json("geojson/us-states.json", function (statesJson) {
+        //d3.json("geojson/FRA_admin12.json", function (statesJson) { //WAY TOO HUGE!!!!
+        d3.json("geojson/myFRA_admin12.json", function (statesJson) {
 
         	franceChart.width(600)
                     .height(560)
