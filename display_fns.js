@@ -84,6 +84,8 @@ function init() {
         minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
         maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
 
+        d3.selectAll("#total").text(filter.size()); // total number of events
+
         //MAP
         var width = 600, height = 560;
 
@@ -108,9 +110,13 @@ function init() {
                     .overlayGeoJson(statesJson.features, "state", function (d) {
                         return d.properties.name;
                     })
-                    .title(function (d) {
-                        return "State: " + d.key + "\nTotal Amount Raised: " + d.value;
+                    .title(function (d) {                        
+                        d3.select("#active").text(filter.groupAll().value()); //total number selected
+                        //return "State: " + d.key + "\nTotal Amount Raised: " + d.value;
+                        return d.key;
                     });
+
+
 
             indexChart.width(200) //svg width
                     .height(200) //svg height
@@ -195,7 +201,7 @@ function init() {
                         function(d) { return d.Value; }                  
                     ])
                     .sortBy(function(d){ return d.Year; })
-                    .order(d3.ascending);                
+                    .order(d3.ascending);            
 
            	dc.renderAll();
 
