@@ -259,15 +259,6 @@ function init() {
 
         d3.selectAll("#total").text(filter.size()); // total number of events
         d3.select("#active").text(filter.groupAll().value()); //total number selected
-        
-
-        // function updateDisplayedResults() {
-        //     console.log("in updateDisplayedResults:")
-        //      //display number of active rows in Table
-        //     //d3.select("#active").text(filter.groupAll().value());
-        //     d3.select("#active").text(function(d) { return filter.groupAll().value(); });
-        //     console.log("filter.groupAll().value(): ", filter.groupAll().value())            
-        // }
 
 
         //initCrossfilter();        
