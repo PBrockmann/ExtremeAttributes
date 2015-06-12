@@ -260,7 +260,6 @@ function init() {
         d3.selectAll("#total").text(filter.size()); // total number of events
         d3.select("#active").text(filter.groupAll().value()); //total number selected
 
-
         //initCrossfilter();        
         eventList(); //renders Table
         //   update1(); //updates number of Event Types selected
@@ -566,6 +565,7 @@ function updateMap() {
     }
            
     //update1();
+    //dc.renderAll();
     dc.redrawAll(); //this reset on each map click so more than one region cannot be clicked!            
 }
       
@@ -634,7 +634,7 @@ function clickDCRegion() {
         }
     }
 
-    dc.redrawAll(); //this reset on each map click so more than one region cannot be clicked!
+    dc.redrawAll();
 }
 
 //called whenever map is clicked to update dc region chart
