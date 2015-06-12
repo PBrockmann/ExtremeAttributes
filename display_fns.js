@@ -7,15 +7,74 @@ function init() {
     var datasetChart = dc.rowChart("#chart-dataset");
 
     d3.csv("data/anomalous_index_sigma_scenario.csv", function (csv) {
-    	var filter = crossfilter(csv);   
+    	var filter = crossfilter(csv);
+
+        //FNS FOR CHECKBOXES
+        function createFilter(filters) {
+            return function (d) {
+                //when both checkboxes are cicked, return true if data point        
+                //contains either checkbox value    
+                for (var i = 0, len = filters.length; i < len; i++) {                        
+                    if (filters[i] == d) return true;                    
+                    //if ($.inArray(filters[i], d) == -1) return false;
+                }
+            }
+        }
+
+        function toggleArrayItem(flist, val) {
+            //Stores value of check boxes clicked in array "flist"
+            var i = flist.indexOf(val);
+            if (i === -1) flist.push(val);
+            else flist.splice(i, 1);
+        }
+
+        function checkboxEval(flist, opt1, opt2, fdim) {
+            noBoxChecked = false;
+            if (flist.indexOf(opt1) == -1 && flist.indexOf(opt2) == -1) noBoxChecked = true;
+
+            fdim.filterAll();
+            console.log("flist: ", flist)
+            if (noBoxChecked == false) fdim.filterFunction(createFilter(flist));        
+        }
+
+        //EVALUATE CHECKBOXES
+        //Sigma value
+        $("#tag1").click(function () {
+            toggleArrayItem(filter_list, "1"); //Sigma col value == 1
+            checkboxEval(filter_list, "1", "2", tags); //both box values
+            
+            dc.redrawAll();
+        });
+
+        $("#tag2").click(function () {
+            toggleArrayItem(filter_list, "2"); //Sigma col value == 2
+            checkboxEval(filter_list, "1", "2", tags); //both box values
+            
+            dc.redrawAll();
+        });
+
+        //Scenario
+        $("#RCP45").click(function () {
+            toggleArrayItem(filter_list, "4.5"); //Scenario col value == 4.5
+            checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+            
+            dc.redrawAll();
+        });
+
+        $("#RCP85").click(function () {
+            toggleArrayItem(filter_list, "8.5"); //Scenario col value == 8.5
+            checkboxEval(filter_list, "4.5", "8.5", scenario); //both box values
+            
+            dc.redrawAll();
+        });
 
         var yearDimension = filter.dimension(function(p) { return Math.round(p.Year); }),  
         	indexDimension = filter.dimension(function(p) { return p.Index; }),
         	regionDimension = filter.dimension(function(p, i) { return p.Region; }),
-        	datasetDimension = filter.dimension(function(d) { return d.Data; });
-        	//tags = filter.dimension(function (d) { return d.Sigma; }),
-        	//scenario = filter.dimension(function (d) { return d.Scenario; }),
-        	//filter_list = [];     
+        	datasetDimension = filter.dimension(function(d) { return d.Data; }),
+        	tags = filter.dimension(function (d) { return d.Sigma; }),
+        	scenario = filter.dimension(function (d) { return d.Scenario; }),
+        	filter_list = [];     
        
         var yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
         	indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
