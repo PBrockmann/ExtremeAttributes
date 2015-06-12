@@ -45,8 +45,10 @@ function init() {
           .scale(2000)
           .translate([width / 2, height / 2]);                     
 
-        //d3.json("json/FRA_admin.json", function (statesJson) {
-        d3.json("geojson/FRA_admin12.json", function (statesJson) {
+        
+        //d3.json("geojson/FRA_admin12.json", function (statesJson) {
+        d3.json("geojson/myFRA_admin12.json", function (statesJson) {            
+        //d3.json("geojson/departements.json", function (statesJson) {
         //d3.json("geojson/us-states.json", function (statesJson) {
 
         	franceChart.width(600)
