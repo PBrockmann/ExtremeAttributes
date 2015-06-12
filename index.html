@@ -89,7 +89,7 @@
         path {
             stroke: #A38566;
             stroke-width: 0.5px;
-            fill-opacity: 0;  /*.1;*/
+            fill-opacity: 1;  /*.1;*/
         }
         
         path:hover {
@@ -192,12 +192,9 @@
                     <input type="checkbox" id="RCP85" />RCP 8.5</label>
                 </div>
 
-                <div class="control-group clear" id="mapreset">                  
-                  <a href="javascript: regionChart.filterAll();dc.redrawAll();" onclick="clearMap()" class="btn btn-primary btn-xs" role="button">Reset Map</a>
-                </div>
+                <div id="france-chart" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: -60px;"></div>
 
-
-                <div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 20px;"></div>
+                <!--<div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 20px;"></div>-->
 
 
                 <div id="chart-indexType" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 50px;">
