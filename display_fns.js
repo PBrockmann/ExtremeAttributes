@@ -103,20 +103,27 @@ function init() {
                     .height(560)
                     .dimension(regionDimension)
                     .group(regionGroup)
-                    //.colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
-                    .colorDomain([0, 200])
+                    //.colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))                
+                    //.colorDomain([0, 200])
+                    .colors(d3.scale.linear().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF"]))                    
                     //.colorCalculator(function (d) { return d ? franceChart.colors()(d) : '#ccc'; })
                     .projection(projection)
                     .overlayGeoJson(statesJson.features, "state", function (d) {
                         return d.properties.name;
                     })
-                    .title(function (d) {                        
+                    .title(function (d) {
+                        console.log("d.Value: ", d.value);             
                         d3.select("#active").text(filter.groupAll().value()); //total number selected
-                        //return "State: " + d.key + "\nTotal Amount Raised: " + d.value;
-                        return d.key;
+                        return "State: " + d.key + "\nNumber of Extreme Events: " + d.value;
+                        //return d.key;
                     });
-
-
+            franceChart.on("preRender", function(chart) {//dynamically calculate domain
+                chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
+            });
+            franceChart.on("preRedraw", function(chart) {
+                chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
+            });
+        
 
             indexChart.width(200) //svg width
                     .height(200) //svg height
@@ -129,7 +136,10 @@ function init() {
                     .dimension(indexDimension)
                     .group(indexGroup)
                     //.on("preRedraw", update0)
-                    .colors(d3.scale.category20())
+                    //.colors(d3.scale.category20())
+                    .renderlet(function(chart){
+                        chart.selectAll("g.row rect").attr("fill", "#1f77b4");
+                    })
                     .elasticX(true)
                     .gap(0);    
 
