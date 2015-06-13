@@ -1,3 +1,7 @@
+var cdomain_preRender;
+var cdomain_preRedraw;
+var rangeDiff;
+
 function init() {
     console.log("in init()!");
 
@@ -7,8 +11,11 @@ function init() {
     var datasetChart = dc.rowChart("#chart-dataset");
 
     var colourRange_blue = ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"];
-    var colourDomain_blue = [0, 100,200,300,400,500,600,700,800,900, 1000];
     var colourRange_red = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
+    
+    
+    var colourRange = colourRange_blue;
+    var colourDomain = [];
 
     d3.csv("data/anomalous_index_sigma_scenario.csv", function (csv) {
     	var filter = crossfilter(csv);
@@ -110,7 +117,7 @@ function init() {
                     //.colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
                     //.colorDomain([0, 200])                    
                     //.colorCalculator(function (d) { return d ? franceChart.colors()(d) : '#ccc'; })
-                    .colors(d3.scale.linear().range(colourRange_red))
+                    .colors(d3.scale.linear().range(colourRange))
                     .projection(projection)
                     .overlayGeoJson(statesJson.features, "state", function (d) {
                         return d.properties.name;
@@ -118,14 +125,28 @@ function init() {
                     .title(function (d) {
                         //console.log("d.Value: ", d.value);
                         d3.select("#active").text(filter.groupAll().value()); //total number selected
-                        return "State: " + d.key + "\nNumber of Extreme Events: " + d.value;
+                        return "Region: " + d.key + "\nNumber of Extreme Events: " + d.value;
                         //return d.key;
                     });
             franceChart.on("preRender", function(chart) {//dynamically calculate domain
+                cdomain_preRender = chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor())).colorDomain();
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
+                console.log("cdomain_preRender: ", cdomain_preRender)
+                rangeDiff = cdomain_preRender[1] - cdomain_preRender[0];
+                console.log("rangeDiff: ", rangeDiff)
+
+                calculateDomain(rangeDiff, colourRange);
+                console.log("colourDomain from fn: ", colourDomain)
+                plotColourbar(colourDomain, colourRange);
+
+
             });
             franceChart.on("preRedraw", function(chart) {
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
+                cdomain_preRedraw = chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor())).colorDomain();
+                console.log("cdomain_preRedraw: ", cdomain_preRedraw)
+                rangeDiff = cdomain_preRedraw[1] - cdomain_preRedraw[0];
+                console.log("rangeDiff: ", rangeDiff)
             });
             //see: https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/r0_lPT-pBsAJ
             //use chart.group().all(): https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/PMblOq_f0oAJ
@@ -133,16 +154,32 @@ function init() {
             //colourbar
             //http://bl.ocks.org/chrisbrich/4209888
             //attach to div defined in index.html
-            var svg = d3.select("div#colourbar").append("svg") //HUOM! must append svg!!
-                .attr("width", 1000)
-                .attr("height", 1000),
-            g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
-            cb = colorBar().color(d3.scale.linear()
-                           .domain(colourDomain_blue)
-                           .range(colourRange_blue))
-                           .size(150).lineWidth(80).precision(1);
-            g.call(cb);
 
+            //define colourbar steps:
+            function calculateDomain(rangeDiff, colourRange_array) {
+                step = Math.round(rangeDiff/(colourRange_array.length - 1));
+                for (var j = 0; j < colourRange_array.length; j++) {
+                   colourDomain[j] = cdomain_preRender[0] + j*step; //j + j*step;
+                }
+                console.log("colourDomain in fn: ", colourDomain);
+                return colourDomain;
+            }
+            
+            //plotColourbar(colourDomain_blue, colourRange_blue); //fixed
+
+            function plotColourbar(colourDomain_array, colourRange_array) {
+                console.log("calculated colourDomain: ", colourDomain_array)
+
+                var svg = d3.select("div#colourbar").append("svg") //HUOM! must append svg!!
+                    .attr("width", 1000)
+                    .attr("height", 1000),
+                g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
+                cb = colorBar().color(d3.scale.linear()
+                               .domain(colourDomain_array)
+                               .range(colourRange_array))
+                               .size(150).lineWidth(80).precision(1);
+                g.call(cb);
+            }
 
             indexChart.width(200) //svg width
                     .height(200) //svg height
