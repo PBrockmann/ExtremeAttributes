@@ -6,6 +6,8 @@ function init() {
     var yearChart = dc.barChart("#chart-eventYear");
     var datasetChart = dc.rowChart("#chart-dataset");
 
+    var colourRange = ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"];
+
     d3.csv("data/anomalous_index_sigma_scenario.csv", function (csv) {
     	var filter = crossfilter(csv);
 
@@ -103,16 +105,17 @@ function init() {
                     .height(560)
                     .dimension(regionDimension)
                     .group(regionGroup)
-                    //.colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))                
-                    //.colorDomain([0, 200])
-                    .colors(d3.scale.linear().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF"]))                    
+                    //.colors(d3.scale.quantize().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
+                    //.colorDomain([0, 200])                    
                     //.colorCalculator(function (d) { return d ? franceChart.colors()(d) : '#ccc'; })
+                    .colors(d3.scale.linear().range(["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]))
+                    //.colors(d3.scale.linear().range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF"])) //blue
                     .projection(projection)
                     .overlayGeoJson(statesJson.features, "state", function (d) {
                         return d.properties.name;
                     })
                     .title(function (d) {
-                        console.log("d.Value: ", d.value);             
+                        //console.log("d.Value: ", d.value);
                         d3.select("#active").text(filter.groupAll().value()); //total number selected
                         return "State: " + d.key + "\nNumber of Extreme Events: " + d.value;
                         //return d.key;
@@ -123,7 +126,60 @@ function init() {
             franceChart.on("preRedraw", function(chart) {
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
             });
-        
+            //see: https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/r0_lPT-pBsAJ
+            //use chart.group().all(): https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/PMblOq_f0oAJ
+
+            //colourbar
+            // //http://tributary.io/inlet/5670909 || http://tributary.io/tributary/3650755/
+            // var svg = d3.select("div#france-chart")
+            //     .attr("width", 1000)
+            //     .attr("height", 1000),
+            //     g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar2",true);
+
+            // //temp
+            // data1 = d3.range(50+1);
+            // var rects = g.selectAll("rect").data(data1);
+
+            // var colorScale = d3.scale.linear().range(["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"])
+            //                    .domain([0, 200]);
+
+            // var local_height = 500;
+            // var nb_rect = 900;
+            // var rect_height = local_height/nb_rect;
+
+            // rects.enter()
+            //      .append("rect")
+            //      .attr({width: 120,
+            //             height:20,
+            //             x: -100,
+            //             y: function(d, i) { return -i * rect_height + local_height - rect_height; },
+            //             fill: function(d, i) { return colorScale(d); } 
+            //       });
+
+            
+            // //Alternative: http://bl.ocks.org/chrisbrich/4209888
+            //attach to map div
+            var svg = d3.select("div#colourbar").append("svg")
+                .attr("width", 1000)
+                .attr("height", 1000),
+            g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
+            cb = colorBar().color(d3.scale.linear()
+                           .domain([0, 100,200,300,400,500,600,700,800,900, 1000])
+                           .range(colourRange))
+                           .size(150).lineWidth(80).precision(1);
+            g.call(cb);
+
+            // //in a separate svg
+            // var svg = d3.select("div#wrap").append("svg")
+            //     .attr("width", 1000)
+            //     .attr("height", 1000),
+            // g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
+            // cb = colorBar().color(d3.scale.linear()
+            //                .domain([0, 100,200,300,400,500,600,700,800,900, 1000])
+            //                .range(["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"]))
+            //                .size(150).lineWidth(80).precision(1);
+            // g.call(cb);
+
 
             indexChart.width(200) //svg width
                     .height(200) //svg height
