@@ -152,8 +152,9 @@ function init() {
 
             //define double-click
             franceChart.renderlet(function(chart) {
-              chart.selectAll("g.layer0 g.state").on("click", function(d) {
-                console.log("click!", d);
+              chart.selectAll("g.layer0 g.state").on("click", function(d) { //dblclick
+                console.log("click!", d.properties.name);
+                showTimeSeries(d.properties.name);
               });
             })
  
@@ -276,6 +277,30 @@ function init() {
                     ])
                     .sortBy(function(d){ return d.Year; })
                     .order(d3.ascending);            
+
+            function showTimeSeries(regionName) {
+                console.log("In showTimeSeries for ", regionName);
+
+                // var svg = d3.select("div#chart-ts").append("svg") //HUOM! must append svg!!
+                //     .attr("width", 1000)
+                //     .attr("height", 1000);
+
+                // g = svg.append("g").append("h1")
+                //   .attr("width", 1000)
+                //   .attr("height", 1000)
+                //   .text(function() {
+                //       return "Time Series for " + regionName;
+                //   });
+
+
+                d3.select("div#chart-ts").append("h2")
+                  .attr("width", 1000)
+                  .attr("height", 1000)
+                  .text(function() {
+                      return "Time Series for " + regionName;
+                  });
+            }        
+
 
            	dc.renderAll();
 

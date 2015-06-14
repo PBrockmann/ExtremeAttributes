@@ -183,7 +183,7 @@
                 <h4>Threshold</h4>
                 <label>
                     <!--<input class="checkbox-sigma" type="checkbox" id="tag1" onclick="checkboxEval()" />1 Sigma</label>-->
-                    <input type="checkbox" id="tag1" />1 Sigma</label>
+                    <input type="checkbox" id="tag1" checked="checked" visibility="visible"/>1 Sigma</label>
                 <label>
                     <input type="checkbox" id="tag2" />2 Sigma</label>
                 </div>
@@ -251,15 +251,14 @@
 
 
             </div> <!--end ROW 1-->
-        
-            <!--ROW 2-->
-            <div class="row" style="width: 660px;">                  
-                <div id="chart-region" class="col-md-6" style="margin-top: 10px; margin-left: 50px; width=400">
-                    <a class="reset" href="javascript:regionChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-                    <span class="reset" style="display: none;"><span class="filter"></span></span>                
+
+            <!--ROW 2 TIME SERIES -->
+            <div class="row" style="width: 2000px;">                  
+                <div id="chart-ts" class="col-md-6" style=" width=1000px; height: 600px; margin-top: 10px; margin-left: 50px;">
+                                    
 
                 </div>
-            </div> <!--end ROW 2-->           
+            </div> <!--end ROW 2-->       
 
         </div>
         <!-- /.container -->
@@ -279,28 +278,13 @@
     <script>
 
         // window.onload = function() {
-        //     document.getElementById("eventsList").style.cursor = "pointer";
+        //     // $(':checkbox:checked').prop('checked',false);
+        //     $(':checkbox:checked').prop('checked',true);
+        // //     document.getElementById("eventsList").style.cursor = "pointer";
         // }
 
-    
-        // d3.select("#mapreset").on("click", function() {
-        //     //clearMapFlag = 1;
-        //     regionChart.filterAll();dc.redrawAll();
 
-        //     d3.selectAll("path").style("fill", "brown").style("fill-opacity", 0.7)
-        //           .style("stroke", "gray").style("stroke-width", "1px");
-
-        // ;})
-    
-        //console.log("regionChart.filters() in index: ", regionChart.filters())
-
-        function checkEnable() {
-            
-            if (clickDC==true) // some logic to determine if it is ok to go
-                {document.getElementById("testbutton").disabled = false;}
-            else // in case it was enabled and the user changed their mind
-                {document.getElementById("testbutton").disabled = true;}
-            }
+      
 
     </script>
 
