@@ -196,14 +196,15 @@ function init() {
                     //.on("preRedraw", update0)
                     //.colors(d3.scale.category20())
                     .renderlet(function(chart){
-                        chart.selectAll("g.row rect").attr("fill", "#1f77b4");
+                        chart.selectAll("g.row rect").attr("fill", "#1f77b4");                   
                     })
                     .elasticX(true)
-                    .gap(0);    
+                    .gap(0);
 
                 xAxis_indexChart = indexChart.xAxis().ticks(4);
+            
 
-            // Define a click event for indexChart bar   
+            // // Define a click event for indexChart bar   
             // indexChart.renderlet(function(chart) {
             //   chart.selectAll('rect').on("click", function(d) {
             //     console.log("click!", d);
@@ -279,26 +280,18 @@ function init() {
                     .order(d3.ascending);            
 
             function showTimeSeries(regionName) {
-                console.log("In showTimeSeries for ", regionName);
+                //only show if ONE index filter has been selected
+                if (indexChart.filters().length == 1) {
+                    console.log("In showTimeSeries for ", regionName);
+                    //console.log("indexChart.hasFilter(CDD): ", indexChart.hasFilter("CDD"))
 
-                // var svg = d3.select("div#chart-ts").append("svg") //HUOM! must append svg!!
-                //     .attr("width", 1000)
-                //     .attr("height", 1000);
-
-                // g = svg.append("g").append("h1")
-                //   .attr("width", 1000)
-                //   .attr("height", 1000)
-                //   .text(function() {
-                //       return "Time Series for " + regionName;
-                //   });
-
-
-                d3.select("div#chart-ts").append("h2")
-                  .attr("width", 1000)
-                  .attr("height", 1000)
-                  .text(function() {
-                      return "Time Series for " + regionName;
-                  });
+                    d3.select("div#chart-ts").append("h2")
+                      .attr("width", 1000)
+                      .attr("height", 1000)
+                      .text(function() {
+                          return "Time Series for " + regionName;
+                      });
+                }
             }        
 
 
