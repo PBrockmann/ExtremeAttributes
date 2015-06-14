@@ -5,10 +5,10 @@ var rangeDiff;
 function init() {
     console.log("in init()!");
 
-    var franceChart = dc.geoChoroplethChart("#france-chart");
-    var indexChart = dc.rowChart("#chart-indexType");
-    var yearChart = dc.barChart("#chart-eventYear");
-    var datasetChart = dc.rowChart("#chart-dataset");
+    franceChart = dc.geoChoroplethChart("#france-chart");
+    indexChart = dc.rowChart("#chart-indexType");
+    yearChart = dc.barChart("#chart-eventYear");
+    datasetChart = dc.rowChart("#chart-dataset");
 
     var colourRange_blue = ["#E2F2FF", "#C4E4FF", "#9ED2FF", "#81C5FF", "#6BBAFF", "#51AEFF", "#36A2FF", "#1E96FF", "#0089FF", "#0061B5"];
     var colourRange_red = ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"];
@@ -123,20 +123,15 @@ function init() {
                         return d.properties.name;
                     })
                     .title(function (d) {
-                        //console.log("d.Value: ", d.value);
                         d3.select("#active").text(filter.groupAll().value()); //total number selected
                         return "Region: " + d.key + "\nNumber of Extreme Events: " + d.value;
-                        //return d.key;
                     });
             franceChart.on("preRender", function(chart) {//dynamically calculate domain
                 cdomain_preRender = chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor())).colorDomain();
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
-                console.log("cdomain_preRender: ", cdomain_preRender)
                 rangeDiff = cdomain_preRender[1] - cdomain_preRender[0];
-                console.log("rangeDiff: ", rangeDiff)
 
-                calculateDomain(rangeDiff, colourRange);
-                console.log("colourDomain from fn: ", colourDomain)
+                calculateDomain(rangeDiff, colourRange); //returns colourDomain
                 plotColourbar(colourDomain, colourRange);
 
 
@@ -144,32 +139,32 @@ function init() {
             franceChart.on("preRedraw", function(chart) {
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
                 cdomain_preRedraw = chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor())).colorDomain();
-                console.log("cdomain_preRedraw: ", cdomain_preRedraw)
                 rangeDiff = cdomain_preRedraw[1] - cdomain_preRedraw[0];
-                console.log("rangeDiff: ", rangeDiff)
+
+                // d3.select("div#colourbar").remove();
+                // calculateDomain(rangeDiff, colourRange);
+                // console.log("colourDomain from fn: ", colourDomain)
+                // plotColourbar(colourDomain, colourRange);
+
             });
             //see: https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/r0_lPT-pBsAJ
             //use chart.group().all(): https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/PMblOq_f0oAJ
 
-            //colourbar
-            //http://bl.ocks.org/chrisbrich/4209888
-            //attach to div defined in index.html
-
+ 
             //define colourbar steps:
             function calculateDomain(rangeDiff, colourRange_array) {
                 step = Math.round(rangeDiff/(colourRange_array.length - 1));
                 for (var j = 0; j < colourRange_array.length; j++) {
                    colourDomain[j] = cdomain_preRender[0] + j*step; //j + j*step;
                 }
-                console.log("colourDomain in fn: ", colourDomain);
                 return colourDomain;
             }
             
             //plotColourbar(colourDomain_blue, colourRange_blue); //fixed
 
+            //colourbar (http://bl.ocks.org/chrisbrich/4209888)
+            //attach to div defined in index.html
             function plotColourbar(colourDomain_array, colourRange_array) {
-                console.log("calculated colourDomain: ", colourDomain_array)
-
                 var svg = d3.select("div#colourbar").append("svg") //HUOM! must append svg!!
                     .attr("width", 1000)
                     .attr("height", 1000),
