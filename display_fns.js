@@ -150,6 +150,12 @@ function init() {
             //see: https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/r0_lPT-pBsAJ
             //use chart.group().all(): https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/PMblOq_f0oAJ
 
+            //define double-click
+            franceChart.renderlet(function(chart) {
+              chart.selectAll("g.layer0 g.state").on("click", function(d) {
+                console.log("click!", d);
+              });
+            })
  
             //define colourbar steps:
             function calculateDomain(rangeDiff, colourRange_array) {
@@ -195,6 +201,13 @@ function init() {
                     .gap(0);    
 
                 xAxis_indexChart = indexChart.xAxis().ticks(4);
+
+            // Define a click event for indexChart bar   
+            // indexChart.renderlet(function(chart) {
+            //   chart.selectAll('rect').on("click", function(d) {
+            //     console.log("click!", d);
+            //   });
+            // });    
 
                 yearChart.width(200)
                     .height(200)
