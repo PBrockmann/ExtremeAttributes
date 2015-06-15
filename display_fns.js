@@ -87,11 +87,14 @@ function init() {
         	scenario = filter.dimension(function (d) { return d.Scenario; }),
         	filter_list = [];     
        
-        var yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
+        var yearGroup = yearDimension.group(),
         	indexGroup = indexDimension.group(),
+            regionGroup = regionDimension.group(),
+            datasetGroup = datasetDimension.group();
+            //yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
             //indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
-        	regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; })
-        	datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
+        	//regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; })
+        	//datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
 
         minYear = parseInt(yearDimension.bottom(1)[0].Year) - 5;
         maxYear = parseInt(yearDimension.top(1)[0].Year) + 5;
