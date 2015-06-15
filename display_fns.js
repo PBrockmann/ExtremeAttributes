@@ -153,8 +153,10 @@ function init() {
             //define double-click
             franceChart.renderlet(function(chart) {
               chart.selectAll("g.layer0 g.state").on("click", function(d) { //dblclick
-                console.log("click!", d.properties.name);
-                showTimeSeries(d.properties.name);
+                if (d3.event.shiftKey) {
+                    console.log("click!", d.properties.name);
+                    showTimeSeries(d.properties.name);
+                }
               });
             })
  
