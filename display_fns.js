@@ -88,7 +88,8 @@ function init() {
         	filter_list = [];     
        
         var yearGroup = yearDimension.group().reduceSum(function(d) { return d.Value; }),
-        	indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
+        	indexGroup = indexDimension.group(),
+            //indexGroup = indexDimension.group().reduceSum(function(d) { return d.Value; }),
         	regionGroup = regionDimension.group().reduceSum(function(d) { return d.Value; })
         	datasetGroup = datasetDimension.group().reduceSum(function(d) { return d.Value; });
 
