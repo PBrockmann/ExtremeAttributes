@@ -285,6 +285,8 @@ function init() {
                     console.log("In showTimeSeries for ", regionName);
                     //console.log("indexChart.hasFilter(CDD): ", indexChart.hasFilter("CDD"))
 
+                    clearSeries();
+
                     d3.select("div#chart-ts").append("h2")
                       .attr("width", 1000)
                       .attr("height", 1000)
@@ -292,7 +294,12 @@ function init() {
                           return "Time Series for " + regionName;
                       });
                 }
-            }        
+            }
+
+            function clearSeries() {
+                console.log("in clearSeries!!")
+                d3.selectAll("div#chart-ts").selectAll("h2").remove();                   
+            }    
 
 
            	dc.renderAll();
