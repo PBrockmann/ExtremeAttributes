@@ -54,6 +54,9 @@
     <link href="lib/colorbar.css" rel="stylesheet">
     <script type="text/javascript" src="lib/colorbar.js"></script>
 
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/highstock/2.0.4/highstock.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+
     <style>
         /*Map overlay*/
         
@@ -255,6 +258,8 @@
             <!--ROW 2 TIME SERIES -->
             <div class="row" style="width: 2000px;">                  
                 <div id="chart-ts" class="col-md-6" style=" width=1000px; height: 600px; margin-top: 10px; margin-left: 50px;">
+                    <div id="timeChartTitle"></div>
+                    <div id="timeChart"></div>
                                     
 
                 </div>

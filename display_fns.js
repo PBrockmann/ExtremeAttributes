@@ -285,16 +285,128 @@ function showTimeSeries(regionName) {
 
         clearSeries();
 
-        d3.select("div#chart-ts").append("h2")
+        d3.select("div#timeChartTitle").append("h2")
           .attr("width", 1000)
           .attr("height", 1000)
           .text(function() {
             return "Time Series for " + regionName;
         });
+
+        //create div element for timeseries chart
+        //<div id="timeChart"></div>
+        //d3.select("div#chart-ts").append("div#timeChart");     
+        callHighChart();
     }
 }
 
 function clearSeries() {
     console.log("in clearSeries!!")
     d3.selectAll("div#chart-ts").selectAll("h2").remove();                   
+}
+
+function callHighChart() {
+    var d = [];
+    var options = {
+        chart: {
+            renderTo: 'timeChart',
+        zoomType: 'xy',
+        type: 'spline'
+        },
+        title: {
+            text: '',
+        style: {
+            color: '#000000',
+            fontWeight: 'bold',
+            fontSize: '12px'
+        },
+        x: -320,
+        y: 20,
+        align: 'right'
+        },
+        xAxis: {
+        type: 'datetime',
+        gridLineWidth: 1,
+        labels: {
+                    dateTimeLabelFormats: {
+                        minute: '%H:%M',
+                        hour: '%H:%M',
+                        day: '%e. %b',
+                        week: '%e. %b',
+                        month: '%b \'%y',
+                        year: '%Y'
+                    }
+        }
+        },
+        yAxis: {
+        gridLineWidth: 1,
+            title: {
+                text: ''
+            }
+        },
+        // rangeSelector: {
+        // inputDateFormat: '%Y',
+        //     buttons: [{
+        //         type: 'year',
+        //         count: 25,
+        //         text: '25Y'},
+        //         {
+        //         type: 'year',
+        //         count: 50,
+        //         text: '50Y'},
+        //         {
+        //         type: 'all',
+        //         text: 'All'}
+        //     ]
+        // },
+        // navigator: {
+        //     enabled: true,
+        //     series: {
+        //         id: 'navigator'
+        //     }
+        // },
+        // tooltip: {
+        //     crosshairs: true,
+        //     shared: true,
+        // valueDecimals: 2,
+        // useHTML: true,
+        //     headerFormat: '<small>{point.key}</small><table>',
+        //     pointFormat: '<tr><td style="color: {series.color}">{series.name}: </td>' +
+        //             '<td style="text-align: right"><b>{point.y}</b></td></tr>',
+        //     footerFormat: '</table>',
+        // xDateFormat: '%Y'
+        // },
+        legend: {
+        enabled: true,
+            align: 'right',
+            verticalAlign: 'top',
+        width: 300,
+            y: 60
+        },
+        plotOptions: {
+            spline: {
+                marker: {
+            enabled: false,
+                    radius: 2,
+                    lineColor: '#666666',
+                    lineWidth: 1
+                }
+            }
+        },
+        // exporting: {
+        //     enabled: true,
+        // filename: "EUROCORDEX_chart",
+        // sourceWidth: 1200,
+        // sourceHeight: 600,
+        // scale: 1
+        // },
+        // credits: {
+        // enabled: true, 
+        // text: "EUROCORDEX Time Series Viewer - LSCE"
+        // },
+        series: []
+    };
+
+    // Create the chart
+    var chart = new Highcharts.StockChart(options);
+    // http://jsfiddle.net/SyyUZ/4/
 }
