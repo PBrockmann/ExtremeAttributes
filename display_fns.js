@@ -133,19 +133,11 @@ function init() {
 
                 calculateDomain(rangeDiff, colourRange); //returns colourDomain
                 plotColourbar(colourDomain, colourRange);
-
-
             });
             franceChart.on("preRedraw", function(chart) {
                 chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor()));
                 cdomain_preRedraw = chart.colorDomain(d3.extent(chart.group().all(), chart.valueAccessor())).colorDomain();
                 rangeDiff = cdomain_preRedraw[1] - cdomain_preRedraw[0];
-
-                // d3.select("div#colourbar").remove();
-                // calculateDomain(rangeDiff, colourRange);
-                // console.log("colourDomain from fn: ", colourDomain)
-                // plotColourbar(colourDomain, colourRange);
-
             });
             //see: https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/r0_lPT-pBsAJ
             //use chart.group().all(): https://groups.google.com/forum/#!msg/dc-js-user-group/6_EzrHSRQ30/PMblOq_f0oAJ
@@ -167,23 +159,7 @@ function init() {
                    colourDomain[j] = cdomain_preRender[0] + j*step; //j + j*step;
                 }
                 return colourDomain;
-            }
-            
-            //plotColourbar(colourDomain_blue, colourRange_blue); //fixed
-
-            //colourbar (http://bl.ocks.org/chrisbrich/4209888)
-            //attach to div defined in index.html
-            function plotColourbar(colourDomain_array, colourRange_array) {
-                var svg = d3.select("div#colourbar").append("svg") //HUOM! must append svg!!
-                    .attr("width", 1000)
-                    .attr("height", 1000),
-                g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
-                cb = colorBar().color(d3.scale.linear()
-                               .domain(colourDomain_array)
-                               .range(colourRange_array))
-                               .size(150).lineWidth(80).precision(1);
-                g.call(cb);
-            }
+            }            
 
             indexChart.width(200) //svg width
                     .height(200) //svg height
@@ -281,31 +257,44 @@ function init() {
                     .sortBy(function(d){ return d.Year; })
                     .order(d3.ascending);            
 
-            function showTimeSeries(regionName) {
-                //only show if ONE index filter has been selected
-                if (indexChart.filters().length == 1) {
-                    console.log("In showTimeSeries for ", regionName);
-                    //console.log("indexChart.hasFilter(CDD): ", indexChart.hasFilter("CDD"))
-
-                    clearSeries();
-
-                    d3.select("div#chart-ts").append("h2")
-                      .attr("width", 1000)
-                      .attr("height", 1000)
-                      .text(function() {
-                          return "Time Series for " + regionName;
-                      });
-                }
-            }
-
-            function clearSeries() {
-                console.log("in clearSeries!!")
-                d3.selectAll("div#chart-ts").selectAll("h2").remove();                   
-            }    
-
-
            	dc.renderAll();
 
         }); //end geojson
     }); //end csv
+} //end init
+
+//colourbar (http://bl.ocks.org/chrisbrich/4209888)
+//attach to div defined in index.html
+function plotColourbar(colourDomain_array, colourRange_array) {
+    var svg = d3.select("div#colourbar").append("svg") //HUOM! must append svg!!
+                .attr("width", 1000)
+                .attr("height", 1000),
+        g = svg.append("g").attr("transform","translate(10,10)").classed("colorbar",true),
+        cb = colorBar().color(d3.scale.linear()
+                       .domain(colourDomain_array)
+                       .range(colourRange_array))
+                       .size(150).lineWidth(80).precision(1);
+    g.call(cb);
+}
+
+function showTimeSeries(regionName) {
+    //only show if ONE index filter has been selected
+    if (indexChart.filters().length == 1) {
+        console.log("In showTimeSeries for ", regionName);
+        //console.log("indexChart.hasFilter(CDD): ", indexChart.hasFilter("CDD"))
+
+        clearSeries();
+
+        d3.select("div#chart-ts").append("h2")
+          .attr("width", 1000)
+          .attr("height", 1000)
+          .text(function() {
+            return "Time Series for " + regionName;
+        });
+    }
+}
+
+function clearSeries() {
+    console.log("in clearSeries!!")
+    d3.selectAll("div#chart-ts").selectAll("h2").remove();                   
 }
