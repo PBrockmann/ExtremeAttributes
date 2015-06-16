@@ -19,7 +19,7 @@
 
     <!--d3 and dc-->
     <script src="lib/crossfilter.js"></script>
-    <script src="lib/dc.js-1.7.3/dc.min.js"></script>
+    <script src="lib/dc.js-1.7.3/dc.js"></script>
     <link rel="stylesheet" href="lib/dc.js-1.7.3/dc.css" />
 
     <!--css links-->
@@ -39,6 +39,12 @@
 
     <script type="text/javascript" src="setup.js"></script>
     <link href="style.css" rel="stylesheet" type="text/css" media="all">
+    <style type="text/css">
+        h4 span {
+            font-size:14px;
+            font-weight:normal;
+        }
+    </style>
 
 </head>
 
@@ -71,52 +77,50 @@
         <!-- Begin page content -->
         <div class="container">
 
-            <!--ROW 1-->
-            <div class="row" style="width: 1600px;">
-                <div id="title" style="margin-left: 610px;"><h2>Selectors</h2></div>
-                <div id="tags" style="margin-top: -55px; margin-left: -30px;">
+            <div class="row">
+                <div id="tags" class="col-md-1">
                 <h4>Threshold</h4>
-                	<input type="radio" name="sigma" value="1" checked>1 Sigma<br>
+                	<input type="radio" name="sigma" value="1">1 Sigma<br>
                 	<input type="radio" name="sigma" value="2">2 Sigma
                 </div>
-                <div id="scenario" style="margin-top: -69px; margin-left: 200px;">
+                <div id="scenario" class="col-md-1">
                 <h4>Scenario</h4>
-                	<input type="radio" name="rcp" value="4.5" checked>RCP 4.5<br>
+                	<input type="radio" name="rcp" value="4.5">RCP 4.5<br>
                 	<input type="radio" name="rcp" value="8.5">RCP 8.5
                 </div>
-
-                <div id="colourbar" class="dc-chart col-md-1" style="width: 30px;height:30px;margin-top:280px;margin-left: -40px"></div>
-
-                <div id="france-chart" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 10px;">
-                    <a class="reset" href="javascript:franceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-                    <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
-
+                <div id="chart-indiceType" class="col-md-3 dc-chart">
+                    <h4>Index
+		    	<!--<span class='reset-hidden' style="visibility: hidden;">Filtered for: <span class="filter"></span></span>
+                    	<a class="reset" href="javascript:indiceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>-->
+			<span>
+                            <a class="reset" href="javascript:indexChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                            <span class="reset" style="display: none;"><span class="filter"></span></span>
+			</span>
+		    </h4>
                 </div>
-
-                <!--<div id="map" class="dc-chart col-md-8" style="width: 600px; height: 560px; margin-top: 20px;"></div>-->
-
-
-                <div id="chart-indexType" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 0px;">
-                    <h4>Index</h4>
-                    <a class="reset" href="javascript:indexChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
-                    <span class="reset" style="display: none;"><span class="filter"></span></span>                                       
-                </div>
-
-                <div id="chart-eventYear" class="dc-chart col-md-2" style="margin-top: 0px; margin-left: 80px;">
+                <div id="chart-eventYear" class="col-md-3 dc-chart">
                     <h4>Year</h4>
                     <a class="reset" href="javascript:yearChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
-
-                <div id="chart-dataset" class="dc-chart col-md-3b" style="margin-top: 0px; margin-left: 100px;">
+                <div id="chart-dataset" class="col-md-3 dc-chart">
                     <h4>Datasets</h4>
-                    <h5>Select observations or model data</h5>                    
                     <a class="reset" href="javascript:datasetChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
                     <span class="reset" style="display: none;"><span class="filter"></span></span>
                 </div>
-               
+
+            </div> 
+
+            <div class="row">
+                <div id="colourbar" class="col-md-1 dc-chart"></div>
+
+                <div id="france-chart" class="col-md-3 dc-chart">
+                    <a class="reset" href="javascript:franceChart.filterAll();dc.redrawAll();" style="display: none;">reset</a>
+                    <span class="reset" style="display: none;"> | Current filter: <span class="filter"></span></span>
+
+                </div>
                 <div>       
-                  <div id="summaryDiv" class="col-md-6" style="margin-top: 10px; margin-left: 0px; width=860">
+                  <div id="summaryDiv" class="col-md-8 dc-chart">
                     <table class="table table-striped table-hover" id="dc-table-graph">
                         <h4>Summary</h4>
                         <span id="active">-</span> of <span id="total">-</span> rows selected.
@@ -126,7 +130,7 @@
                                 <th>Year</th>
                                 <th>Region</th>
                                 <th>Type</th>
-                                <th> Season</th>
+                                <th>Season</th>
                                 <th>Index</th>
                                 <th>Data</th>
                                 <th>Sigma</th>
@@ -137,26 +141,20 @@
                     </table>
                   </div>  
                 </div>
-                
+            </div> 
 
-
-            </div> <!--end ROW 1-->
-
-            <!--ROW 2 TIME SERIES -->
-            <div class="row" style="width: 2000px;">                  
-                <div id="chart-ts" class="col-md-6" style=" width=1000px; height: 600px; margin-top: 10px; margin-left: 50px;">
+            <div class="row">                  
+                <div id="chart-ts" class="col-md-12">
                     <div id="timeChartTitle"></div>
                     <div id="timeChart"></div>
-                                    
 
                 </div>
-            </div> <!--end ROW 2-->       
+            </div>
 
         </div>
         <!-- /.container -->
 
     </div>
-    <!-- /.wrap -->
 
     <div id="footer">
         <div class="container">
